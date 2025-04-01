@@ -69,6 +69,7 @@ export default {
       juegos,
       previousPage,
       nextPage,
+      cargando,
 
       // Métodos
       getJuegos,
