@@ -40,15 +40,18 @@ export default {
         <!-- Enlace a inicio de sesión -->
         <RouterLink class="link--navbar" to="/"><button>inicio</button></RouterLink>
 
+        <!-- Enlace a página de búsqueda -->
+        <RouterLink class="link--navbar" to="/buscar/"><button>Buscar</button></RouterLink>
+
         <!-- Aparece un boton para buscar, cuando se pulsa se esconde y aparece la busqueda con los detalles -->
-        <span v-show="!verBuscar">
+        <!-- <span v-show="!verBuscar">
             <button @click="visibleBuscar()">Abrir búsqueda</button>
         </span>
 
         <span v-show="verBuscar" class="verBuscar">
             <buscar />
             <button @click="visibleBuscar()">X</button>
-        </span>
+        </span> -->
 
         <!-- Deberá estar oculto hasta que se inicie sesión -->
         <RouterLink class="link--navbar" to="/deseados"><button>Lista de deseados</button></RouterLink>

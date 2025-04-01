@@ -30,6 +30,7 @@ export default {
       try {
         const response = await axios.get(endpoint.value);
         juegos.value = response.data.results;
+        console.log(juegos.value);
 
         //se asignan los valores correspondientes a la página
         previousPage.value = response.data.previous;
@@ -84,16 +85,22 @@ export default {
   <main>
     <h1>Página de listado de juegos</h1>
 
-    <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
-    <button v-if="previousPage" @click="cambiarPagina(previousPage)" :disabled="cargando">Página anterior</button>
+    <buscar />
 
-    <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
-    <button v-if="nextPage" @click="cambiarPagina(nextPage)" :disabled="cargando">Página siguiente</button>
 
-    <div class="listadoJuegos"> <!-- Se pasan los datos del juego a la tarjeta -->
-      <span v-for="juego in juegos" :key="juego.id" class="listadoJuegos">
-        <tarjetaJuego :juego="juego"></tarjetaJuego>
-      </span>
+    <div class="contenedorJuegos">
+      <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
+      <button v-if="previousPage" @click="cambiarPagina(previousPage)" :disabled="cargando">Página anterior</button>
+
+      <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
+      <button v-if="nextPage" @click="cambiarPagina(nextPage)" :disabled="cargando">Página siguiente</button>
+
+      <div class="listadoJuegos">
+        <!-- Se pasan los datos del juego a la tarjeta -->
+        <span v-for="juego in juegos" :key="juego.id" class="listadoJuegos">
+          <tarjetaJuego :juego="juego"></tarjetaJuego>
+        </span>
+      </div>
     </div>
   </main>
 </template>

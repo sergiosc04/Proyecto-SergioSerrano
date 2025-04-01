@@ -15,12 +15,12 @@ const router = createRouter({
       component: () => import('../views/DetallesJuegoView.vue'),
     },
     {
-      path: '/buscar',
+      path: '/buscar/',
       name: 'buscar',
       component: () => import('../views/BuscarJuegosView.vue'),
     },
     {
-      path: '/deseados',
+      path: '/deseados/',
       name: 'deseado',
       component: () => import('../views/ListaDeseadosView.vue'),
     },
