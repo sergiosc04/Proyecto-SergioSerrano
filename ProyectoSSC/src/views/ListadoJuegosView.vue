@@ -55,6 +55,7 @@ export default {
       setTimeout(() => {
         cambiarEndpoint(nuevoEndpoint);
         getJuegos();
+        console.log(juegos.value);
         cargando.value = false;
       }, 500);
     }
