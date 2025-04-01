@@ -81,22 +81,21 @@ export default {
 </script>
 
 <template>
-  <main class="listadoJuegos">
+  <main>
     <h1>Página de listado de juegos</h1>
 
-    <div class="botonesPaginas">
+    <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
+    <button v-if="previousPage" @click="cambiarPagina(previousPage)" :disabled="cargando">Página anterior</button>
 
-      <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
-      <button v-if="previousPage" @click="cambiarPagina(previousPage)" :disabled="cargando">Página anterior</button>
+    <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
+    <button v-if="nextPage" @click="cambiarPagina(nextPage)" :disabled="cargando">Página siguiente</button>
 
-      <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
-      <button v-if="nextPage" @click="cambiarPagina(nextPage)" :disabled="cargando">Página siguiente</button>
+    <div class="listadoJuegos"> <!-- Se pasan los datos del juego a la tarjeta -->
+      <span v-for="juego in juegos" :key="juego.id" class="listadoJuegos">
+        <tarjetaJuego :juego="juego"></tarjetaJuego>
+      </span>
     </div>
-
-    <!-- Se pasan los datos del juego a la tarjeta -->
-    <span v-for="juego in juegos" :key="juego.id">
-      <tarjetaJuego :juego="juego"></tarjetaJuego>
-    </span>
-
   </main>
 </template>
+
+<style scoped></style>
