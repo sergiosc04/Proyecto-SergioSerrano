@@ -3,7 +3,7 @@
 
 <template>
   <div>
-    <h1>Pagina de juego especifico</h1>
+    <h1>Vista de detalles del juego</h1>
   </div>
 </template>
 
