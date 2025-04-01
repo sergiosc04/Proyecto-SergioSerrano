@@ -1,0 +1,73 @@
+<script>
+import buscar from './buscar.vue';
+import { ref } from 'vue';
+
+export default {
+    name: 'navbar',
+
+    components: {
+        buscar,
+    },
+
+
+    setup() {
+        let idBuscar = ref("");
+        let verBuscar = ref(false);
+
+        let visibleBuscar = () => {
+            verBuscar.value = !verBuscar.value;
+            console.log(verBuscar);
+        }
+
+        return {
+            idBuscar,
+            verBuscar,
+            visibleBuscar,
+        }
+    }
+
+}
+</script>
+
+<template>
+    <nav class="navbar">
+
+        <!-- Cambiar el logo por el correcto cuando lo tenga-->
+        <a href="/">
+            <img src="https://img.itch.zone/aW1nLzE4MzUyNzU5LnBuZw==/original/8DRbfb.png" alt="Placeholder"
+                height="80px">
+        </a>
+
+        <!-- Enlace a inicio de sesión -->
+        <RouterLink class="link--navbar" to="/"><button>inicio</button></RouterLink>
+
+        <!-- Aparece un boton para buscar, cuando se pulsa se esconde y aparece la busqueda con los detalles -->
+        <span v-show="!verBuscar">
+            <button @click="visibleBuscar()">Abrir búsqueda</button>
+        </span>
+
+        <span v-show="verBuscar" class="verBuscar">
+            <buscar />
+            <button @click="visibleBuscar()">X</button>
+        </span>
+
+        <!-- Deberá estar oculto hasta que se inicie sesión -->
+        <RouterLink class="link--navbar" to="/deseados"><button>Lista de deseados</button></RouterLink>
+
+        <!-- Deberá mostrarse hasta q se inicie sesión-->
+        <RouterLink class="link--navbar" to="/deseados"><button>Registrarse</button></RouterLink>
+        <RouterLink class="link--navbar" to="/deseados"><button>Iniciar Sesión</button></RouterLink>
+    </nav>
+</template>
+
+<style>
+.navbar {
+    display: flex;
+    align-items: center;
+}
+
+.verBuscar {
+    display: flex;
+    align-items: center;
+}
+</style>

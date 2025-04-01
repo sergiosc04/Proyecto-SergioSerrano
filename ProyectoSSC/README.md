@@ -1,28 +1,34 @@
 # ProyectoSSC
 
-This template should help get you started developing with Vue 3 in Vite.
+Pasos para configurar el IDE para que funcione al desarrollar la web
 
-## Recommended IDE Setup
+## Configuración IDE (Desactivar Vetur si está instalado)
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+[VSCode](https://code.visualstudio.com/) + [Extensión Vue Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
 
-## Customize configuration
+## Configuración de vite (Aquí no he tocado nada)
 
 See [Vite Configuration Reference](https://vite.dev/config/).
 
-## Project Setup
+## Preparar proyecto. En la ruta del proyecto creado
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Instalar AXIOS para procesar los datos de la API
+
+```sh
+npm install axios@latest
+```
+
+### Compilar y recarga en caliente para desarrollo
 
 ```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
+### Compilar y minificar para producción
 
 ```sh
 npm run build
