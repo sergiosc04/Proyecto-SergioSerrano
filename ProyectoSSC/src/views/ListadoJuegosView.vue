@@ -84,7 +84,7 @@ export default {
 </script>
 
 <template>
-  <main>
+  <main v-if="juegos">
     <h1>Inicio</h1>
 
     <div class="contenedorJuegos">
@@ -102,6 +102,8 @@ export default {
       </div>
     </div>
   </main>
+
+  <p v-else>Cargando...</p>
 </template>
 
 <style scoped></style>

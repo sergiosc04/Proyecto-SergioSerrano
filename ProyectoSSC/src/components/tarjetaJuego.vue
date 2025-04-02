@@ -23,7 +23,7 @@ export default {
         </ul>
 
         <div class="accionesJuegos">
-            <router-link :to="'juego/' + juego.id"
+            <router-link :to="`/juego/${juego.id}`"
                 style="display: flex; justify-content: center; padding-bottom: 10px;">
                 <button>Ver juego</button>
             </router-link>
