@@ -1,14 +1,11 @@
 <script>
-import buscar from './buscar.vue';
 import { ref } from 'vue';
 
 export default {
     name: 'navbar',
 
     components: {
-        buscar,
     },
-
 
     setup() {
         let idBuscar = ref("");
@@ -57,8 +54,8 @@ export default {
         <RouterLink class="link--navbar" to="/deseados"><button>Lista de deseados</button></RouterLink>
 
         <!-- Deberá mostrarse hasta q se inicie sesión-->
-        <RouterLink class="link--navbar" to="/deseados"><button>Registrarse</button></RouterLink>
-        <RouterLink class="link--navbar" to="/deseados"><button>Iniciar Sesión</button></RouterLink>
+        <RouterLink class="link--navbar" to="/registro"><button>Registrarse</button></RouterLink>
+        <RouterLink class="link--navbar" to="/login"><button>Iniciar Sesión</button></RouterLink>
     </nav>
 </template>
 

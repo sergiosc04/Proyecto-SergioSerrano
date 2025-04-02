@@ -14,6 +14,8 @@ export default {
     //instancias del objeto de juego haya en la API
 
 
+    //IDEA- Puedo hacer q la pagina que se cargue cada vez q se cargue la pagina web sea una aleatoria, para darle dinamismo y "diferenciarla" de ka oagina principal
+
     // Se define juegos como una referencia reactiva
     let juegos = ref([]);
     let endpoint = ref("https://api.rawg.io/api/games?key=9c8533b1b08441e680f0d26ed85dc61b&page_size=10");
@@ -83,10 +85,7 @@ export default {
 
 <template>
   <main>
-    <h1>Página de listado de juegos</h1>
-
-    <buscar />
-
+    <h1>Inicio</h1>
 
     <div class="contenedorJuegos">
       <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->

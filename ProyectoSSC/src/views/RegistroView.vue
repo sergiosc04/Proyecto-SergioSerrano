@@ -1,7 +1,9 @@
 <script></script>
 
 <template>
-    <h1>Vista de Deseados</h1>
+    <div>
+        <h1>Registro</h1>
+    </div>
 </template>
 
 <style></style>

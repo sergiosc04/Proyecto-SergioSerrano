@@ -148,13 +148,15 @@ export default {
     </div>
 
     <div class="contenedorJuegos">
-      <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
-      <button v-if="previousPage" @click="cambiarPagina('anterior')" :disabled="cargando">Página anterior</button>
 
-      <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
-      <button v-if="nextPage" @click="cambiarPagina('siguiente')" :disabled="cargando">Página siguiente</button>
+      <div class="contenedorBotones"><br> Página {{ numPagina }} <br>
 
-      <p>Página {{ numPagina }}</p>
+        <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
+        <button v-if="nextPage" @click="cambiarPagina('siguiente')" :disabled="cargando">Página siguiente</button>
+
+        <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
+        <button v-if="previousPage" @click="cambiarPagina('anterior')" :disabled="cargando">Página anterior</button>
+      </div><br>
 
       <div class="listadoJuegos">
         <!-- Se pasan los datos del juego a la tarjeta -->
