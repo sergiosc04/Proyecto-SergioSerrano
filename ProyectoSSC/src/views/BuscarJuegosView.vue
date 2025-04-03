@@ -19,7 +19,7 @@ export default {
 
     //Var para cargar generos
     let generos = ref([]);
-    let generoSelect = ref("prueba");
+    let generoSelect = ref("");
 
     //Var para cargar paginas
     let numPagina = ref(1);
@@ -130,11 +130,10 @@ export default {
         </label>
         <br>
         <label for="selectGenero">
+
           Género:
           <!-- Selector de generos -->
-          <select name="selectGenero" id="selectGenero" v-model="generoSelect">
-
-            <option value="''">Todos los géneros</option>
+          <select name="selectGenero" id="selectGenero" v-model="generoSelect" placeholder="Todos los géneros">
             <option v-for="genero in generos" :key="genero.id" :value="genero.slug">
               {{ genero.name }} ({{ genero.games_count }} juegos)
             </option>

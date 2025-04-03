@@ -40,9 +40,6 @@ export default {
     <div v-if="juego">
       <p><strong>Nombre:</strong> {{ juego.name }}</p>
 
-      <p><strong>Descripción:</strong></p>
-      <p v-html="juego.description"></p>
-
       <p><strong>Fecha de lanzamiento:</strong> {{ juego.released }}</p>
 
       <p><strong>Género:</strong>
@@ -60,6 +57,11 @@ export default {
           <!-- Itera sobre las plataformas del juego, mostrando su nombre y separándolas con comas excepto después de la última -->
           {{ platform.platform.name }}{{ index < juego.platforms.length - 1 ? ', ' : '' }} </span>
       </p>
+
+      <summary> <strong>Descripción:</strong> </summary>
+      <details>
+        <p v-html="juego.description"></p>
+      </details>
 
       <p><strong>Imágenes:</strong></p>
       <div v-if="juego.background_image">

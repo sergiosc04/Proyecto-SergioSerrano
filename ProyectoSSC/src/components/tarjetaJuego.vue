@@ -22,10 +22,13 @@ export default {
             <li>Calificación del juego: {{ juego.rating }}/ 5</li>
         </ul>
 
-        <div class="accionesJuegos">
-            <router-link :to="`/juego/${juego.id}`"
-                style="display: flex; justify-content: center; padding-bottom: 10px;">
+        <div class="accionesJuegos" style=" display: flex; justify-content: center; padding-bottom: 10px;">
+            <router-link :to="`/juego/${juego.id}`">
                 <button>Ver juego</button>
+            </router-link>
+
+            <router-link :to="`/deseados`">
+                <button>Añadir a deseados</button>
             </router-link>
         </div>
     </div>
