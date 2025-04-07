@@ -35,7 +35,7 @@ export default {
         </a>
 
         <!-- Enlace a inicio de sesión -->
-        <RouterLink class="link--navbar" to="/"><button>inicio</button></RouterLink>
+        <RouterLink class="link--navbar" to="/"><button>Inicio</button></RouterLink>
 
         <!-- Enlace a página de búsqueda -->
         <RouterLink class="link--navbar" to="/buscar/"><button>Buscar</button></RouterLink>
@@ -57,8 +57,8 @@ export default {
         <RouterLink class="link--navbar" to="/deseados"><button>Lista de deseados</button></RouterLink>
 
         <!-- Deberá mostrarse hasta q se inicie sesión-->
-        <RouterLink class="link--navbar" to="/registro"><button>Registrarse</button></RouterLink>
-        <RouterLink class="link--navbar" to="/login"><button>Iniciar Sesión</button></RouterLink>
+        <!-- <RouterLink class="link--navbar" to="/registro"><button>Registrarse</button></RouterLink>
+        <RouterLink class="link--navbar" to="/login"><button>Iniciar Sesión</button></RouterLink> -->
     </nav>
 </template>
 
