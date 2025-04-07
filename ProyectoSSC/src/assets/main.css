@@ -6,3 +6,21 @@
     font-variation-settings:
         "wdth" 100;
 }
+
+.contenedorJuegos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contenedorBotones {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.listadoJuegos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}

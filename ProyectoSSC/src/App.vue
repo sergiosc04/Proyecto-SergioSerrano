@@ -4,12 +4,6 @@ export default {
     components: {
         navbar,
     },
-
-    setup() {
-
-        return {
-        }
-    }
 }
 
 </script>
