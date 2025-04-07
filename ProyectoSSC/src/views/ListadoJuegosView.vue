@@ -9,34 +9,40 @@ export default {
   },
 
   setup() {
+
     //Se hace un array, que recoge distintos juegos
     //Mostrar el componente tarjetaJuego con los datos dependiendo de la ID que tenga cada juego, tantas veces como
     //instancias del objeto de juego haya en la API
 
-
-    //IDEA- Puedo hacer q la pagina que se cargue cada vez q se cargue la pagina web sea una aleatoria, para darle dinamismo y "diferenciarla" de ka oagina principal
-
     // Se define juegos como una referencia reactiva
     let juegos = ref([]);
-    let endpoint = ref("https://api.rawg.io/api/games?key=9c8533b1b08441e680f0d26ed85dc61b&page_size=10");
+
+    //Declarar variables para la busqueda de juegos
+    let numPagina = ref(1);
+    let endpoint = ref("");
 
     // Variable para evitar el spam en los botones
     let cargando = ref(false);
 
     // Variables de página anterior/siguiente
-    let previousPage = ref(null);
-    let nextPage = ref(null);
+    let paginaAnterior = ref(null);
+    let paginaSiguiente = ref(null);
 
     //Función que obtiene los juegos
     const getJuegos = async () => {
       try {
+
+        //hacemos numPagina un numero aleatorio de 1 a 100, y le asignamos ese valor al endpoint
+        numPagina.value = Math.floor(Math.random() * 99) + 1;
+        endpoint.value = `https://api.rawg.io/api/games?key=9c8533b1b08441e680f0d26ed85dc61b&page=${numPagina.value}`;
         const response = await axios.get(endpoint.value);
         juegos.value = response.data.results;
         console.log(juegos.value);
+        console.log(endpoint.value);
 
         //se asignan los valores correspondientes a la página
-        previousPage.value = response.data.previous;
-        nextPage.value = response.data.next;
+        paginaAnterior.value = response.data.previous;
+        paginaSiguiente.value = response.data.next;
 
       } catch (error) {
         console.error("Error al obtener los juegos:", error);
@@ -70,9 +76,10 @@ export default {
     return {
       // Variables
       juegos,
-      previousPage,
-      nextPage,
+      paginaAnterior,
+      paginaSiguiente,
       cargando,
+      numPagina,
 
       // Métodos
       getJuegos,
@@ -84,15 +91,24 @@ export default {
 </script>
 
 <template>
-  <main v-if="juegos">
+  <main>
     <h1>Inicio</h1>
+    <div v-if="juegos.length > 0" class="contenedorJuegos">
+      <div class="contenedorBotones">
+        <br>
+        Página {{ numPagina }} <br>
+        <button @click="getJuegos();" :disabled="cargando">Página aleatoria</button>
 
-    <div class="contenedorJuegos">
-      <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
-      <button v-if="previousPage" @click="cambiarPagina(previousPage)" :disabled="cargando">Página anterior</button>
+        <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
+        <button v-if="nextPage" @click="cambiarPagina(nextPage)" :disabled="cargando">
+          Página siguiente
+        </button>
 
-      <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
-      <button v-if="nextPage" @click="cambiarPagina(nextPage)" :disabled="cargando">Página siguiente</button>
+        <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
+        <button v-if="previousPage" @click="cambiarPagina(previousPage)" :disabled="cargando">
+          Página anterior
+        </button>
+      </div><br>
 
       <div class="listadoJuegos">
         <!-- Se pasan los datos del juego a la tarjeta -->
@@ -100,10 +116,12 @@ export default {
           <tarjetaJuego :juego="juego"></tarjetaJuego>
         </span>
       </div>
-    </div>
-  </main>
 
-  <p v-else>Cargando...</p>
+    </div>
+
+    <p v-else>Cargando...</p>
+  </main>
 </template>
+
 
 <style scoped></style>

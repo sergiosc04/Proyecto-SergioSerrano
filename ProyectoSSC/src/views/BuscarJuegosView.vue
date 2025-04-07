@@ -19,7 +19,7 @@ export default {
 
     //Var para cargar generos
     let generos = ref([]);
-    let generoSelect = ref("prueba");
+    let generoSelect = ref("");
 
     //Var para cargar paginas
     let numPagina = ref(1);
@@ -31,7 +31,22 @@ export default {
     //Funcion para buscar juegos
     const buscarJuegos = async () => {
       try {
-        const endpoint = `https://api.rawg.io/api/games?key=9c8533b1b08441e680f0d26ed85dc61b&search=${idBuscar.value}&page_size=${juegosPagina.value}&page=${numPagina.value}&genres=${generoSelect.value}`;
+
+        const params = new URLSearchParams({
+          key: '9c8533b1b08441e680f0d26ed85dc61b',
+          search: idBuscar.value || '',
+          page_size: juegosPagina.value,
+          page: numPagina.value,
+        });
+
+        if (generoSelect.value) {
+          params.append('genres', generoSelect.value);
+        }
+
+        const endpoint = `https://api.rawg.io/api/games?${params.toString()}`;
+
+        //Version anterior de busqueda: 
+        //const endpoint = `https://api.rawg.io/api/games?key=9c8533b1b08441e680f0d26ed85dc61b&search=${idBuscar.value}&page_size=${juegosPagina.value}&page=${numPagina.value}&genres=${generoSelect.value}`;
         const response = await axios.get(endpoint);
 
         juegos.value = response.data.results;
@@ -78,6 +93,7 @@ export default {
 
     onMounted(() => {
       getGeneros();
+      buscarJuegos();
     });
 
     return {
@@ -129,12 +145,12 @@ export default {
           <input type="text" placeholder="Nº de página" v-model="numPagina">
         </label>
         <br>
+
         <label for="selectGenero">
           Género:
           <!-- Selector de generos -->
           <select name="selectGenero" id="selectGenero" v-model="generoSelect">
 
-            <option value="''">Todos los géneros</option>
             <option v-for="genero in generos" :key="genero.id" :value="genero.slug">
               {{ genero.name }} ({{ genero.games_count }} juegos)
             </option>
