@@ -150,6 +150,7 @@ export default {
 
           Género:
           <!-- Selector de generos -->
+          <select id="selectGenero" v-model="generoSelect">
             <option v-for="genero in generos" :key="genero.id" :value="genero.slug">
               {{ genero.name }} ({{ genero.games_count }} juegos)
             </option>

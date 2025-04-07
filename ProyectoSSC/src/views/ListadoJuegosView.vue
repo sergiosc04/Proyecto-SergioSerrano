@@ -33,7 +33,7 @@ export default {
       try {
 
         //hacemos numPagina un numero aleatorio de 1 a 100, y le asignamos ese valor al endpoint
-        numPagina.value = Math.floor(Math.random() * 99) + 1;
+        numPagina.value = Math.floor(Math.random() * 100) + 1;
         endpoint.value = `https://api.rawg.io/api/games?key=9c8533b1b08441e680f0d26ed85dc61b&page=${numPagina.value}`;
         const response = await axios.get(endpoint.value);
         juegos.value = response.data.results;
@@ -100,13 +100,13 @@ export default {
         <button @click="getJuegos();" :disabled="cargando">Página aleatoria</button>
 
         <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
-        <button v-if="nextPage" @click="cambiarPagina(nextPage)" :disabled="cargando">
-          Página siguiente
+        <button v-if="paginaAnterior" @click="cambiarPagina(paginaAnterior)" :disabled="cargando">
+          Página anterior
         </button>
 
         <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
-        <button v-if="previousPage" @click="cambiarPagina(previousPage)" :disabled="cargando">
-          Página anterior
+        <button v-if="paginaSiguiente" @click="cambiarPagina(paginaSiguiente)" :disabled="cargando">
+          Página siguiente
         </button>
       </div><br>
 
