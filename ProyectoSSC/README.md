@@ -22,6 +22,16 @@ npm install
 npm install axios@latest
 ```
 
+### Instalar PINIA y SUPABASE para gestionar las sesiones
+
+```sh
+npm install pinia
+```
+
+```sh
+npm install @supabase/supabase-js
+```
+
 ### Compilar y recarga en caliente para desarrollo
 
 ```sh
