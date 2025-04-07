@@ -25,21 +25,11 @@ const router = createRouter({
       component: () => import('../views/ListaDeseadosView.vue'),
     },
     {
-      path: '/perfil:id',
-      name: 'perfil',
-      component: () => import('../views/PerfilView.vue'),
-    },
-    {
-      path: '/login/',
-      name: 'login',
-      component: () => import('../views/LoginView.vue'),
-    },
-    {
-      path: '/registro/',
-      name: 'registro',
-      component: () => import('../views/RegistroView.vue'),
+      path: '/cuenta/',
+      name: 'cuenta',
+      component: () => import('../views/CuentaView.vue'),
     }
   ],
 })
 
-export default router
+export default router;

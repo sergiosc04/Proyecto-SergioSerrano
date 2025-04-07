@@ -40,6 +40,9 @@ export default {
         <!-- Enlace a página de búsqueda -->
         <RouterLink class="link--navbar" to="/buscar/"><button>Buscar</button></RouterLink>
 
+        <RouterLink class="link--navbar" to="/cuenta/"><button>Cuenta</button></RouterLink>
+
+
         <!-- Aparece un boton para buscar, cuando se pulsa se esconde y aparece la busqueda con los detalles -->
         <!-- <span v-show="!verBuscar">
             <button @click="visibleBuscar()">Abrir búsqueda</button>
