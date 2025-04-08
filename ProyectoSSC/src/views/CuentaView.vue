@@ -13,16 +13,13 @@ export default {
         const sessionStore = useSessionStore();  // Instancia del store de la sesión
         const router = useRouter();
 
-
         const idAuth = ref(null);
         const error = ref(null);
-
-
-
 
         const cerrarSesion = async () => {
             // Llama al método de Supabase para cerrar la sesión
             await supabase.auth.signOut();
+
             // Limpia los datos de la sesión en el store
             sessionStore.logout();
             alert('Sesión cerrada correctamente');
@@ -87,7 +84,6 @@ export default {
 };
 </script>
 
-
 <template>
     <div class="container">
 
@@ -107,7 +103,7 @@ export default {
             <p><strong>UID del usuario:</strong> {{ sessionStore.session.user.id }}</p>
             <p><strong>Correo Electrónico:</strong> {{ sessionStore.user.email }}</p>
             <p><strong>Estado del Correo:</strong> {{ sessionStore.user.email_verified ? 'Verificado' : 'No Verificado'
-            }}</p>
+                }}</p>
 
             <!-- Muestra la fecha del último acceso del usuario -->
             <!--
