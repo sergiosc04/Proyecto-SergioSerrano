@@ -6,7 +6,6 @@ export default {
     name: 'ColeccionView',
     setup() {
         const colecciones = ref([]);
-        const loading = ref(false);
         const error = ref(null);
 
         const getColeccion = async () => {
