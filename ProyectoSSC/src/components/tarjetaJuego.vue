@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: 'tarjetaJuego',
+    name: "tarjetaJuego",
     props: {
         juego: {
             type: Object,
@@ -37,7 +37,7 @@ export default {
 <style scoped>
 .tarjetaJuego {
     background-color: #f9f9fc;
-    border: 1px solid #ddd;
+    border: 1px solid gray;
     border-radius: 10px;
     width: 20vw;
     min-width: 250px;

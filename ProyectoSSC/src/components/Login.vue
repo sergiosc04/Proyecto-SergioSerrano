@@ -44,25 +44,36 @@ const cambiarARegistro = () => {
 </script>
 
 <template>
-    <form @submit.prevent="manejarLogin">
-        <div>
-            <h1 class="header">Inicio de sesión</h1>
-            <p class="description">Inicia sesión con tu email y contraseña.</p>
+    <div class="container">
+        <form @submit.prevent="manejarLogin">
             <div>
-                <input class="inputField" required type="email" placeholder="Email:" v-model="email" />
+                <h1 class="header">Inicio de sesión</h1>
+                <p class="description">Inicia sesión con tu email y contraseña.</p>
+                <div>
+                    <input class="inputField" required type="email" placeholder="Email:" v-model="email" />
+                </div>
+                <div>
+                    <input class="inputField" required type="password" placeholder="Contraseña:" v-model="password" />
+                </div>
+                <div>
+                    <input type="submit" class="button block" :value="cargando ? 'Cargando' : 'Iniciar sesión'"
+                        :disabled="cargando" />
+                </div>
+                <div><br>
+                    <button type="button" class="button secondary" @click="cambiarARegistro">
+                        ¿No tienes una cuenta? Regístrate.
+                    </button>
+                </div>
             </div>
-            <div>
-                <input class="inputField" required type="password" placeholder="Contraseña:" v-model="password" />
-            </div>
-            <div>
-                <input type="submit" class="button block" :value="cargando ? 'Cargando' : 'Iniciar sesión'"
-                    :disabled="cargando" />
-            </div>
-            <div><br>
-                <button type="button" class="button secondary" @click="cambiarARegistro">
-                    ¿No tienes una cuenta? Regístrate.
-                </button>
-            </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </template>
+
+<style>
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+</style>

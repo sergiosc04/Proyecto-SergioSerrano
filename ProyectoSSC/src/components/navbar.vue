@@ -11,7 +11,7 @@
                 <RouterLink class="link--navbar" to="/"><button>INICIO</button></RouterLink>
                 <RouterLink class="link--navbar" to="/buscar/"><button>BUSCAR</button></RouterLink>
                 <!-- Este debería estar oculto hasta que la sesion este activa -->
-                <RouterLink class="link--navbar" to="/deseados"><button>DESEADOS</button></RouterLink>
+                <RouterLink class="link--navbar" to="/coleccion/"><button>COLECCIÓN</button></RouterLink>
                 <RouterLink class="link--navbar" to="/cuenta/"><button>CUENTA</button></RouterLink>
             </div>
 

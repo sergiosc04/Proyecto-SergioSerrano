@@ -34,10 +34,11 @@ export default {
 
 <template>
   <div>
-    <h1>Vista de detalles del juego</h1>
+
 
     <!-- Mostrar los detalles del juego -->
     <div v-if="juego">
+      <h1 align="center">Detalles de {{ juego.name }}</h1>
       <p><strong>Nombre:</strong> {{ juego.name }}</p>
 
       <p><strong>Fecha de lanzamiento:</strong> {{ juego.released }}</p>

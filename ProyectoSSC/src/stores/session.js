@@ -24,4 +24,5 @@ export const useSessionStore = defineStore('session', {
             this.user = null;
         }
     }
+    //Las sesiones duran 1 hora, por lo que la sesion se cierra automaticamente al pasar este tiempo
 })

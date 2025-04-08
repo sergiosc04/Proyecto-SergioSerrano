@@ -6,7 +6,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/ListadoJuegosView.vue'),
+      component: () => import('../views/InicioView.vue'),
     },
     {
       //el :id significa que recibe un valor ID mediante la URL
@@ -17,12 +17,12 @@ const router = createRouter({
     {
       path: '/buscar/',
       name: 'buscar',
-      component: () => import('../views/BuscarJuegosView.vue'),
+      component: () => import('../views/BuscarView.vue'),
     },
     {
-      path: '/deseados/',
-      name: 'deseado',
-      component: () => import('../views/ListaDeseadosView.vue'),
+      path: '/coleccion/',
+      name: 'coleccion',
+      component: () => import('../views/ColeccionView.vue'),
     },
     {
       path: '/cuenta/',

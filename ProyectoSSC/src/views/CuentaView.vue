@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted } from 'vue';
-import { useSessionStore } from '../stores/session';  // Importa el store de la sesión
-import auth from '../components/auth.vue';  // Importa el componente de login
-import { supabase } from '../supabase';  // Importa la instancia de Supabase
+import { useSessionStore } from '../stores/session';
+import auth from '../components/auth.vue';
+import { supabase } from '../supabase';
 
 const sessionStore = useSessionStore();  // Instancia del store de la sesión
 
@@ -35,10 +35,10 @@ onMounted(async () => {
         <div v-if="sessionStore.session">
             <!-- Botón para cerrar la sesión -->
 
-            <h1>Bienvenido, {{ sessionStore.user.email }}</h1>
+            <h2>Bienvenido, {{ sessionStore.user.email }}</h2>
             <p><strong>Correo Electrónico:</strong> {{ sessionStore.user.email }}</p>
             <p><strong>Estado del Correo:</strong> {{ sessionStore.user.email_verified ? 'Verificado' : 'No Verificado'
-                }}</p>
+            }}</p>
 
             <!-- Muestra la fecha del último acceso del usuario -->
             <!--
@@ -48,8 +48,8 @@ onMounted(async () => {
                  - Si `last_sign_in_at` no está disponible (usuario nunca ha iniciado sesión), muestra "Nunca".
             -->
 
-            <p><strong>Último acceso:</strong> {{ sessionStore.session.user.last_sign_in_at ? new
-                Date(sessionStore.session.user.last_sign_in_at).toLocaleString() : 'Nunca' }}</p>
+            <p><strong>Último acceso:</strong> {{ sessionStore.session.user.last_sign_in_at ?
+                new Date(sessionStore.session.user.last_sign_in_at).toLocaleString() : 'Nunca' }}</p>
             <p><strong>Rol:</strong> {{ sessionStore.session.user.role }}</p>
 
             <!-- Agregar más detalles de la cuenta -->
@@ -65,7 +65,7 @@ onMounted(async () => {
 
         <!-- Si no hay sesión activa, mostramos el formulario de login -->
         <div v-else>
-            <auth /> <!-- Aquí se carga el componente de login -->
+            <auth />
         </div>
     </div>
 </template>
