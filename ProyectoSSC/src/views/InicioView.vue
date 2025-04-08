@@ -94,20 +94,15 @@ export default {
     <div v-if="juegos.length > 0" class="contenedorJuegos">
       <div class="contenedorPagina">
 
-        Página {{ numPagina }} <br>
-        <button @click="getJuegos();" :disabled="cargando">Página aleatoria</button>
 
-        <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
-        <button v-if="paginaAnterior" @click="cambiarPagina('anterior')" :disabled="cargando">
-          Página anterior
-        </button>
-
-        <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
-        <button v-if="paginaSiguiente" @click="cambiarPagina('siguiente')" :disabled="cargando">
-          Página siguiente
-        </button>
-      </div><br>
-
+        <!-- Imagen para Página anterior -->
+        <img v-if="paginaAnterior" src="../assets/img/back.png" alt="Página anterior" @click="cambiarPagina('anterior')"
+          :disabled="cargando" />
+        Página {{ numPagina }}
+        <!-- Imagen para Página siguiente -->
+        <img v-if="paginaSiguiente" src="../assets/img/next.png" alt="Página siguiente"
+          @click="cambiarPagina('siguiente')" :disabled="cargando" />
+      </div>
       <div class="listadoJuegos">
         <!-- Se pasan los datos del juego a la tarjeta -->
         <span v-for="juego in juegos" :key="juego.id" class="listadoJuegos">
@@ -131,5 +126,14 @@ export default {
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+
+.contenedorPagina img {
+  width: 20px;
+  height: 20px;
+  margin: 0 5px;
+  cursor: pointer;
 }
 </style>

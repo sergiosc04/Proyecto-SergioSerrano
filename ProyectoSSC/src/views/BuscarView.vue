@@ -17,6 +17,9 @@ export default {
     let idBuscar = ref("");
     let juegosPagina = ref(20);
 
+    //Variable para confirmar que se ha buscado
+    let buscado = ref(false);
+
     //Var para cargar generos
     let generos = ref([]);
     let generoSelect = ref("");
@@ -77,6 +80,8 @@ export default {
         buscarJuegos(); // Vuelve a hacer la petición con el nuevo número de página
         cargando.value = false;
       }, 500);
+      buscado.value = true;
+      console.log(buscado.value);
     };
 
     //Funcion para buscar Generos
@@ -108,6 +113,7 @@ export default {
       previousPage,
       nextPage,
       cargando,
+      buscado,
 
       //Variables de generos
       generos,
@@ -177,19 +183,22 @@ export default {
 
 
     <div class="contenedorJuegos">
-
+      <h3 v-if="buscado">Resultados de la búsqueda {{ idBuscar }}:</h3>
       <div class="contenedorPagina"> Página {{ numPagina }} <br>
 
         <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
-        <button v-if="nextPage" @click="cambiarPagina('siguiente')" :disabled="cargando">Página siguiente</button>
+        <img v-if="nextPage" @click="cambiarPagina('siguiente')" :disabled="cargando">Página siguiente</img>
         <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
         <button v-if="previousPage" @click="cambiarPagina('anterior')" :disabled="cargando">Página anterior</button>
 
       </div><br>
 
       <div class="listadoJuegos" v-if="!cargando">
+
         <!-- Se pasan los datos del juego a la tarjeta -->
         <span v-for="juego in juegos" :key="juego.id" class="listadoJuegos">
+
+
           <tarjetaJuego :juego="juego"></tarjetaJuego>
         </span>
       </div>
