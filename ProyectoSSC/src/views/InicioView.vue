@@ -17,7 +17,7 @@ export default {
     let juegos = ref([]);
 
     //Declarar variables para la busqueda de juegos
-    let numPagina = ref(1);
+    let numPagina = ref(0);
     let endpoint = ref("");
 
     // Variable para evitar el spam en los botones
@@ -32,7 +32,7 @@ export default {
       try {
 
         //hacemos numPagina un numero aleatorio de 1 a 100, y le asignamos ese valor al endpoint
-        if (numPagina.value === 1) {
+        if (numPagina.value === 0) {
           numPagina.value = Math.floor(Math.random() * 100) + 1;
         }
         endpoint.value = `https://api.rawg.io/api/games?key=9c8533b1b08441e680f0d26ed85dc61b&page=${numPagina.value}`;
