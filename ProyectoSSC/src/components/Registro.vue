@@ -13,7 +13,7 @@ const manejarRegistro = async () => {
     try {
         cargando.value = true;
 
-        // Paso 1: Registrar en auth
+        //1. Registrarse en auth
         const { data, error } = await supabase.auth.signUp({
             email: email.value,
             password: password.value,
@@ -26,7 +26,7 @@ const manejarRegistro = async () => {
 
         if (!idauth) throw new Error('No se pudo obtener el idauth del usuario');
 
-        // Paso 2: Crear colección primero
+        //2. Crear colección
         const { data: coleccion, error: errorColeccion } = await supabase
             .from('coleccion')
             .insert({})
@@ -37,12 +37,24 @@ const manejarRegistro = async () => {
 
         const idcoleccion = coleccion.idcoleccion;
 
-        // Paso 3: Insertar en usuarios con idauth + idcoleccion (sin incluir idusuario)
-        const { error: errorUsuario } = await supabase
+        //3. Insertar en usuarios con idauth + idcoleccion (sin incluir idusuario, es autoincremental)
+        const { data: usuario, error: errorUsuario } = await supabase
             .from('usuarios')
-            .insert({ idauth, idcoleccion });
+            .insert({ idauth, idcoleccion })
+            .select('idusuario') //recoger el idusuario para añadirlo luego en la tabla coleccion
+            .single();
 
         if (errorUsuario) throw errorUsuario;
+
+        const idusuario = usuario.idusuario; //se asigna valor del idusuario generado automáticamente
+
+        //4. Actualizar la tabla coleccion con el idusuario generado
+        const { error: errorActualizarColeccion } = await supabase
+            .from('coleccion')
+            .update({ idusuario }) // Se actualiza la tupla idusuario para asociar idusuario a coleccion
+            .eq('idcoleccion', idcoleccion);
+
+        if (errorActualizarColeccion) throw errorActualizarColeccion;
 
         alert('¡Registrado correctamente! Verifica tu correo electrónico.');
 
@@ -54,7 +66,6 @@ const manejarRegistro = async () => {
         cargando.value = false;
     }
 }
-
 
 
 const emit = defineEmits(['cambiarALogin']);

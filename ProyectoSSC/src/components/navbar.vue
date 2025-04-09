@@ -11,7 +11,7 @@ const avatarUrl = computed(() => avatar?.value || new URL('../assets/img/usuario
         <div class="navbar--content">
             <!-- Logo -->
             <a href="/" class="navbar--logo">
-                <img src="../assets/img/PixelRift-LogoBasico-Blanco.png" alt="PixelRift Logo" height="60" />
+                <img src="../assets/img/PixelRift-Logo-Colores.png" alt="PixelRift Logo" height="60" />
             </a>
 
             <!-- Links -->
