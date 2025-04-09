@@ -4,10 +4,12 @@ import { useSessionStore } from '../stores/session';
 import auth from '../components/auth.vue';
 import { supabase } from '../supabase';
 import { useRouter } from 'vue-router';
+
 export default {
     components: {
         auth
     },
+
     setup() {
         const sessionStore = useSessionStore();  // Instancia del store de la sesión
         const router = useRouter();
@@ -40,11 +42,12 @@ export default {
             } else if (error) {
                 console.error('Error al obtener la sesión:', error.message);
             }
-            console.log("UID de la sesion: " + sessionStore.session.user.id);
-            idAuth.value = sessionStore.session.user.id; // Asigna el id de usuario
-            console.log("idAuth recogido de getSession: " + idAuth.value); // Verifica que el id esté disponible
+            // console.log("UID de la sesion: " + sessionStore.session.user.id);
+            // idAuth.value = sessionStore.session.user.id; // Asigna el id de usuario
+            // console.log("idAuth recogido de getSession: " + idAuth.value); // Verifica que el id esté disponible
         }
 
+        //funcion para obtener el avatar del usuario
         const getAvatar = async () => {
             if (!idAuth.value) {
                 console.warn("idAuth no está disponible aún");
@@ -68,7 +71,7 @@ export default {
             await getUID();
             const url = await getAvatar();
             avatar.value = url;
-            console.log("Avatar URL:", url.value);
+            // console.log("Avatar URL:", url.value);
         });
 
         return {
@@ -84,7 +87,7 @@ export default {
 </script>
 
 <template>
-    <div class="container" :key="forzarActualizacion">
+    <div class="container">
 
         <div v-if="sessionStore.session">
             <h2>Bienvenido, {{ sessionStore.user.email }} <button @click="cerrarSesion">Cerrar Sesión</button></h2>
@@ -97,7 +100,7 @@ export default {
             <p><strong>UID del usuario:</strong> {{ sessionStore.session.user.id }}</p>
             <p><strong>Correo Electrónico:</strong> {{ sessionStore.user.email }}</p>
             <p><strong>Estado del Correo:</strong> {{ sessionStore.user.email_verified ? 'Verificado' : 'No Verificado'
-            }}</p>
+                }}</p>
 
             <!-- Muestra la fecha del último acceso del usuario -->
             <!--

@@ -11,6 +11,7 @@ const sessionStore = useSessionStore();
 const manejarLogin = async () => {
     try {
         cargando.value = true
+
         const { data, error } = await supabase.auth.signInWithPassword({
             email: email.value,
             password: password.value,
@@ -18,10 +19,9 @@ const manejarLogin = async () => {
 
         if (error) throw error;
 
-        // Asegúrate de que `data` esté correctamente definido
         if (data?.session) {
-            // Al hacer login exitoso, guardamos la sesión en el store
-            sessionStore.setSession(data.session)  // Guardamos la sesión
+            //despues del login , se guarda la sesión en el store
+            sessionStore.setSession(data.session)
             alert("Sesión iniciada correctamente.");
             location.reload();
         } else {

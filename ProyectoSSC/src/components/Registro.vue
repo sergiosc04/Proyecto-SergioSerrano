@@ -6,19 +6,45 @@ const cargando = ref(false);
 const email = ref('');
 const password = ref('');
 
+//Función que registra un usuario en auth, luego coge el uid de ese usuario y lo añade en la tabla public.usuarios, Tras esto, se crea una coleccion en la tabla public.coleccion.
+//Despues, se añade el idColeccion a la tabla public.usuarios, junto con el uid del usuario que se acaba de registrar.
 
 const manejarRegistro = async () => {
     try {
         cargando.value = true;
 
-        //Metodo de superbase para registrar un nuevo usuario
-        const { error } = await supabase.auth.signUp({
+        // Paso 1: Registrar en auth
+        const { data, error } = await supabase.auth.signUp({
             email: email.value,
             password: password.value,
         });
 
         if (error) throw error;
-        alert('¡Registrado correctamente! Verifica tu correo electrónico para confirmar tu cuenta.');
+
+        const user = data.user;
+        const idauth = user?.id;
+
+        if (!idauth) throw new Error('No se pudo obtener el idauth del usuario');
+
+        // Paso 2: Crear colección primero
+        const { data: coleccion, error: errorColeccion } = await supabase
+            .from('coleccion')
+            .insert({})
+            .select('idcoleccion')
+            .single();
+
+        if (errorColeccion) throw errorColeccion;
+
+        const idcoleccion = coleccion.idcoleccion;
+
+        // Paso 3: Insertar en usuarios con idauth + idcoleccion (sin incluir idusuario)
+        const { error: errorUsuario } = await supabase
+            .from('usuarios')
+            .insert({ idauth, idcoleccion });
+
+        if (errorUsuario) throw errorUsuario;
+
+        alert('¡Registrado correctamente! Verifica tu correo electrónico.');
 
     } catch (error) {
         if (error instanceof Error) {
@@ -28,6 +54,7 @@ const manejarRegistro = async () => {
         cargando.value = false;
     }
 }
+
 
 
 const emit = defineEmits(['cambiarALogin']);

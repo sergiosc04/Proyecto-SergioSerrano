@@ -12,8 +12,6 @@ export default {
   },
   setup() {
 
-
-
     const endpointGeneros = `https://api.rawg.io/api/genres?key=9c8533b1b08441e680f0d26ed85dc61b`;
 
     //Var para cargar juegos
@@ -34,8 +32,6 @@ export default {
     let paginaAnterior = ref(null);
     let paginaSiguiente = ref(null);
 
-
-
     //Funcion para buscar juegos
     const buscarJuegos = async () => {
       try {
@@ -55,6 +51,7 @@ export default {
 
         //Version anterior de busqueda: 
         //const endpoint = `https://api.rawg.io/api/games?key=9c8533b1b08441e680f0d26ed85dc61b&search=${idBuscar.value}&page_size=${juegosPagina.value}&page=${numPagina.value}&genres=${generoSelect.value}`;
+
         const response = await axios.get(endpoint);
 
         juegos.value = response.data.results;
@@ -127,6 +124,7 @@ export default {
       <table>
         <tbody>
           <tr>
+
             <!-- Columna 1: Buscar juego -->
             <td>
               <label>
@@ -188,8 +186,6 @@ export default {
 
         <!-- Se pasan los datos del juego a la tarjeta -->
         <span v-for="juego in juegos" :key="juego.id" class="listadoJuegos">
-
-
           <tarjetaJuego :juego="juego"></tarjetaJuego>
         </span>
       </div>
@@ -205,11 +201,9 @@ export default {
 .buscador {
   display: flex;
   justify-content: center;
-  /* Centrado horizontal */
   margin-top: 20px;
 }
 
-/* Espaciado entre columnas */
 .buscador table {
   border-collapse: separate;
   border-spacing: 20px;
