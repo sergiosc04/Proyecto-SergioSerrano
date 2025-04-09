@@ -25,6 +25,8 @@ export default {
             console.log(colecciones.value);
         }
 
+        getColeccion();
+
         onMounted(() => {
             getColeccion();
         })

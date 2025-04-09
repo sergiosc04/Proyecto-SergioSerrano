@@ -22,6 +22,8 @@ const manejarLogin = async () => {
         if (data?.session) {
             // Al hacer login exitoso, guardamos la sesión en el store
             sessionStore.setSession(data.session)  // Guardamos la sesión
+            alert("Sesión iniciada correctamente.");
+            location.reload();
         } else {
             alert("Error al recuperar la sesión");
         }

@@ -1,10 +1,9 @@
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import { useSessionStore } from '../stores/session';
 import auth from '../components/auth.vue';
 import { supabase } from '../supabase';
 import { useRouter } from 'vue-router';
-
 export default {
     components: {
         auth
@@ -12,6 +11,9 @@ export default {
     setup() {
         const sessionStore = useSessionStore();  // Instancia del store de la sesión
         const router = useRouter();
+
+        let avatar = inject('avatar');
+        console.log("Avatar inyectado: " + avatar.value); // Verifica que el avatar esté disponible
 
         const idAuth = ref(null);
         const error = ref(null);
@@ -23,8 +25,9 @@ export default {
             // Limpia los datos de la sesión en el store
             sessionStore.logout();
             alert('Sesión cerrada correctamente');
+            location.reload();
+            // Redirige al usuario a la página de inicio tras recargar la pagina
 
-            // Redirige al usuario a la página de inicio
             router.push('/');
         }
 
@@ -43,7 +46,6 @@ export default {
         }
 
         const getAvatar = async () => {
-
             if (!idAuth.value) {
                 console.warn("idAuth no está disponible aún");
                 return null;
@@ -62,15 +64,11 @@ export default {
             return avatarUrl;
         }
 
-        const avatar = ref("");
-
         onMounted(async () => {
-            //Se espera a que se cumpla la promesa de getSesion y getAvatar antes de continuar
             await getUID();
-
-            //asigna el valor del avatar a la variable
-            const avatarRecogido = await getAvatar();
-            avatar.value = avatarRecogido;
+            const url = await getAvatar();
+            avatar.value = url;
+            console.log("Avatar URL:", url.value);
         });
 
         return {
@@ -78,32 +76,28 @@ export default {
             error,
             cerrarSesion,
             getUID,
-            sessionStore
+            sessionStore,
         };
     }
 };
+
 </script>
 
 <template>
-    <div class="container">
+    <div class="container" :key="forzarActualizacion">
 
-        <!-- Página de ejemplo de manejar los datos de la sesion-->
-
-        <!-- Si hay sesión activa, mostramos los detalles de la cuenta -->
         <div v-if="sessionStore.session">
-            <!-- Botón para cerrar la sesión -->
+            <h2>Bienvenido, {{ sessionStore.user.email }} <button @click="cerrarSesion">Cerrar Sesión</button></h2>
 
-
-            <p>{{ avatar }}</p>
-            <div>
+            <div v-if="avatar">
+                <strong>Avatar:</strong><br>
                 <img :src="avatar" alt="Avatar" style="height:100px" />
-
+                <p><strong>Enlace avatar:</strong> {{ avatar }}</p>
             </div>
-            <h2>Bienvenido, {{ sessionStore.user.email }}</h2>
             <p><strong>UID del usuario:</strong> {{ sessionStore.session.user.id }}</p>
             <p><strong>Correo Electrónico:</strong> {{ sessionStore.user.email }}</p>
             <p><strong>Estado del Correo:</strong> {{ sessionStore.user.email_verified ? 'Verificado' : 'No Verificado'
-                }}</p>
+            }}</p>
 
             <!-- Muestra la fecha del último acceso del usuario -->
             <!--
@@ -112,20 +106,13 @@ export default {
                  - `toLocaleString()`: Formatea la fecha a un formato legible según la configuración regional del navegador.
                  - Si `last_sign_in_at` no está disponible (usuario nunca ha iniciado sesión), muestra "Nunca".
             -->
-
             <p><strong>Último acceso:</strong> {{ sessionStore.session.user.last_sign_in_at ?
                 new Date(sessionStore.session.user.last_sign_in_at).toLocaleString() : 'Nunca' }}</p>
 
             <p><strong>Rol:</strong> {{ sessionStore.session.user.role }}</p>
 
-            <!-- Agregar más detalles de la cuenta -->
-            <div v-if="sessionStore.session.user.app_metadata">
-                <h3>Metadatos de la cuenta</h3>
-                <p><strong>Provedor:</strong> {{ sessionStore.session.user.app_metadata.provider }}</p>
-                <p><strong>Confirmado:</strong> {{ sessionStore.session.user.app_metadata.confirmed_at ? 'Sí' : 'No' }}
-                </p>
-            </div>
-            <button @click="cerrarSesion">Cerrar Sesión</button>
+
+            <!-- Puedes mostrar más detalles aquí si es necesario -->
         </div>
 
         <!-- Si no hay sesión activa,se muestra el formulario de login -->

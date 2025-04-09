@@ -1,3 +1,11 @@
+<script setup>
+
+import { inject, computed } from 'vue';
+
+const avatar = inject('avatar'); // ✅ Lo mismo que hicimos en CuentaView
+const avatarUrl = computed(() => avatar?.value || new URL('../assets/img/usuarioPH.jpg', import.meta.url).href);
+</script>
+
 <template>
     <nav class="navbar--container">
         <div class="navbar--content">
@@ -18,7 +26,7 @@
             <!-- Botón del usuario con clase nueva -->
             <RouterLink class="navbar--user" to="/cuenta/">
                 <button>
-                    <img src="../assets/img/usuarioPH.jpg" alt="Usuario" />
+                    <img :src="avatarUrl" alt="Usuario" />
                 </button>
             </RouterLink>
         </div>
@@ -79,8 +87,6 @@
     gap: 0.5rem;
 }
 
-/* Añadir dentro del <style scoped> */
-
 .navbar--user button {
     padding: 0;
     border: none;
@@ -91,7 +97,6 @@
 .navbar--user img {
     height: 50px;
     width: 50px;
-    /* Igual que el logo */
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid #fff;

@@ -1,9 +1,16 @@
 <script>
-import navbar from './components/navbar.vue'
+import navbar from './components/navbar.vue';
+import { provide, ref } from 'vue';
+
 export default {
     components: {
         navbar,
     },
+
+    setup() {
+        const avatar = ref('');
+        provide('avatar', avatar);
+    }
 }
 
 </script>
