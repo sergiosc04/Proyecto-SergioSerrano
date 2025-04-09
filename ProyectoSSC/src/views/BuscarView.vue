@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import tarjetaJuego from '@/components/tarjetaJuego.vue';
+import paginacion from '../compostables/paginacion';
 
 export default {
   name: 'buscar',
@@ -11,7 +12,10 @@ export default {
   },
   setup() {
 
-    const endpoint = `https://api.rawg.io/api/genres?key=9c8533b1b08441e680f0d26ed85dc61b`;
+
+
+    const endpointGeneros = `https://api.rawg.io/api/genres?key=9c8533b1b08441e680f0d26ed85dc61b`;
+
     //Var para cargar juegos
     let juegos = ref([]);
     let idBuscar = ref("");
@@ -27,8 +31,9 @@ export default {
     //Var para cargar paginas
     let numPagina = ref(1);
     let cargando = ref(false);
-    let previousPage = ref(null);
-    let nextPage = ref(null);
+    let paginaAnterior = ref(null);
+    let paginaSiguiente = ref(null);
+
 
 
     //Funcion para buscar juegos
@@ -53,8 +58,8 @@ export default {
         const response = await axios.get(endpoint);
 
         juegos.value = response.data.results;
-        previousPage.value = response.data.previous;
-        nextPage.value = response.data.next;
+        paginaAnterior.value = response.data.previous;
+        paginaSiguiente.value = response.data.next;
         cargando.value = false;
 
       } catch (error) {
@@ -62,32 +67,10 @@ export default {
       }
     };
 
-    //Función para cambiar el endpoint
-
-    //Función para cambiar de página - DISTINTO A LA FUNCION DE ListadoJuegosView (la pagina es dinamica)
-    const cambiarPagina = (direccion) => {
-      if (cargando.value) return; // Evita cambios si ya está cargando
-
-      cargando.value = true;
-
-      setTimeout(() => {
-        if (direccion === 'siguiente' && nextPage.value) {
-          numPagina.value++; // Aumentar página si es "siguiente"
-        } else if (direccion === 'anterior' && previousPage.value && numPagina.value > 1) {
-          numPagina.value--; // Disminuir página si es "anterior"
-        }
-
-        buscarJuegos(); // Vuelve a hacer la petición con el nuevo número de página
-        cargando.value = false;
-      }, 500);
-      buscado.value = true;
-      console.log(buscado.value);
-    };
-
     //Funcion para buscar Generos
     const getGeneros = async () => {
       try {
-        const response = await axios.get(endpoint);
+        const response = await axios.get(endpointGeneros);
         generos.value = response.data.results;
 
         console.log(generos.value);
@@ -102,6 +85,9 @@ export default {
       buscarJuegos();
     });
 
+    //Compostable para cambiar la pagina
+    const { cambiarPagina } = paginacion(numPagina, cargando, paginaAnterior, paginaSiguiente, buscarJuegos);
+
     return {
       //Variables de juegos
       juegos,
@@ -110,8 +96,8 @@ export default {
 
       //Variables de pagina
       numPagina,
-      previousPage,
-      nextPage,
+      paginaAnterior,
+      paginaSiguiente,
       cargando,
       buscado,
 
@@ -184,12 +170,17 @@ export default {
 
     <div class="contenedorJuegos">
       <h3 v-if="buscado">Resultados de la búsqueda {{ idBuscar }}:</h3>
-      <div class="contenedorPagina"> Página {{ numPagina }} <br>
+      <div class="contenedorPagina">
+
+        <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
+        <img v-if="paginaAnterior" src="../assets/img/back.png" @click="cambiarPagina('anterior')" :disabled="cargando">
+
+        Página {{ numPagina }} <br>
 
         <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
-        <img v-if="nextPage" @click="cambiarPagina('siguiente')" :disabled="cargando">Página siguiente</img>
-        <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
-        <button v-if="previousPage" @click="cambiarPagina('anterior')" :disabled="cargando">Página anterior</button>
+        <img v-if="paginaSiguiente" src="../assets/img/next.png" @click="cambiarPagina('siguiente')"
+          :disabled="cargando">
+
 
       </div><br>
 
@@ -234,5 +225,14 @@ export default {
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+
+.contenedorPagina img {
+  width: 20px;
+  height: 20px;
+  margin: 0 5px;
+  cursor: pointer;
 }
 </style>

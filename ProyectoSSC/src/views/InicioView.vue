@@ -2,6 +2,8 @@
 import tarjetaJuego from '../components/tarjetaJuego.vue';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import paginacion from '../compostables/paginacion';
+
 
 export default {
   components: {
@@ -30,10 +32,11 @@ export default {
     //Función que obtiene los juegos
     const getJuegos = async () => {
       try {
+        cargando.value = true;
 
         //hacemos numPagina un numero aleatorio de 1 a 100, y le asignamos ese valor al endpoint
         if (numPagina.value === 0) {
-          numPagina.value = Math.floor(Math.random() * 100) + 1;
+          numPagina.value = Math.floor(Math.random() * 15) + 1;
         }
         endpoint.value = `https://api.rawg.io/api/games?key=9c8533b1b08441e680f0d26ed85dc61b&page=${numPagina.value}`;
 
@@ -47,30 +50,19 @@ export default {
         paginaAnterior.value = response.data.previous;
         paginaSiguiente.value = response.data.next;
 
+        cargando.value = false;
+
       } catch (error) {
         console.error("Error al obtener los juegos:", error);
       }
     };
 
-    // Función para cambiar de página
-    const cambiarPagina = (direccion) => {
-
-      // Bloquea los botones mientras se ejecuta la petición
-      cargando.value = true;
-
-      // Ajustar numPagina hacia adelante o atrás
-      if (direccion === 'anterior' && paginaAnterior.value) {
-        numPagina.value -= 1;
-      } else if (direccion === 'siguiente' && paginaSiguiente.value) {
-        numPagina.value += 1;
-      }
-
-      getJuegos();
-      cargando.value = false;
-    }
     onMounted(() => {
       getJuegos();
     });
+
+    //Compostable para cambiar la pagina
+    const { cambiarPagina } = paginacion(numPagina, cargando, paginaAnterior, paginaSiguiente, getJuegos);
 
     return {
       // Variables
@@ -94,20 +86,25 @@ export default {
     <div v-if="juegos.length > 0" class="contenedorJuegos">
       <div class="contenedorPagina">
 
-
         <!-- Imagen para Página anterior -->
         <img v-if="paginaAnterior" src="../assets/img/back.png" alt="Página anterior" @click="cambiarPagina('anterior')"
           :disabled="cargando" />
+
         Página {{ numPagina }}
+
         <!-- Imagen para Página siguiente -->
         <img v-if="paginaSiguiente" src="../assets/img/next.png" alt="Página siguiente"
           @click="cambiarPagina('siguiente')" :disabled="cargando" />
       </div>
+
       <div class="listadoJuegos">
+
         <!-- Se pasan los datos del juego a la tarjeta -->
-        <span v-for="juego in juegos" :key="juego.id" class="listadoJuegos">
+        <span v-for="juego in juegos" :key="juego.id" class="listadoJuegos" v-if="!cargando">
           <tarjetaJuego :juego="juego"></tarjetaJuego>
         </span>
+
+        <p v-else align="center">Cargando...</p>
       </div>
     </div>
     <p v-else align="center">Cargando...</p>

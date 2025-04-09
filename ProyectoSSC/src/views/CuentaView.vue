@@ -69,8 +69,8 @@ export default {
             await getUID();
 
             //asigna el valor del avatar a la variable
-            avatar.value = await getAvatar();
-            console.log("URL del avatar: " + avatar.value);
+            const avatarRecogido = await getAvatar();
+            avatar.value = avatarRecogido;
         });
 
         return {
@@ -112,6 +112,7 @@ export default {
                  - `toLocaleString()`: Formatea la fecha a un formato legible según la configuración regional del navegador.
                  - Si `last_sign_in_at` no está disponible (usuario nunca ha iniciado sesión), muestra "Nunca".
             -->
+
             <p><strong>Último acceso:</strong> {{ sessionStore.session.user.last_sign_in_at ?
                 new Date(sessionStore.session.user.last_sign_in_at).toLocaleString() : 'Nunca' }}</p>
 
@@ -125,7 +126,6 @@ export default {
                 </p>
             </div>
             <button @click="cerrarSesion">Cerrar Sesión</button>
-            <!-- Puedes mostrar más detalles aquí si es necesario -->
         </div>
 
         <!-- Si no hay sesión activa,se muestra el formulario de login -->

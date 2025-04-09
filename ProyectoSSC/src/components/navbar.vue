@@ -10,7 +10,7 @@
             <div class="navbar--links">
                 <RouterLink class="link--navbar" to="/"><button>INICIO</button></RouterLink>
                 <RouterLink class="link--navbar" to="/buscar/"><button>BUSCAR</button></RouterLink>
-                <!-- Este debería estar oculto hasta que la sesion este activa -->
+
                 <RouterLink class="link--navbar" to="/coleccion/"><button>COLECCIÓN</button></RouterLink>
                 <RouterLink class="link--navbar" to="/cuenta/"><button>CUENTA</button></RouterLink>
             </div>
@@ -21,7 +21,6 @@
                     <img src="../assets/img/usuarioPH.jpg" alt="Usuario" />
                 </button>
             </RouterLink>
-
         </div>
     </nav>
 </template>
