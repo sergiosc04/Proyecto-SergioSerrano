@@ -20,6 +20,8 @@ export default {
         const idAuth = ref(null);
         const error = ref(null);
 
+        //Función para cerrar sesión --------
+
         const cerrarSesion = async () => {
             // Llama al método de Supabase para cerrar la sesión
             await supabase.auth.signOut();
@@ -33,6 +35,8 @@ export default {
             router.push('/');
         }
 
+        //Función para obtener el UID -----------
+
         const getUID = async () => {
             // Llama al método de Supabase para obtener la sesión actual
             const { data, error } = await supabase.auth.getSession();
@@ -42,12 +46,13 @@ export default {
             } else if (error) {
                 console.error('Error al obtener la sesión:', error.message);
             }
-            // console.log("UID de la sesion: " + sessionStore.session.user.id);
-            // idAuth.value = sessionStore.session.user.id; // Asigna el id de usuario
-            // console.log("idAuth recogido de getSession: " + idAuth.value); // Verifica que el id esté disponible
+            console.log("UID de la sesion: " + sessionStore.session.user.id);
+            idAuth.value = sessionStore.session.user.id; // Asigna el id de usuario
+            console.log("idAuth recogido de getSession: " + idAuth.value); // Verifica que el id esté disponible
         }
 
-        //funcion para obtener el avatar del usuario
+        //funcion para obtener el avatar del usuario -----------
+
         const getAvatar = async () => {
             if (!idAuth.value) {
                 console.warn("idAuth no está disponible aún");
@@ -67,11 +72,75 @@ export default {
             return avatarUrl;
         }
 
+        //Funcion para subir el avatar al bucket avatars de supabase ----------
+
+        const subirAvatar = async (evento) => {
+            //1. Obtener el archivo seleccionado por el usuario
+            const archivo = evento.target.files[0];
+
+            //2. Verificar si no se ha seleccionado un archivo
+            if (!archivo) {
+                error.value = "No se ha seleccionado ningún archivo."; // Mostrar mensaje de error
+                return; // Detener la ejecución si no hay archivo
+            }
+
+            //3. Generar un nombre único para el archivo basado en el ID del usuario y el nombre original del archivo
+            const nombreArchivo = `${idAuth.value}_${archivo.name}`;
+
+            //-. definir la ruta donde se almacenara el archivo en el bucket  
+            const rutaArchivo = `avatars/${nombreArchivo}`;
+
+            // 4. Subir el archivo al bucket "avatars" en Supabase
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(rutaArchivo, archivo, {
+                    cacheControl: '3600', // Control de caché (1 hora)
+                    upsert: true //sobrescribe el archivo si ya existe
+                });
+
+            //5. Control de errores
+            if (uploadError) {
+                console.error("Error al subir avatar:", uploadError.message);
+                error.value = uploadError.message;
+                return; // Detener la ejecución en caso de error
+            }
+
+            //2- Añadir el URL a la tabla usuarios, en el campo avatar_url
+
+            // Paso 6: Obtener la URL pública del archivo subido
+            const { data } = supabase
+                .storage
+                .from('avatars')
+                .getPublicUrl(rutaArchivo);
+
+            const avatarUrl = data.publicUrl; //obtiene la URL pública del archivo
+
+            //7. Asignar la URL pública del avatar al valor de la variable `avatar`
+            avatar.value = avatarUrl;
+
+            //8. Actualizar la base de datos con la URL del avatar
+            const { error: dbError } = await supabase
+                .from('usuarios')
+                .update({ avatar_url: avatarUrl }) // Actualizar el campo `avatar_url` con la nueva URL
+                .eq('idauth', idAuth.value); // Asegurarse de que solo se actualice el avatar del usuario correcto
+
+            //9. Control de errores
+            if (dbError) {
+                console.error("Error al actualizar avatar_url:", dbError.message);
+                error.value = dbError.message;
+                return;
+            }
+
+            //Muestra un mensaje si todo fue bien
+            alert("¡Avatar subido y guardado correctamente!");
+        };
+
+
         onMounted(async () => {
             await getUID();
             const url = await getAvatar();
             avatar.value = url;
-            // console.log("Avatar URL:", url.value);
+            console.log("Avatar URL:", url.value);
         });
 
         return {
@@ -80,6 +149,7 @@ export default {
             cerrarSesion,
             getUID,
             sessionStore,
+            subirAvatar,
         };
     }
 };
@@ -96,11 +166,14 @@ export default {
                 <strong>Avatar:</strong><br>
                 <img :src="avatar" alt="Avatar" style="height:100px" />
                 <p><strong>Enlace avatar:</strong> {{ avatar }}</p>
+
+                <label for="cambioAvatar"><strong>Actualizar avatar:</strong></label><br>
+                <input class="cambioAvatar" type="file" accept="image/*" @change="subirAvatar">
             </div>
             <p><strong>UID del usuario:</strong> {{ sessionStore.session.user.id }}</p>
             <p><strong>Correo Electrónico:</strong> {{ sessionStore.user.email }}</p>
             <p><strong>Estado del Correo:</strong> {{ sessionStore.user.email_verified ? 'Verificado' : 'No Verificado'
-                }}</p>
+            }}</p>
 
             <!-- Muestra la fecha del último acceso del usuario -->
             <!--

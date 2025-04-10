@@ -109,7 +109,7 @@ export default {
       <div class="grupo enlaces">
         <p><strong>Website:</strong> <a :href="juego.website" target="_blank">{{ juego.website }}</a></p>
         <p><strong>Metacritic URL:</strong> <a :href="juego.metacritic_url" target="_blank">{{ juego.metacritic_url
-            }}</a></p>
+        }}</a></p>
         <p><strong>Subreddit:</strong> <a :href="juego.reddit_url" target="_blank">{{ juego.reddit_url }}</a></p>
       </div>
 
@@ -126,12 +126,9 @@ export default {
 
       <!-- Imágenes -->
       <div class="grupo imagenes">
-        <div v-if="juego.background_image">
-          <img :src="juego.background_image" alt="Imagen principal del juego" />
-        </div>
-        <div v-if="juego.background_image_additional">
-          <img :src="juego.background_image_additional" alt="Imagen adicional del juego" />
-        </div>
+        <img v-if="juego.background_image" :src="juego.background_image" alt="Imagen principal del juego" />
+        <img v-if="juego.background_image_additional" :src="juego.background_image_additional"
+          alt="Imagen adicional del juego" />
       </div>
     </div>
 
@@ -154,11 +151,11 @@ export default {
 .titulo {
   text-align: center;
   margin-bottom: 20px;
+  margin: 3px;
   color: #333;
-}
+  display: flex;
+  align-items: center;
 
-.grupo {
-  margin-bottom: 15px;
 }
 
 .descripcion {

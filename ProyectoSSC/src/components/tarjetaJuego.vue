@@ -3,7 +3,7 @@
         <img :src="juego.background_image" alt="Imagen del juego" class="juego-img" />
 
         <div class="tarjeta--contenido">
-            <h2>{{ juego.name }}</h2>
+            <h2><router-link :to="`/juego/${juego.id}`">{{ juego.name }}</router-link></h2>
             <ul>
                 <li><strong>ID:</strong> {{ juego.id }}</li>
                 <li><strong>Fecha de salida:</strong> {{ juego.released }}</li>

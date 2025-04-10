@@ -20,6 +20,7 @@ export default {
     <span class="navbar--container">
         <navbar />
     </span>
+
     <!-- Vista que se actualiza dependiendo del momento (router.push/routerlink). Solo se actualiza esta parte de la página sin tener que refrescarla -->
     <span>
         <RouterView />
