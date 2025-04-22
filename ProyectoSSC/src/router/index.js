@@ -10,7 +10,7 @@ const router = createRouter({
     },
     {
       //el :id significa que recibe un valor ID mediante la URL
-      path: '/juego/:id',
+      path: '/juego/:slug',
       name: 'juego',
       component: () => import('../views/DetallesJuegoView.vue'),
     },

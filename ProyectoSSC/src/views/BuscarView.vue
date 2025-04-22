@@ -14,6 +14,9 @@ export default {
 
     const endpointGeneros = `https://api.rawg.io/api/genres?key=9c8533b1b08441e680f0d26ed85dc61b`;
 
+    //Variable para mostrar busqueda avanzada de juegos
+    let busquedaAvanzada = ref(false);
+
     //Var para cargar juegos
     let juegos = ref([]);
     let idBuscar = ref("");
@@ -64,6 +67,10 @@ export default {
       }
     };
 
+    const vistaAvanzada = () => {
+      busquedaAvanzada.value = !busquedaAvanzada.value;
+    };
+
     //Funcion para buscar Generos
     const getGeneros = async () => {
       try {
@@ -110,6 +117,10 @@ export default {
 
       //Metodos de generos
       getGeneros,
+
+      //Variable de busqueda avanzada
+      busquedaAvanzada,
+      vistaAvanzada,
     };
   }
 }
@@ -119,51 +130,56 @@ export default {
 <template>
   <main>
     <h1 align="center">Buscar juegos</h1>
+    <div class="buscador_container" align="center">
+      <div class="barra_busqueda">
+        <!-- Columna 1: Buscar juego -->
 
-    <div class="buscador">
-      <table>
-        <tbody>
-          <tr>
+        <div class="buscador-col">
+          <input type="text" placeholder="Busca un juego..." v-model="idBuscar" />
+        </div>
 
-            <!-- Columna 1: Buscar juego -->
-            <td>
-              <label>
-                Buscar:<br />
-                <input type="text" placeholder="Busca un juego" v-model="idBuscar" />
-              </label>
-            </td>
+      </div>
 
-            <!-- Columna 2: Nº página y juegos/página -->
-            <td>
-              <label>
-                Juegos/página:<br />
-                <input type="text" placeholder="Juegos por página" v-model="juegosPagina" />
-              </label>
-              <br />
-              <label>
-                Nº página:<br />
-                <input type="text" placeholder="Nº de página" v-model="numPagina" />
-              </label>
-            </td>
+      <div v-if="busquedaAvanzada" class="buscador_avanzado">
+        <h4 align="center">Opciones Avanzadas</h4>
+        <div class="buscador_genero">
+          <label>
+            Género:<br>
+            <select id="selectGenero" v-model="generoSelect">
+              <option v-for="genero in generos" :key="genero.id" :value="genero.slug">
+                {{ genero.name }} ({{ genero.games_count }} juegos)
+              </option>
+            </select>
+          </label>
+          <br>
+        </div>
 
-            <!-- Columna 3: Género y botón -->
-            <td>
-              <label>
-                Género:<br />
-                <select id="selectGenero" v-model="generoSelect">
-                  <option v-for="genero in generos" :key="genero.id" :value="genero.slug">
-                    {{ genero.name }} ({{ genero.games_count }} juegos)
-                  </option>
-                </select>
-              </label>
-              <br />
-              <button type="submit" @click="buscarJuegos()">Buscar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+
+        <!-- Columna 2: Nº página y juegos/página -->
+        <div class="buscador_pagina">
+          <label>
+            Juegos por página:<br>
+            <input type="text" placeholder="Juegos por página" v-model="juegosPagina" />
+          </label>
+          <br>
+          <label>
+            Nº página:<br>
+            <input type="text" placeholder="Nº de página" v-model="numPagina" />
+          </label>
+        </div>
+
+        <!-- Columna 3: Género y botón -->
+
+      </div>
+
+      <div class="botones_busqueda">
+        <button class="boton-buscar" @click="buscarJuegos()">Buscar</button>
+        <button class="boton-buscar" v-if="busquedaAvanzada" @click="vistaAvanzada()">Ocultar opciones
+          avanzadas</button>
+        <button class="boton-buscar" v-else @click="vistaAvanzada()">Ver opciones avanzadas</button>
+      </div>
+
     </div>
-
 
 
     <div class="contenedorJuegos">
@@ -173,7 +189,7 @@ export default {
         <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
         <img v-if="paginaAnterior" src="../assets/img/back.png" @click="cambiarPagina('anterior')" :disabled="cargando">
 
-        Página {{ numPagina }} <br>
+        <strong>Página {{ numPagina }}</strong>
 
         <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
         <img v-if="paginaSiguiente" src="../assets/img/next.png" @click="cambiarPagina('siguiente')"
@@ -198,17 +214,68 @@ export default {
 
 
 <style scoped>
-.buscador {
+.buscador_container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20%;
+  margin-right: 20%;
+}
+
+/* Input de búsqueda ocupa todo el ancho */
+.barra_busqueda input {
+  width: 80%;
+  padding: 10px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+/* Inputs de juegos/página y número de página se alinean */
+.buscador_pagina {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  gap: 5px;
+  margin-bottom: 10px;
 }
 
-.buscador table {
-  border-collapse: separate;
-  border-spacing: 20px;
+
+.buscador_pagina input {
+  padding: 10px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
 }
 
+/* Select de género */
+.buscador_genero select {
+  width: 80%;
+  padding: 10px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  ;
+}
+
+.boton-buscar {
+  background-color: #2d2d44;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+
+.boton-buscar:hover {
+  background-color: #4f4f6e;
+  transform: translateY(-2px);
+}
+
+
+
+/* caja de paginas */
 .contenedorPagina {
   position: fixed;
   bottom: 10px;
@@ -223,6 +290,7 @@ export default {
   align-items: center;
 }
 
+/* para las flechas de las paginas */
 .contenedorPagina img {
   width: 20px;
   height: 20px;

@@ -2,8 +2,12 @@
 
 import { inject, computed } from 'vue';
 
-const avatar = inject('avatar'); // ✅ Lo mismo que hicimos en CuentaView
-const avatarUrl = computed(() => avatar?.value || new URL('../assets/img/usuarioPH.jpg', import.meta.url).href);
+const avatar = inject('avatar');
+
+//propiedad computada que usa el avatar si está disponible, o una imagen por defecto si no hay avatar aún cargado
+const avatarUrl = computed(() =>
+    avatar?.value || new URL('../assets/img/usuarioPH.jpg', import.meta.url).href
+);
 </script>
 
 <template>
@@ -57,6 +61,18 @@ const avatarUrl = computed(() => avatar?.value || new URL('../assets/img/usuario
 
 .navbar--logo img:hover {
     transform: scale(1.05);
+    animation: cambioHue 2s linear infinite;
+}
+
+/* Animación del cambio constante de hue */
+@keyframes cambioHue {
+    0% {
+        filter: hue-rotate(0deg);
+    }
+
+    100% {
+        filter: hue-rotate(360deg);
+    }
 }
 
 .navbar--links {

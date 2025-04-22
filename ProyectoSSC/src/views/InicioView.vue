@@ -90,7 +90,7 @@ export default {
         <img v-if="paginaAnterior" src="../assets/img/back.png" alt="Página anterior" @click="cambiarPagina('anterior')"
           :disabled="cargando" />
 
-        Página {{ numPagina }}
+        <strong>Página {{ numPagina }}</strong>
 
         <!-- Imagen para Página siguiente -->
         <img v-if="paginaSiguiente" src="../assets/img/next.png" alt="Página siguiente"

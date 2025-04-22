@@ -3,7 +3,7 @@
         <img :src="juego.background_image" alt="Imagen del juego" class="juego-img" />
 
         <div class="tarjeta--contenido">
-            <h2><router-link :to="`/juego/${juego.id}`">{{ juego.name }}</router-link></h2>
+            <h2><router-link :to="`/juego/${juego.slug}`">{{ juego.name }}</router-link></h2>
             <ul>
                 <li><strong>ID:</strong> {{ juego.id }}</li>
                 <li><strong>Fecha de salida:</strong> {{ juego.released }}</li>
@@ -12,7 +12,7 @@
         </div>
 
         <div class="accionesJuegos">
-            <router-link :to="`/juego/${juego.id}`">
+            <router-link :to="`/juego/${juego.slug}`">
                 <button class="boton-accion">Ver juego</button>
             </router-link>
 
@@ -36,6 +36,11 @@ export default {
 </script>
 
 <style scoped>
+a {
+    color: black;
+    text-decoration: none;
+}
+
 .tarjetaJuego {
     display: flex;
     flex-direction: column;

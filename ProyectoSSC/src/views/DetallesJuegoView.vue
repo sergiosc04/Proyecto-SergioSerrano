@@ -10,7 +10,7 @@ export default {
 
     const getDetalleJuegos = async () => {
       try {
-        const endpoint = `https://api.rawg.io/api/games/${useRoute().params.id}?key=9c8533b1b08441e680f0d26ed85dc61b`;
+        const endpoint = `https://api.rawg.io/api/games/${useRoute().params.slug}?key=9c8533b1b08441e680f0d26ed85dc61b`;
         const response = await axios.get(endpoint);
         juego.value = response.data;
         console.log(juego.value);
@@ -109,7 +109,7 @@ export default {
       <div class="grupo enlaces">
         <p><strong>Website:</strong> <a :href="juego.website" target="_blank">{{ juego.website }}</a></p>
         <p><strong>Metacritic URL:</strong> <a :href="juego.metacritic_url" target="_blank">{{ juego.metacritic_url
-        }}</a></p>
+            }}</a></p>
         <p><strong>Subreddit:</strong> <a :href="juego.reddit_url" target="_blank">{{ juego.reddit_url }}</a></p>
       </div>
 
