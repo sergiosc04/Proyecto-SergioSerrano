@@ -15,7 +15,10 @@ export default {
         const router = useRouter();
 
         let avatar = inject('avatar');
-        console.log("Avatar inyectado: " + avatar.value); // Verifica que el avatar esté disponible
+
+        if (avatar.value = null) console.log("Avatar inyectado: " + avatar.value);
+
+        // Verifica que el avatar esté disponible
 
         const idAuth = ref(null);
         const error = ref(null);
@@ -46,16 +49,25 @@ export default {
             } else if (error) {
                 console.error('Error al obtener la sesión:', error.message);
             }
-            console.log("UID de la sesion: " + sessionStore.session.user.id);
-            idAuth.value = sessionStore.session.user.id; // Asigna el id de usuario
-            console.log("idAuth recogido de getSession: " + idAuth.value); // Verifica que el id esté disponible
+
+            //Comprobamos si la sesión existe y si el usuario está autenticado
+            if (sessionStore.session && sessionStore.session.user) {
+                console.log("UID de la sesion: " + sessionStore.session.user.id);
+                idAuth.value = sessionStore.session.user.id; // Asigna el id de usuario
+
+                console.log("idAuth recogido de getSession: " + idAuth.value);
+            } else {
+                console.warn("La sesión del usuario no está disponible, prueba a iniciar sesion");
+            }
         }
 
         //funcion para obtener el avatar del usuario -----------
 
         const getAvatar = async () => {
+
+            //si idauth no existe muestra error
             if (!idAuth.value) {
-                console.warn("idAuth no está disponible aún");
+                console.warn("idAuth no está disponible aún, prueba a iniciar sesion");
                 return null;
             }
 
@@ -105,11 +117,8 @@ export default {
                 return; // Detener la ejecución en caso de error
             }
 
-            //2- Añadir el URL a la tabla usuarios, en el campo avatar_url
-
-            // Paso 6: Obtener la URL pública del archivo subido
-            const { data } = supabase
-                .storage
+            // 6. Obtener la URL pública del archivo subido
+            const { data } = supabase.storage
                 .from('avatars')
                 .getPublicUrl(rutaArchivo);
 
@@ -140,7 +149,6 @@ export default {
             await getUID();
             const url = await getAvatar();
             avatar.value = url;
-            console.log("Avatar URL:", url.value);
         });
 
         return {
@@ -165,11 +173,13 @@ export default {
             <div v-if="avatar">
                 <strong>Avatar:</strong><br>
                 <img :src="avatar" alt="Avatar" style="height:100px" />
-                <p><strong>Enlace avatar:</strong> {{ avatar }}</p>
-
-                <label for="cambioAvatar"><strong>Actualizar avatar:</strong></label><br>
-                <input class="cambioAvatar" type="file" accept="image/*" @change="subirAvatar">
             </div>
+
+            <p><strong>Enlace avatar:</strong> {{ avatar }}</p>
+
+            <label for="cambioAvatar"><strong>Actualizar avatar:</strong></label><br>
+            <input class="cambioAvatar" type="file" accept="image/*" @change="subirAvatar">
+
             <p><strong>UID del usuario:</strong> {{ sessionStore.session.user.id }}</p>
             <p><strong>Correo Electrónico:</strong> {{ sessionStore.user.email }}</p>
             <p><strong>Estado del Correo:</strong> {{ sessionStore.user.email_verified ? 'Verificado' : 'No Verificado'
@@ -185,7 +195,8 @@ export default {
             <p><strong>Último acceso:</strong> {{ sessionStore.session.user.last_sign_in_at ?
                 new Date(sessionStore.session.user.last_sign_in_at).toLocaleString() : 'Nunca' }}</p>
 
-            <p><strong>Rol:</strong> {{ sessionStore.session.user.role }}</p>
+
+            <p><strong>Acceso BBDD:</strong> {{ sessionStore.session.user.role }}</p>
 
 
             <!-- Puedes mostrar más detalles aquí si es necesario -->

@@ -146,6 +146,7 @@ export default {
           <label>
             Género:<br>
             <select id="selectGenero" v-model="generoSelect">
+              <option value=""></option>
               <option v-for="genero in generos" :key="genero.id" :value="genero.slug">
                 {{ genero.name }} ({{ genero.games_count }} juegos)
               </option>
@@ -248,7 +249,7 @@ export default {
 
 /* Select de género */
 .buscador_genero select {
-  width: 80%;
+  width: 50%;
   padding: 10px;
   border-radius: 3px;
   border: 1px solid #ccc;
@@ -267,13 +268,10 @@ export default {
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-
 .boton-buscar:hover {
   background-color: #4f4f6e;
   transform: translateY(-2px);
 }
-
-
 
 /* caja de paginas */
 .contenedorPagina {

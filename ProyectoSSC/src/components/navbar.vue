@@ -20,6 +20,7 @@ const avatarUrl = computed(() =>
 
             <!-- Links -->
             <div class="navbar--links">
+
                 <RouterLink class="link--navbar" to="/"><button>INICIO</button></RouterLink>
                 <RouterLink class="link--navbar" to="/buscar/"><button>BUSCAR</button></RouterLink>
 

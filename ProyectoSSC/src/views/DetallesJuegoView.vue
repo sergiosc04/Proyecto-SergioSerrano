@@ -109,7 +109,7 @@ export default {
       <div class="grupo enlaces">
         <p><strong>Website:</strong> <a :href="juego.website" target="_blank">{{ juego.website }}</a></p>
         <p><strong>Metacritic URL:</strong> <a :href="juego.metacritic_url" target="_blank">{{ juego.metacritic_url
-            }}</a></p>
+        }}</a></p>
         <p><strong>Subreddit:</strong> <a :href="juego.reddit_url" target="_blank">{{ juego.reddit_url }}</a></p>
       </div>
 
