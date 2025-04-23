@@ -208,7 +208,9 @@ export default {
         </span>
       </div>
 
-      <p v-else align="center">Cargando...</p>
+      <p v-else align="center">
+        Cargando...
+      </p>
 
     </div>
   </main>

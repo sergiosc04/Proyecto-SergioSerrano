@@ -110,11 +110,12 @@ onMounted(() => {
       </div>
 
       <!-- Descripción con desplegable -->
-      <details class="descripcion">
-        <summary><strong>Descripción:</strong></summary>
-        <div v-html="juego.description"></div>
-      </details>
-
+      <div class="descripcion">
+        <details>
+          <summary><strong>Desplegar descripción...</strong></summary>
+          <div v-html="juego.description"></div>
+        </details>
+      </div>
       <!-- Fechas de lanzamiento y actualización -->
       <div class="fechas">
         <h2>Fechas relevantes</h2>
@@ -146,9 +147,9 @@ onMounted(() => {
           {{ plataforma.platform.name || "No disponible" }}<span v-if="index < juego.parent_platforms.length - 1">,
           </span>
         </span>
+      </div>
 
-
-        <!-- enlaces de compra -->
+      <div class="enlacesCompra"> <!-- enlaces de compra -->
         <h2>Enlaces de compra</h2>
         <span style="font-style: italic;">Es posible que los enlaces estén incorrectos, la respuesta de la api de las
           tiendas devuelve una id de tienda que no se corresponde con el id de tienda que devuelve el endpoint de
@@ -156,7 +157,7 @@ onMounted(() => {
         <ul>
           <li v-for="(enlace, index) in tiendas" :key="index">
             ID de tienda: {{ enlace.store_id || "No disponible" }}<br>
-            {{ detallesTiendas[enlace.store_id].name || "No disponible" }} —
+            {{ detallesTiendas[enlace.store_id]?.name || "No disponible" }} —
             <a :href="enlace.url" target="_blank">{{ enlace.url || "No disponible" }}</a>
           </li>
         </ul>
@@ -215,8 +216,7 @@ onMounted(() => {
         <p>(Recogidos del endpoint /screenshots)</p>
         <div v-if="capturas.length > 0" class="slider">
 
-          <img :src="capturas[indiceSlider].image" :alt="`Captura ${indiceSlider + 1} de ${juego.name}`"
-            class="slide-img" />
+          <img :src="capturas[indiceSlider].image" class="slide-img" />
 
           <div class="controlesSlider">
             <button @click="capAnterior">Anterior</button>
@@ -231,7 +231,7 @@ onMounted(() => {
       <!-- Imagen principal y adicional -->
       <div class="containerAdicionales">
         <h2>Imagenes adicionales:</h2>
-        (Recogidas desde el endpoint de detalles)
+        <p>(Recogidas desde el endpoint de detalles)</p>
         <div class="imagenesAdicionales">
 
           <img v-if="juego.background_image" :src="juego.background_image" alt="Imagen principal del juego" />
@@ -245,6 +245,25 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.datos,
+.datosGenerales,
+.fechas,
+.generos,
+.calificaciones,
+.plataformas,
+.desarrolladores,
+.tags,
+.enlaces,
+.enlacesCompra,
+.estadisticas,
+.descripcion {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f9f9fc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .container {
   margin-left: 10vw;
   margin-right: 10vw;
@@ -254,97 +273,56 @@ onMounted(() => {
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border: solid 1px black;
-
   display: flex;
   flex-direction: row;
+  /* Añadido para prevenir desbordamiento */
+  box-sizing: border-box;
+  overflow: hidden;
+  /* Oculta cualquier contenido que pueda desbordar */
 }
 
-.container div {
-  border: solid 1px lightgray;
-  padding: 10px;
-  margin-bottom: 15px;
-}
-
-.titulo {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.descripcion {
-  margin: 15px 0;
-  padding: 10px;
-  background-color: #fffef2;
-  border-left: 4px solid #ccc;
-}
-
-.enlaces a {
-  color: #007BFF;
-  text-decoration: none;
-}
-
-.enlaces a:hover {
-  text-decoration: underline;
-}
-
-.cargando {
-  text-align: center;
-  font-size: 18px;
-  color: #888;
-}
-
-.slider {
-  position: relative;
-  text-align: center;
-}
-
-
-.controlesSlider {
-  margin-top: 10px;
-}
-
-.controlesSlider button {
-  background-color: #444;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  margin: 0 5px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.slider {
-  flex: 1 1 45%;
-}
-
+/* Asegurar que las imágenes no causen desbordamiento */
 .slider img {
   max-width: 100%;
   max-height: 400px;
   margin-bottom: 10px;
   border-radius: 10px;
+  /* Añadido para asegurar que las imágenes respeten el ancho del contenedor */
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
-
 
 .imagenesAdicionales {
   display: flex;
-  flex-direction: row;
-
+  flex-wrap: wrap;
+  /* Cambiado de 'flex-direction: wrap' a 'flex-wrap: wrap' */
   gap: 5px;
+  /* Añadido para prevenir desbordamiento horizontal */
+  justify-content: center;
 }
 
 .imagenesAdicionales img {
-  max-width: 300px;
+  max-width: 100%;
+  /* Cambiado de 300px a 100% para que se ajuste al contenedor */
+  max-height: 150px;
+  /* Añadido límite de altura */
   margin-bottom: 10px;
   border-radius: 10px;
+  /* Añadido para mejor ajuste de imágenes */
+  width: auto;
+  height: auto;
+  object-fit: cover;
 }
 
-/* Ajuste para que ambos contenedores ocupen el 50% */
+/* Ajuste para los contenedores internos */
 .container>.juego-detalles,
 .container>.containerFotos {
   width: 50%;
+  /* Añadido para prevenir desbordamiento */
+  box-sizing: border-box;
+  padding: 10px;
+  overflow: auto;
+  /* Añade scroll si el contenido es demasiado grande */
 }
 </style>
