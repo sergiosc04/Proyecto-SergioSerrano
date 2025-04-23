@@ -87,13 +87,13 @@ export default {
       <div class="contenedorPagina">
 
         <!-- Imagen para Página anterior -->
-        <img v-if="paginaAnterior" src="../assets/img/back.png" alt="Página anterior" @click="cambiarPagina('anterior')"
-          :disabled="cargando" />
+        <img v-if="paginaAnterior" src="../assets/img/botones/back.png" alt="Página anterior"
+          @click="cambiarPagina('anterior')" :disabled="cargando" />
 
         <strong>Página {{ numPagina }}</strong>
 
         <!-- Imagen para Página siguiente -->
-        <img v-if="paginaSiguiente" src="../assets/img/next.png" alt="Página siguiente"
+        <img v-if="paginaSiguiente" src="../assets/img/botones/next.png" alt="Página siguiente"
           @click="cambiarPagina('siguiente')" :disabled="cargando" />
       </div>
 

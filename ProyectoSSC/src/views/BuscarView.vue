@@ -182,18 +182,19 @@ export default {
 
     </div>
 
-
+    <!-- contenedor info pagina -->
     <div class="contenedorJuegos">
       <h3 v-if="buscado">Resultados de la búsqueda {{ idBuscar }}:</h3>
       <div class="contenedorPagina">
 
         <!-- Botón de página anterior solo si existe y no está en estado "cargando" -->
-        <img v-if="paginaAnterior" src="../assets/img/back.png" @click="cambiarPagina('anterior')" :disabled="cargando">
+        <img v-if="paginaAnterior" src="../assets/img/botones/back.png" @click="cambiarPagina('anterior')"
+          :disabled="cargando">
 
         <strong>Página {{ numPagina }}</strong>
 
         <!-- Botón de página siguiente solo si existe y no está en estado "cargando" -->
-        <img v-if="paginaSiguiente" src="../assets/img/next.png" @click="cambiarPagina('siguiente')"
+        <img v-if="paginaSiguiente" src="../assets/img/botones/next.png" @click="cambiarPagina('siguiente')"
           :disabled="cargando">
 
 

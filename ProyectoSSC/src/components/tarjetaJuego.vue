@@ -1,6 +1,6 @@
 <script>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
 export default {
     name: "tarjetaJuego",
@@ -19,20 +19,20 @@ export default {
         // Función para obtener videos del juego desde la API
         const getVideos = async () => {
             try {
-                const endpoint = `https://api.rawg.io/api/games/${props.juego.id}/movies?key=9c8533b1b08441e680f0d26ed85dc61b`
-                const response = await axios.get(endpoint)
-                const results = response.data.results
+                const endpoint = `https://api.rawg.io/api/games/${props.juego.id}/movies?key=9c8533b1b08441e680f0d26ed85dc61b`;
+                const response = await axios.get(endpoint);
+                const results = response.data.results;
 
                 // Si hay un video disponible, se guarda la URL del video 480p
                 if (results.length > 0 && results[0].data && results[0].data['480']) {
-                    videoUrl.value = results[0].data['480']
+                    videoUrl.value = results[0].data['480'];
                 }
             } catch (error) {
                 console.error('Error al obtener el video:', error)
             }
         }
 
-        // Se llama a la función para obtener los videos cuando el componente se monta
+
         onMounted(getVideos)
 
         return {
@@ -44,8 +44,7 @@ export default {
 </script>
 
 <template>
-    <!-- Detecta cuando el
-        ratón entra en la tarjeta -->
+    <!-- Detecta cuando el raton entra en la tarjeta -->
     <div class="tarjetaJuego" :class="{ 'con-video': videoUrl }" @mouseenter="hovering = true"
         @mouseleave="hovering = false"> <!-- Detecta cuando el ratón sale de la tarjeta -->
 
@@ -58,17 +57,17 @@ export default {
                 playsinline></video>
 
             <!-- Muestra un icono de video en la esquina inferior si hay un video disponible -->
-            <span v-if="videoUrl" class="icono-video"></span>
+            <span v-if="videoUrl && !hovering" class="icono-video"></span>
         </div>
 
         <div class="tarjeta--contenido">
             <!-- Muestra el nombre del juego con un enlace -->
             <h2><router-link :to="`/juego/${juego.slug}`">{{ juego.name }}</router-link></h2>
             <ul>
-                <li><strong>ID:</strong> {{ juego.id }}</li> <!-- Muestra el ID del juego -->
-                <li><strong>Fecha de salida:</strong> {{ juego.released }}</li> <!-- Muestra la fecha de lanzamiento -->
+                <li><strong>ID:</strong> {{ juego.id }}</li>
+                <li><strong>Fecha de salida:</strong> {{ juego.released }}</li>
                 <li><strong>Calificación:</strong> {{ juego.rating }} / 5 ★</li>
-                <!-- Muestra la calificación del juego -->
+
             </ul>
         </div>
 
@@ -140,12 +139,12 @@ a {
 /* Estilos para el icono de video */
 .icono-video {
     position: absolute;
-    bottom: 8px;
-    left: 8px;
-    width: 24px;
-    height: 24px;
-    background-image: url('./assets/img/play.png');
-    /* <-- NO FUNCIONA */
+    bottom: 12px;
+    left: 12px;
+    width: 25px;
+    height: 25px;
+    background-image: url('../assets/img/botones/play.png');
+
     /* Aquí se debe poner la URL del icono */
     background-size: contain;
     background-repeat: no-repeat;
