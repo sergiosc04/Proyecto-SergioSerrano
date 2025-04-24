@@ -1,7 +1,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import tarjetaJuego from '@/components/tarjetaJuego.vue';
+import tarjetaJuego from '../components/tarjetaJuego.vue';
 import paginacion from '../compostables/paginacion';
 
 export default {
