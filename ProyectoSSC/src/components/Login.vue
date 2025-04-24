@@ -46,36 +46,33 @@ const cambiarARegistro = () => {
 </script>
 
 <template>
+    <div class="header">
+        <h1>Inicio de sesión</h1>
+        <p>Inicia sesión con tu email y contraseña.</p>
+    </div>
+
     <div class="container">
-        <form @submit.prevent="manejarLogin">
-            <div>
-                <h1 class="header">Inicio de sesión</h1>
-                <p class="description">Inicia sesión con tu email y contraseña.</p>
-                <div>
-                    <input class="inputField" required type="email" placeholder="Email:" v-model="email" />
+        <div v-if="!cargando" class="form">
+
+            <form @submit.prevent="manejarLogin">
+                <div class="inputForm">
+                    <input required type="email" placeholder="Email:" v-model="email" />
+                    <input required type="password" placeholder="Contraseña:" v-model="password" />
                 </div>
-                <div>
-                    <input class="inputField" required type="password" placeholder="Contraseña:" v-model="password" />
-                </div>
-                <div>
-                    <input type="submit" class="button block" :value="cargando ? 'Cargando' : 'Iniciar sesión'"
-                        :disabled="cargando" />
-                </div>
-                <div><br>
+
+                <div class="botonesForm">
+                    <button type="submit">Iniciar sesión</button>
                     <button type="button" class="button secondary" @click="cambiarARegistro">
                         ¿No tienes una cuenta? Regístrate.
                     </button>
                 </div>
-            </div>
-        </form>
+
+            </form>
+        </div>
+        <div v-else>
+            <p>Cargando...</p>
+        </div>
     </div>
 </template>
 
-<style>
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f0f0f0;
-}
-</style>
+<style></style>

@@ -67,7 +67,6 @@ const manejarRegistro = async () => {
     }
 }
 
-
 const emit = defineEmits(['cambiarALogin']);
 
 const cambiarALogin = () => {
@@ -76,36 +75,32 @@ const cambiarALogin = () => {
 </script>
 
 <template>
-    <div>
-        <form @submit.prevent="manejarRegistro">
-            <div>
-                <h1 class="header">Registro</h1>
-                <p class="description">Crea una nueva cuenta.</p>
-                <div>
+    <div class="header">
+        <h1>Registro</h1>
+        <p>Crea una nueva cuenta.</p>
+    </div>
+
+    <div class="container">
+        <div v-if="!cargando" class="form">
+            <form @submit.prevent="manejarRegistro">
+
+                <div class="inputForm">
                     <input class="inputField" required type="email" placeholder="Email:" v-model="email" />
-                </div>
-                <div>
                     <input class="inputField" required type="password" placeholder="Contraseña:" v-model="password" />
                 </div>
-                <div>
-                    <input type="submit" class="button block" :value="cargando ? 'Cargando' : 'Registrarse'"
-                        :disabled="cargando" />
-                </div><br>
-                <div>
+
+                <div class="botonesForm">
+                    <button type="submit">Iniciar sesión</button>
                     <button type="button" class="button secondary" @click="cambiarALogin">
                         ¿Ya tienes una cuenta? Inicia sesión.
                     </button>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
+        <div v-else>
+            <p>Cargando...</p>
+        </div>
     </div>
 </template>
 
-<style>
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f0f0f0;
-}
-</style>
+<style></style>

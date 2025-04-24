@@ -219,10 +219,10 @@ onMounted(() => {
           <img :src="capturas[indiceSlider].image" class="slide-img" />
 
           <div class="controlesSlider">
-            <button @click="capAnterior">Anterior</button>
+            <button @click="capAnterior"> ⇐ Anterior</button>
             <span> &nbsp; Imagen {{ indiceSlider + 1 || "No disponible" }} de {{ capturas.length || "No disponible" }}
               &nbsp; </span>
-            <button @click="capSiguiente">Siguiente</button>
+            <button @click="capSiguiente">Siguiente ⇒</button>
 
           </div>
         </div>

@@ -14,28 +14,33 @@ export default {
         const sessionStore = useSessionStore();  // Instancia del store de la sesión
         const router = useRouter();
 
+        let username = ref("");
+        let usernameEditado = ref("");
+
         let avatar = inject('avatar');
 
-        if (avatar.value = null) console.log("Avatar inyectado: " + avatar.value);
+        if (avatar.value === null) console.log("Avatar inyectado: " + avatar.value);
 
         // Verifica que el avatar esté disponible
-
         const idAuth = ref(null);
         const error = ref(null);
 
         //Función para cerrar sesión --------
 
         const cerrarSesion = async () => {
-            // Llama al método de Supabase para cerrar la sesión
-            await supabase.auth.signOut();
+            let confirmacion = "";
+            if (confirmacion !== confirm("¿Estás seguro de que quieres cerrar sesión?")) {
+                // Llama al método de Supabase para cerrar la sesión
+                await supabase.auth.signOut();
 
-            // Limpia los datos de la sesión en el store
-            sessionStore.logout();
-            alert('Sesión cerrada correctamente');
-            location.reload();
-            // Redirige al usuario a la página de inicio tras recargar la pagina
+                // Limpia los datos de la sesión en el store
+                sessionStore.logout();
+                alert('Sesión cerrada correctamente');
+                location.reload();
 
-            router.push('/');
+                // Redirige al usuario a la página de inicio tras recargar la pagina
+                router.push('/');
+            }
         }
 
         //Función para obtener el UID -----------
@@ -52,13 +57,29 @@ export default {
 
             //Comprobamos si la sesión existe y si el usuario está autenticado
             if (sessionStore.session && sessionStore.session.user) {
+
                 console.log("UID de la sesion: " + sessionStore.session.user.id);
                 idAuth.value = sessionStore.session.user.id; // Asigna el id de usuario
-
                 console.log("idAuth recogido de getSession: " + idAuth.value);
+
             } else {
                 console.warn("La sesión del usuario no está disponible, prueba a iniciar sesion");
             }
+        }
+
+        //Funcion para obtener el nombre de usuario----------
+        const getNombre = async () => {
+            let { data: usuario, error } = await supabase
+                .from('usuarios')
+                .select('username')
+                .eq('idauth', idAuth.value).single();
+
+            if (error) {
+                console.error("error al conseguir el nombre: " + error.message);
+            }
+
+            username.value = usuario.username; //Variable que contiene el nombre de usuario
+            usernameEditado.value = usuario.username; // Asigna el nombre de usuario a la variable de edición
         }
 
         //funcion para obtener el avatar del usuario -----------
@@ -84,6 +105,21 @@ export default {
             return avatarUrl;
         }
 
+        //funcion para obtener el avatar del usuario -----------
+
+        const actualizarUsername = async () => {
+            let { data: usuario, error } = await supabase
+                .from('usuarios')
+                .update({
+                    username: usernameEditado.value
+                })
+                .eq('idauth', idAuth.value).single();
+
+            alert("¡Nombre de usuario actualizado correctamente a " + usernameEditado.value + "!");
+
+            username.value = usernameEditado.value; // Actualiza el nombre de usuario en la variable
+        }
+
         //Funcion para subir el avatar al bucket avatars de supabase ----------
 
         const subirAvatar = async (evento) => {
@@ -106,7 +142,6 @@ export default {
             const { error: uploadError } = await supabase.storage
                 .from('avatars')
                 .upload(rutaArchivo, archivo, {
-                    cacheControl: '3600', // Control de caché (1 hora)
                     upsert: true //sobrescribe el archivo si ya existe
                 });
 
@@ -144,11 +179,12 @@ export default {
             alert("¡Avatar subido y guardado correctamente!");
         };
 
-
         onMounted(async () => {
             await getUID();
+            await getNombre();
             const url = await getAvatar();
             avatar.value = url;
+            console.log(usernameEditado.value)
         });
 
         return {
@@ -158,53 +194,143 @@ export default {
             getUID,
             sessionStore,
             subirAvatar,
+            username,
+            usernameEditado,
+            actualizarUsername,
+            getNombre,
         };
     }
 };
-
 </script>
 
 <template>
+    <h1 v-if="username" align="center">Bienvenido, {{ username }} </h1>
     <div class="container">
 
         <div v-if="sessionStore.session">
-            <h2>Bienvenido, {{ sessionStore.user.email }} <button @click="cerrarSesion">Cerrar Sesión</button></h2>
+            <form class="formulario">
 
-            <div v-if="avatar">
-                <strong>Avatar:</strong><br>
-                <img :src="avatar" alt="Avatar" style="height:100px" />
-            </div>
+                <!-- Avatar -->
+                <div class="container-foto">
+                    <div class="grupo-foto">
 
-            <p><strong>Enlace avatar:</strong> {{ avatar }}</p>
+                        <div class="grupo-formulario" v-if="avatar">
+                            <img :src="avatar" alt="Avatar" style="height:100px;" />
+                        </div>
+                        <div>
+                            <label for="cambioAvatar">Actualizar Avatar:</label><br>
+                            <input id="cambioAvatar" type="file" accept="image/*" @change="subirAvatar" />
+                        </div>
+                    </div>
+                </div>
 
-            <label for="cambioAvatar"><strong>Actualizar avatar:</strong></label><br>
-            <input class="cambioAvatar" type="file" accept="image/*" @change="subirAvatar">
-
-            <p><strong>UID del usuario:</strong> {{ sessionStore.session.user.id }}</p>
-            <p><strong>Correo Electrónico:</strong> {{ sessionStore.user.email }}</p>
-            <p><strong>Estado del Correo:</strong> {{ sessionStore.user.email_verified ? 'Verificado' : 'No Verificado'
-            }}</p>
-
-            <!-- Muestra la fecha del último acceso del usuario -->
-            <!--
-                 - `sessionStore.session.user.last_sign_in_at`: Fecha en que el usuario inició sesión por última vez (en formato ISO).
-                 - `new Date()`: Convierte la fecha en un objeto Date para manipularla.
-                 - `toLocaleString()`: Formatea la fecha a un formato legible según la configuración regional del navegador.
-                 - Si `last_sign_in_at` no está disponible (usuario nunca ha iniciado sesión), muestra "Nunca".
-            -->
-            <p><strong>Último acceso:</strong> {{ sessionStore.session.user.last_sign_in_at ?
-                new Date(sessionStore.session.user.last_sign_in_at).toLocaleString() : 'Nunca' }}</p>
+                <!-- Nombre de usuario -->
+                <div class="grupo-formulario">
+                    <label for="username">Nombre de Usuario:</label><br>
+                    <input id="username" type="text" v-model="usernameEditado" />
+                    <button type="button" @click="actualizarUsername()">Guardar cambios</button>
+                </div><br>
 
 
-            <p><strong>Acceso BBDD:</strong> {{ sessionStore.session.user.role }}</p>
+                <!-- Email -->
+                <div class="grupo-formulario">
+                    <label for="email">Correo Electrónico:</label><br>
+                    <input id="email" type="email" v-model="sessionStore.user.email" disabled />
+                </div>
 
 
-            <!-- Puedes mostrar más detalles aquí si es necesario -->
+                <!-- Email verificado -->
+                <div class="grupo-formulariop">
+                    <label for="emailVerified">Estado del Correo:</label><br>
+                    <input id="emailVerified" type="text"
+                        :value="sessionStore.user.email_verified ? 'Verificado' : 'No Verificado'" disabled />
+                </div>
+
+
+                <!-- UID -->
+                <div class="grupo-formulario">
+                    <label for="uid">UID del Usuario:</label><br>
+                    <input id="uid" type="text" v-model="sessionStore.session.user.id" disabled />
+                </div>
+
+
+                <!-- Último acceso -->
+                <div class="grupo-formulario">
+                    <label for="lastSignIn">Último Acceso:</label><br>
+                    <input id="lastSignIn" type="text" :value="sessionStore.session.user.last_sign_in_at
+                        ? new Date(sessionStore.session.user.last_sign_in_at).toLocaleString()
+                        : 'Nunca'" disabled />
+                </div>
+
+
+                <!-- Rol en BBDD -->
+                <div class="grupo-formulario">
+                    <label for="role">Acceso BBDD:</label><br>
+                    <input id="role" type="text" v-model="sessionStore.session.user.role" disabled />
+                </div>
+
+
+                <!-- Avatar -->
+                <div class="grupo-formulario">
+                    <label for="avatarUrl">Enlace Avatar:</label><br>
+                    <input id="avatarUrl" type="text" v-model="avatar" disabled />
+                </div>
+
+
+                <!-- Cerrar sesión -->
+                <div class="grupo-formulario">
+                    <button type="button" @click="cerrarSesion()">
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </form>
         </div>
 
-        <!-- Si no hay sesión activa,se muestra el formulario de login -->
         <div v-else>
             <auth />
         </div>
     </div>
 </template>
+
+<style>
+button {
+    cursor: pointer;
+}
+
+input {
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+.grupo-foto {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    gap: 5px
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.botonesForm {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.botonesForm :hover {
+    cursor: pointer;
+}
+
+.header {
+    text-align: center;
+}
+</style>

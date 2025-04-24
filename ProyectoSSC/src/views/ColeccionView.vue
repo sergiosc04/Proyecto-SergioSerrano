@@ -1,42 +1,30 @@
-<script>
+<script setup>
 import { ref, onMounted } from 'vue'
 import { supabase } from '../supabase.js'
 
-export default {
-    name: 'ColeccionView',
-    setup() {
-        const colecciones = ref([]);
-        const error = ref(null);
-        const introNombre = ref("");
+const colecciones = ref([])
+const error = ref(null)
+const introNombre = ref('')
 
-        const getColeccion = async (nombreBuscar) => {
+// Función para obtener colecciones filtradas por nombre
+const getColeccion = async (nombreBuscar = '') => {
+    const { data, error: supaError } = await supabase
+        .from('coleccion')
+        .select('*')
+        .eq('nombreColeccion', nombreBuscar)
 
-            //Bucar de la tabla coleccion, todas las tuplas que contengan nombreBuscar (recogido del input)
-            let { data: coleccion, error } = await supabase
-                .from('coleccion')
-                .select('*')
-                .eq('nombreColeccion', nombreBuscar);
-
-            if (error) {
-                console.error(error.message);
-            } else {
-                colecciones.value = coleccion;
-            }
-            console.log(colecciones.value);
-        }
-
-        onMounted(() => {
-            getColeccion();
-        })
-
-        return {
-            colecciones,
-            error,
-            getColeccion,
-            introNombre
-        }
+    if (supaError) {
+        error.value = supaError
+        console.error(supaError.message)
+    } else {
+        colecciones.value = data
     }
 }
+
+// Al montar el componente, carga todas las colecciones (sin filtro)
+onMounted(() => {
+    getColeccion()
+})
 </script>
 
 <template>
