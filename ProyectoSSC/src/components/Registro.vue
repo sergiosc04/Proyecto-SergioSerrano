@@ -90,7 +90,7 @@ const cambiarALogin = () => {
                 </div>
 
                 <div class="botonesForm">
-                    <button type="submit">Iniciar sesión</button>
+                    <button type="submit">Registrarse</button>
                     <button type="button" class="button secondary" @click="cambiarALogin">
                         ¿Ya tienes una cuenta? Inicia sesión.
                     </button>

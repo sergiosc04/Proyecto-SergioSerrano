@@ -1,15 +1,17 @@
-<script setup>import { ref, onMounted } from 'vue';
+<script setup>
+import { ref, onMounted } from 'vue';
 import { supabase } from '../supabase';
+import Coleccion from '../components/coleccion.vue';
 
 // Variables reactivas para almacenar los IDs y datos
-const idauth = ref(0);        // ID de autenticación de Supabase (UUID)
-const idusuario = ref(0);     // ID interno de usuario en nuestra tabla 'usuarios'
-const colecciones = ref("");  // Array de colecciones del usuario
+const idauth = ref(0);
+const idusuario = ref(0);
+const colecciones = ref("");
 
 const nombreColeccion = ref("");
 
-const loading = ref(false);   // Indicador de carga
-const error = ref(null);      // Mensaje de error
+const loading = ref(false);
+const error = ref(null);
 
 // Función para obtener la sesión actual y extraer el UUID de Supabase
 async function getIdAuth() {
@@ -25,6 +27,7 @@ async function getIdAuth() {
     await getIdUsuario(idauth.value);
   } catch (err) {
     console.error('Error obteniendo sesión:', err);
+    return;
   }
 }
 
@@ -33,9 +36,9 @@ async function getIdUsuario(uuid) {
   try {
     const { data, error } = await supabase
       .from('usuarios')
-      .select('idusuario')   // Seleccionamos solo la columna idusuario
-      .eq('idauth', uuid)     // Buscamos por el campo idauth que coincide con el UUID
-      .single();              // Esperamos un único registro
+      .select('idusuario')
+      .eq('idauth', uuid)
+      .single();
 
     if (error) throw error;
 
@@ -57,8 +60,8 @@ async function getColeccion(idUsuario) {
 
     const { data, error } = await supabase
       .from('coleccion')
-      .select('datosentrada')  // Seleccionamos la columna que contiene los datos de la colección
-      .eq('idusuario', idUsuario); // Filtramos por el ID interno del usuario
+      .select('datosentrada, nombreColeccion')
+      .eq('idusuario', idUsuario);
 
     console.log("RESPUESTA COMPLETA DE SUPABASE:", { data, error });
     if (error) throw error;
@@ -71,14 +74,14 @@ async function getColeccion(idUsuario) {
     error.value = 'Inicia sesión para ver las colecciones.';
     console.error('Error al obtener las colecciones:', err);
   } finally {
-    loading.value = false; // Terminamos indicador de carga
+    loading.value = false;
   }
 }
 
 
 async function crearColeccion() {
   if (!idusuario.value) {
-    error.value = 'El usuario no está autenticado o no tiene un ID válido.';
+    alert("Regístrate o inicia sesión para administrar colecciones.");
     return;
   }
 
@@ -95,7 +98,8 @@ async function crearColeccion() {
       throw error;
     }
 
-    alert(`Colección del usuario ${idusuario.value}, ${nombreColeccion.value} creada`);
+    alert(`Colección del usuario ${idusuario.value} llamada ${nombreColeccion.value} creada`);
+    location.reload();
 
     // Limpiar formulario
     nombreColeccion.value = '';
@@ -108,10 +112,15 @@ async function crearColeccion() {
   }
 }
 
-// Hook del ciclo de vida: se ejecuta al montar el componente
 onMounted(async () => {
   // Llamamos a la función principal para obtener y mostrar datos
   await getIdAuth();
+
+  if (idauth.value) {
+    console.log('Usuario autenticado:', idauth.value);
+  } else {
+    error.value = 'Regístrate o inicia sesión para ver y administrar las colecciones.';
+  }
 });
 
 </script>
@@ -120,7 +129,7 @@ onMounted(async () => {
   <h1 align="center">Colecciones</h1>
 
 
-  <form @submit.prevent="crearColeccion(idUsuario)" class="space-y-4 max-w-sm mx-auto">
+  <form @submit.prevent="crearColeccion(idUsuario)" class="formularioColeccion">
     <div>
       <label for="nombreColeccion">Crear nueva colección</label><br>
       <input id="nombreColeccion" v-model="nombreColeccion" type="text" required placeholder="Escribe un nombre..." />
@@ -129,27 +138,30 @@ onMounted(async () => {
       <button type="submit" :disabled="loading">
         {{ loading ? 'Guardando...' : 'Crear colección' }}
       </button>
-      <p v-if="error">Error: {{ error }}</p>
-
     </div>
 
   </form>
   <div>
     <h2>Tus colecciones:</h2>
+
     <div v-if="loading">Cargando...</div>
+
+    <!-- si hay error muestra el error -->
     <div v-else-if="error">{{ error }}</div>
+
     <div v-else>
       <div v-if="colecciones.length === 0">
         <p>No tienes colecciones creadas.</p>
       </div>
+
       <div v-else>
-        <div v-for="(coleccion, coleccionIndex) in colecciones" :key="coleccionIndex">
-          <p>Colección {{ coleccionIndex + 1 }}:</p>
-          <div v-if="coleccion.datosentrada?.items">
-            <div v-for="(itemId, itemIndex) in coleccion.datosentrada.items" :key="itemIndex">
-              {{ itemId }}
-            </div>
-          </div>
+        <div v-if="colecciones.length === 0">
+          <p>No tienes colecciones creadas.</p>
+        </div>
+
+        <div v-else class="listaColecciones">
+          <Coleccion v-for="(coleccion, index) in colecciones" :key="index" :nombre="coleccion.nombreColeccion"
+            :items="coleccion.datosentrada?.items || []" :index="index" />
         </div>
       </div>
     </div>

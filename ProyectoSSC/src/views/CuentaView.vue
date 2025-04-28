@@ -239,14 +239,6 @@ export default {
                 </div>
 
 
-                <!-- Email verificado -->
-                <div class="grupo-formulariop">
-                    <label for="emailVerified">Estado del Correo:</label><br>
-                    <input id="emailVerified" type="text"
-                        :value="sessionStore.user.email_verified ? 'Verificado' : 'No Verificado'" disabled />
-                </div>
-
-
                 <!-- UID -->
                 <div class="grupo-formulario">
                     <label for="uid">UID del Usuario:</label><br>
@@ -265,7 +257,7 @@ export default {
 
                 <!-- Rol en BBDD -->
                 <div class="grupo-formulario">
-                    <label for="role">Acceso BBDD:</label><br>
+                    <label for="role">Nivel acceso BBDD:</label><br>
                     <input id="role" type="text" v-model="sessionStore.session.user.role" disabled />
                 </div>
 
