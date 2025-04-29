@@ -156,8 +156,8 @@ onMounted(() => {
           enlaces.</span>
         <ul>
           <li v-for="(enlace, index) in tiendas" :key="index">
-            ID de tienda: {{ enlace.store_id || "No disponible" }}<br>
-            {{ detallesTiendas[enlace.store_id]?.name || "No disponible" }} —
+            ID de tienda: {{ enlace.store_id + 2 || "No disponible" }}<br>
+            {{ detallesTiendas[enlace.store_id + 2]?.name || "No disponible" }} —
             <a :href="enlace.url" target="_blank">{{ enlace.url || "No disponible" }}</a>
           </li>
         </ul>

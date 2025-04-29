@@ -1,3 +1,5 @@
+
+//Apartado para crear el sistema de pinia, el sistema de vue, y el sistema de router
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
@@ -6,7 +8,6 @@ import './assets/main.css';
 
 const app = createApp(App);
 
-// Usar Pinia
 app.use(createPinia());
 
 app.use(router);
