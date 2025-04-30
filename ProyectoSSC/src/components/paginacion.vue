@@ -8,50 +8,50 @@
     </div>
 </template>
 
-<script>
-export default {
-    props: {
-        numPagina: Number,
-        cargando: Boolean,
-        paginaAnterior: String,
-        paginaSiguiente: String,
+<script setup>
+import { defineProps, defineEmits } from 'vue';
 
-        // buscado indica si se ha realizado una búsqueda, y el evento `update:buscado` notifica al componente padre sobre el cambio de este estado.
-        buscado: {
-            type: Boolean,
-            required: false,
-            default: null,
-        },
+// Props
+const props = defineProps({
+    numPagina: Number,
+    cargando: Boolean,
+    paginaAnterior: String,
+    paginaSiguiente: String,
+    buscado: {
+        type: Boolean,
+        required: false,
+        default: null,
     },
-    emits: ['update:numPagina', 'actualizarJuegos', 'update:buscado'], // Emision de eventos
+});
 
-    methods: {
-        cambiar(direccion) {
-            if (this.cargando) return;
+// Emits
+const emit = defineEmits(['update:numPagina', 'actualizarJuegos', 'update:buscado']);
 
-            setTimeout(() => {
-                let nuevaPagina = this.numPagina;
+// Método para cambiar de página
 
-                if (nuevaPagina === 0) {
-                    nuevaPagina = Math.floor(Math.random() * 100) + 1;
-                } else if (direccion === 'siguiente' && this.paginaSiguiente) {
-                    nuevaPagina++;
-                } else if (direccion === 'anterior' && this.paginaAnterior && nuevaPagina > 1) {
-                    nuevaPagina--;
-                }
+function cambiar(direccion) {
+    if (props.cargando) return;
 
-                // se emiten los cambios necesarios
-                this.$emit('update:numPagina', nuevaPagina);
-                this.$emit('actualizarJuegos');
+    setTimeout(() => {
+        let nuevaPagina = props.numPagina;
 
-                if (this.buscado !== null) {
-                    this.$emit('update:buscado', true);
-                    console.log(true);
-                }
-            }, 500);
-        },
-    },
-};
+        if (nuevaPagina === 0) {
+            nuevaPagina = Math.floor(Math.random() * 200) + 1;
+        } else if (direccion === 'siguiente' && props.paginaSiguiente) {
+            nuevaPagina++;
+        } else if (direccion === 'anterior' && props.paginaAnterior && nuevaPagina > 1) {
+            nuevaPagina--;
+        }
+
+        emit('update:numPagina', nuevaPagina);
+        emit('actualizarJuegos');
+
+        if (props.buscado !== null) {
+            emit('update:buscado', true);
+            console.log(true);
+        }
+    }, 500);
+}
 </script>
 
 <style scoped>
