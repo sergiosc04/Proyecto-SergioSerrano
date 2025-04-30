@@ -5,7 +5,7 @@ import tarjetaJuego from '../components/tarjetaJuego.vue';
 import Paginacion from '../components/paginacion.vue';
 import { getJuegos } from '../compostables/obtenerJuegos';
 
-// Estados y lógica para juegos (búsqueda y aleatorio)
+// Función para obtener los juegos, importada del compostable
 const {
   juegos,
   cargando,
@@ -28,11 +28,6 @@ const busquedaAvanzada = ref(false);
 const endpointGeneros = `https://api.rawg.io/api/genres?key=9c8533b1b08441e680f0d26ed85dc61b`;
 const generos = ref([]);
 
-// Sincroniza input de paginación con la página actual
-watch(numPagina, newVal => {
-  paginaInput.value = newVal;
-});
-
 // Función para obtener géneros desde la API
 const getGeneros = async () => {
   try {
@@ -49,7 +44,6 @@ const vistaAvanzada = () => (busquedaAvanzada.value = !busquedaAvanzada.value);
 onMounted(() => {
   getGeneros();
   obtenerJuegos();
-
 });
 </script>
 
@@ -99,6 +93,9 @@ onMounted(() => {
       </div>
     </div>
 
+    <Paginacion v-model:numPagina="paginaInput" v-model:juegosPagina="juegosPagina" :cargando="cargando"
+      :paginaAnterior="paginaAnterior" :paginaSiguiente="paginaSiguiente" @actualizarJuegos="obtenerJuegos" />
+
     <div class="contenedorJuegos">
       <h3 v-if="idBuscar"><br />
         Resultados de la búsqueda "{{ idBuscar }}":
@@ -109,10 +106,8 @@ onMounted(() => {
       </div>
       <p v-else align="center">Cargando...</p>
 
-      <Paginacion :numPagina="paginaInput" :cargando="cargando" :paginaAnterior="paginaAnterior"
-        :paginaSiguiente="paginaSiguiente" @update:numPagina="num => { paginaInput = num; obtenerJuegos(); }"
-        @actualizarJuegos="obtenerJuegos()" />
     </div>
+
   </main>
 </template>
 
@@ -168,5 +163,13 @@ button:hover,
 .boton-buscar:hover {
   background-color: #4f4f6e;
   transform: translateY(-2px);
+}
+
+.listadoJuegos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
 }
 </style>

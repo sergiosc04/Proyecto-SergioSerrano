@@ -1,28 +1,35 @@
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import axios from 'axios';
 
-// Composable para gestionar la obtención de juegos desde la API de RAWG
-
+// Función para gestionar la obtención de juegos desde la API de RAWG
 export function getJuegos() {
-    const juegos = ref([]); //lista de juegos obtenidos
-
+    const juegos = ref([]); // Lista de juegos obtenidos
     const cargando = ref(false); // Indicador de carga (loading)
 
-    const paginaInput = ref(1);  // Número de página deseada
+    const paginaInput = ref(1);  // Número de página deseada (input)
     const numPagina = ref(0); // Página actual (0 para indicar aleatorio)
-    const juegosPagina = ref(20); // juegos por página (número de resultados por petición)
+    const juegosPagina = ref(20); // Juegos por página (número de resultados por petición)
 
-    const paginaAnterior = ref(null); //URL de la página anterior (para paginación)
+    const paginaAnterior = ref(null); // URL de la página anterior (para paginación)
     const paginaSiguiente = ref(null);  // URL de la página siguiente (para paginación)
 
-
-    const buscado = ref(false); //indica si se ha realizado una busqueda activa
-
+    const buscado = ref(false); // Indica si se ha realizado una búsqueda activa
     const idBuscar = ref('');  // Almacena el texto buscado
-
-    const buscarInput = ref('');//texto enlazado al formulario
+    const buscarInput = ref(''); // Texto enlazado al formulario
     const generoSelect = ref('');   // Género seleccionado en el filtro
 
+    // Watch para detectar cambios en numPagina y actualizar paginaInput
+    watch(numPagina, (newVal) => {
+        if (newVal > 0) {
+            paginaInput.value = newVal;
+        }
+    });
+
+    // Función para cambiar página y obtener juegos en un solo paso
+    const cambiarPagina = async (nuevaPagina) => {
+        numPagina.value = nuevaPagina;
+        await obtenerJuegos();
+    };
 
     // Función unificada para buscar o cargar juegos aleatorios
     const obtenerJuegos = async () => {
@@ -35,9 +42,9 @@ export function getJuegos() {
         if (!buscando && numPagina.value === 0) {
             numPagina.value = Math.floor(Math.random() * 15) + 1;
         }
-        // Si se busca, usa la página indicada por el usuario
-        else if (buscando) {
-            numPagina.value = paginaInput.value;
+        // Si se está usando paginaInput explícitamente, actualiza numPagina
+        else if (paginaInput.value !== numPagina.value) {
+            numPagina.value = parseInt(paginaInput.value) || 1;
         }
 
         // Guarda el término de búsqueda actual
@@ -70,7 +77,7 @@ export function getJuegos() {
             paginaSiguiente.value = data.next;
             buscado.value = buscando;
 
-            console.log(`API → https://api.rawg.io/api/games?${params.toString()}`);
+            console.log(`Endpoint de la página ${numPagina.value} con ${juegosPagina.value} juegos: https://api.rawg.io/api/games?${params.toString()} `);
         } catch (error) {
             console.error('Error al obtener los juegos:', error);
         } finally {
@@ -92,5 +99,6 @@ export function getJuegos() {
         generoSelect,
         juegosPagina,
         obtenerJuegos,
+        cambiarPagina, // Nueva función que combina actualización de página y carga
     };
 }
