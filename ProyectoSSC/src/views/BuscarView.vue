@@ -4,8 +4,13 @@ import axios from 'axios';
 import tarjetaJuego from '../components/tarjetaJuego.vue';
 import Paginacion from '../components/paginacion.vue';
 import { getJuegos } from '../compostables/obtenerJuegos';
+import spinnerCarga from '../components/SpinnerCarga.vue';
+
+//Importamos la clave del .env
+const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
 
 // Función para obtener los juegos, importada del compostable
+
 const {
   juegos,
   cargando,
@@ -21,11 +26,13 @@ const {
   obtenerJuegos,
 } = getJuegos();
 
+
+
 // Toggle de búsqueda avanzada
 const busquedaAvanzada = ref(false);
 
 // Endpoint y lista de géneros para filtro avanzado
-const endpointGeneros = `https://api.rawg.io/api/genres?key=9c8533b1b08441e680f0d26ed85dc61b`;
+const endpointGeneros = `https://api.rawg.io/api/genres?key=${claveAPI}`;
 const generos = ref([]);
 
 // Función para obtener géneros desde la API
@@ -70,15 +77,8 @@ onMounted(() => {
         </div>
 
         <div class="buscador_pagina">
-          <label>
-            Juegos por página:<br />
-            <input type="number" placeholder="Juegos por página" v-model="juegosPagina" />
-          </label>
-
-          <label>
-            Nº página:<br />
-            <input type="number" placeholder="Nº de página" v-model="paginaInput" />
-          </label>
+          <Paginacion v-model:numPagina="paginaInput" v-model:juegosPagina="juegosPagina" :cargando="cargando"
+            :paginaAnterior="paginaAnterior" :paginaSiguiente="paginaSiguiente" @actualizarJuegos="obtenerJuegos" />
         </div>
       </div>
 
@@ -93,18 +93,26 @@ onMounted(() => {
       </div>
     </div>
 
-    <Paginacion v-model:numPagina="paginaInput" v-model:juegosPagina="juegosPagina" :cargando="cargando"
-      :paginaAnterior="paginaAnterior" :paginaSiguiente="paginaSiguiente" @actualizarJuegos="obtenerJuegos" />
+
 
     <div class="contenedorJuegos">
-      <h3 v-if="idBuscar"><br />
+      <h3 v-if="idBuscar">
         Resultados de la búsqueda "{{ idBuscar }}":
       </h3>
 
       <div v-if="!cargando" class="listadoJuegos">
         <tarjetaJuego v-for="juego in juegos" :key="juego.id" :juego="juego" />
+
+
+        <Paginacion v-model:numPagina="paginaInput" v-model:juegosPagina="juegosPagina" :cargando="cargando"
+          :paginaAnterior="paginaAnterior" :paginaSiguiente="paginaSiguiente" @actualizarJuegos="obtenerJuegos" />
       </div>
-      <p v-else align="center">Cargando...</p>
+
+      <div v-else align="center">
+        <spinnerCarga />
+      </div>
+
+
 
     </div>
 

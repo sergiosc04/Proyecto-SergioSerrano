@@ -3,6 +3,9 @@ import { ref, onMounted } from 'vue';
 import { supabase } from '../supabase';
 import Coleccion from '../components/coleccion.vue';
 
+//Importamos la clave del .env
+const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
+
 // Variables reactivas para almacenar los IDs y datos
 const idauth = ref(0);
 const idusuario = ref(0);
@@ -12,6 +15,8 @@ const nombreColeccion = ref("");
 
 const loading = ref(false);
 const error = ref(null);
+
+
 
 // Función para obtener la sesión actual y extraer el UUID de Supabase
 async function getIdAuth() {

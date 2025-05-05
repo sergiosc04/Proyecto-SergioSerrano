@@ -9,7 +9,7 @@ const router = createRouter({
       component: () => import('../views/InicioView.vue'),
     },
     {
-      //el :id significa que recibe un valor ID mediante la URL
+      //el :slug significa que recibe un valor mediante la URL, en este caso, el slug del juego
       path: '/juego/:slug',
       name: 'juego',
       component: () => import('../views/DetallesJuegoView.vue'),
@@ -28,7 +28,7 @@ const router = createRouter({
       path: '/cuenta/',
       name: 'cuenta',
       component: () => import('../views/CuentaView.vue'),
-    }
+    },
   ],
 })
 

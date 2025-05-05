@@ -13,13 +13,17 @@ export default {
     setup(props) {
         // Referencia para almacenar la URL del video
         const videoUrl = ref(null)
+
         // Referencia para detectar si el ratón está encima de la tarjeta
         const hovering = ref(false)
+
+        //Importamos la clave del .env
+        const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
 
         // Función para obtener videos del juego desde la API
         const getVideos = async () => {
             try {
-                const endpoint = `https://api.rawg.io/api/games/${props.juego.id}/movies?key=9c8533b1b08441e680f0d26ed85dc61b`;
+                const endpoint = `https://api.rawg.io/api/games/${props.juego.id}/movies?key=${claveAPI}`;
                 const response = await axios.get(endpoint);
                 const results = response.data.results;
 

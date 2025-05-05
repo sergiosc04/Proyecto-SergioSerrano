@@ -5,6 +5,7 @@ import tarjetaJuego from '../components/tarjetaJuego.vue';
 import Paginacion from '../components/paginacion.vue';
 import { getJuegos } from '../compostables/obtenerJuegos';
 
+
 // Función para obtener los juegos, importada del compostable
 const {
   juegos,
@@ -21,30 +22,13 @@ const {
   obtenerJuegos,
 } = getJuegos();
 
-// Toggle de búsqueda avanzada
-const busquedaAvanzada = ref(false);
-
-// Endpoint y lista de géneros para filtro avanzado
-const endpointGeneros = `https://api.rawg.io/api/genres?key=9c8533b1b08441e680f0d26ed85dc61b`;
-const generos = ref([]);
-
-// Función para obtener géneros desde la API
-const getGeneros = async () => {
-  try {
-    const { data } = await axios.get(endpointGeneros);
-    generos.value = data.results;
-  } catch (error) {
-    console.error('Error al obtener los géneros:', error);
-  }
-};
-
-// Alternar vista avanzada
-const vistaAvanzada = () => (busquedaAvanzada.value = !busquedaAvanzada.value);
+//Importamos la clave del .env
+const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
 
 onMounted(() => {
-  getGeneros();
   obtenerJuegos();
 });
+
 </script>
 
 <template>

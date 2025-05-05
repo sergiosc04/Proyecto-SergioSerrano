@@ -13,10 +13,13 @@ const detallesTiendas = ref([]); // Detalles de las tiendas
 const indiceSlider = ref(0);     // Índice actual del slider
 const route = useRoute();       // Acceso a parámetros de ruta
 
+//Importamos la clave del .env
+const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
+
 // Función para obtener los detalles del juego
 const getDetalleJuegos = async () => {
   try {
-    const endpoint = `https://api.rawg.io/api/games/${route.params.slug}?key=9c8533b1b08441e680f0d26ed85dc61b`;
+    const endpoint = `https://api.rawg.io/api/games/${route.params.slug}?key=${claveAPI}`;
     const response = await axios.get(endpoint);
     juego.value = response.data;
   } catch (error) {
@@ -29,7 +32,7 @@ const getDetalleJuegos = async () => {
 // Función para obtener capturas de pantalla
 const getCapturas = async () => {
   try {
-    const endpoint = `https://api.rawg.io/api/games/${route.params.slug}/screenshots?key=9c8533b1b08441e680f0d26ed85dc61b`;
+    const endpoint = `https://api.rawg.io/api/games/${route.params.slug}/screenshots?key=${claveAPI}`;
     const response = await axios.get(endpoint);
     capturas.value = response.data.results;
     console.log("capturas.value");
@@ -60,7 +63,7 @@ function capAnterior() {
 //funcion para obtener detalles de las tiendas (necesario para poner el nombre, por ejemplo)
 const getDetallesTiendas = async () => {
   try {
-    const endpoint = `https://api.rawg.io/api/stores?key=9c8533b1b08441e680f0d26ed85dc61b`;
+    const endpoint = `https://api.rawg.io/api/stores?key=${claveAPI}`;
     const response = await axios.get(endpoint);
     detallesTiendas.value = response.data.results;
     console.log("detallesTiendas.value");
@@ -73,7 +76,7 @@ const getDetallesTiendas = async () => {
 //Función para obtener tiendas del juego especifico
 const getTiendas = async () => {
   try {
-    const endpoint = `https://api.rawg.io/api/games/${route.params.slug}/stores?key=9c8533b1b08441e680f0d26ed85dc61b`;
+    const endpoint = `https://api.rawg.io/api/games/${route.params.slug}/stores?key=${claveAPI}`;
     const response = await axios.get(endpoint);
     tiendas.value = response.data.results;
 
@@ -91,13 +94,14 @@ onMounted(() => {
   getTiendas();
   getDetallesTiendas();
 });
+
 </script>
 
 <template>
   <h1 v-if="juego" class="titulo" align="center"> {{ juego.name }}</h1>
   <div class="container">
-    <!-- Mostrar detalles del juego si ya está cargado -->
 
+    <!-- Mostrar detalles del juego si ya está cargado -->
     <div v-if="juego" class="juego-detalles">
 
 
@@ -149,7 +153,8 @@ onMounted(() => {
         </span>
       </div>
 
-      <div class="enlacesCompra"> <!-- enlaces de compra -->
+      <!-- enlaces de compra -->
+      <div class="enlacesCompra">
         <h2>Enlaces de compra</h2>
         <span style="font-style: italic;">Es posible que los enlaces estén incorrectos, la respuesta de la api de las
           tiendas devuelve una id de tienda que no se corresponde con el id de tienda que devuelve el endpoint de

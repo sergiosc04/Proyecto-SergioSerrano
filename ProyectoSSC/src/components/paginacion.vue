@@ -41,6 +41,18 @@ const cambiarPagina = (direccion) => {
     emit('cambiarPagina', nuevaPagina);
 };
 
+
+const cambiarJuegos = (direccion) => {
+    if (props.cargando) return;
+    let nuevosJuegos = Number(props.juegosPagina);
+    if (direccion === 'siguiente' && props.paginaSiguiente) nuevosJuegos++;
+    else if (direccion === 'anterior' && props.paginaAnterior && nuevosJuegos > 1) nuevosJuegos--;
+    else return;
+
+    emit('update:juegosPagina', nuevosJuegos);
+    emit('cambiarJuegos', nuevosJuegos);
+};
+
 const irAPagina = () => {
     if (props.cargando) return;
     emit('actualizarJuegos');
@@ -59,32 +71,43 @@ const actualizarJuegosPagina = (event) => {
     <div class="paginacion">
 
         <div class="inputs">
+            <!-- controles de paginas -->
+            <div class="controles pagina">
+                <img src="../assets/img/botones/back.png" alt="Anterior"
+                    :class="{ 'boton-img': true, 'disabled': !paginaAnterior || cargando || Number(numPagina) <= 1 }"
+                    @click="cambiarPagina('anterior')" />
 
-            <button :disabled="!paginaAnterior || cargando || Number(numPagina) <= 1" @click="cambiarPagina('anterior')"
-                class="boton">
-                ⬅
-            </button>
+                <div class="campo">
+                    <label for="numPagina">Página</label>
+                    <input id="numPagina" type="number" :value="numPagina" @input="actualizarNumPagina" min="1"
+                        :disabled="cargando" class="input" />
+                </div>
 
-            <div class="campo">
-
-                <label for="numPagina">Página</label>
-                <input id="numPagina" type="number" :value="numPagina" @input="actualizarNumPagina" min="1"
-                    :disabled="cargando" class="input" />
+                <img src="../assets/img/botones/next.png" alt="Siguiente"
+                    :class="{ 'boton-img': true, 'disabled': !paginaSiguiente || cargando }"
+                    @click="cambiarPagina('siguiente')" />
             </div>
 
-            <button :disabled="!paginaSiguiente || cargando" @click="cambiarPagina('siguiente')" class="boton">
-                ➡
-            </button>
+            <!-- controles de juegos/pagina -->
+            <div class="controles juegos">
+                <img src="../assets/img/botones/back.png" alt="Menos juegos"
+                    :class="{ 'boton-img': true, 'disabled': !paginaAnterior || cargando || Number(numPagina) <= 1 }"
+                    @click="cambiarJuegos('anterior')" />
 
-            <div class="campo">
-                <label for="juegosPagina">Juegos/Página</label>
-                <input id="juegosPagina" type="number" :value="juegosPagina" @input="actualizarJuegosPagina" min="1"
-                    :disabled="cargando" class="input" />
+                <div class="campo">
+                    <label for="juegosPagina">Juegos/Página</label>
+                    <input id="juegosPagina" type="number" :value="juegosPagina" @input="actualizarJuegosPagina" min="1"
+                        :disabled="cargando" class="input" />
+                </div>
+
+                <img src="../assets/img/botones/next.png" alt="Más juegos"
+                    :class="{ 'boton-img': true, 'disabled': !paginaSiguiente || cargando }"
+                    @click="cambiarJuegos('siguiente')" />
             </div>
 
-            <button @click="irAPagina" :disabled="cargando" class="ir-btn"
-                title="Ir a la página especificada">Ir</button>
-        </div>
+
+        </div><button @click="irAPagina" :disabled="cargando" class="ir-btn"
+            title="Ir a la página especificada">Ir</button>
 
     </div>
 </template>
@@ -92,9 +115,10 @@ const actualizarJuegosPagina = (event) => {
 <style scoped>
 .paginacion {
     display: flex;
-    margin-left: 40%;
-    margin-right: 40%;
+    margin-left: 38%;
+    margin-right: 38%;
     margin-bottom: 20px;
+    margin-top: 20px;
 
     align-items: center;
     justify-content: center;
@@ -107,6 +131,13 @@ const actualizarJuegosPagina = (event) => {
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     font-family: 'Segoe UI', sans-serif;
+}
+
+.controles {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 5px;
 }
 
 .inputs {
@@ -166,5 +197,25 @@ const actualizarJuegosPagina = (event) => {
     background-color: #bbbcc5;
     cursor: not-allowed;
     transform: none;
+}
+
+.boton-img {
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.boton-img:hover:not(.disabled) {
+    background-color: #505072;
+    transform: translateY(-1px);
+}
+
+.boton-img.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #bbbcc5;
 }
 </style>

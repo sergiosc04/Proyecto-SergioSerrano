@@ -3,6 +3,10 @@ import axios from 'axios';
 
 // Función para gestionar la obtención de juegos desde la API de RAWG
 export function getJuegos() {
+
+    //Importamos la clave del .env
+    const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
+
     const juegos = ref([]); // Lista de juegos obtenidos
     const cargando = ref(false); // Indicador de carga (loading)
 
@@ -52,7 +56,7 @@ export function getJuegos() {
 
         // Construye parámetros básicos para la API
         const params = new URLSearchParams({
-            key: '9c8533b1b08441e680f0d26ed85dc61b',
+            key: claveAPI,
             page: numPagina.value,
             page_size: juegosPagina.value,
         });
@@ -68,7 +72,7 @@ export function getJuegos() {
         try {
             // Llamada a la API con los parámetros construidos
             const { data } = await axios.get(
-                `https://api.rawg.io/api/games?${params.toString()}`
+                `http://api.rawg.io/api/games?${params.toString()}`
             );
 
             // Actualiza el estado con los resultados y enlaces de paginación
@@ -76,8 +80,7 @@ export function getJuegos() {
             paginaAnterior.value = data.previous;
             paginaSiguiente.value = data.next;
             buscado.value = buscando;
-
-            console.log(`Endpoint de la página ${numPagina.value} con ${juegosPagina.value} juegos: https://api.rawg.io/api/games?${params.toString()} `);
+            console.log(`Endpoint de la página ${numPagina.value} con ${juegosPagina.value} juegos: http://api.rawg.io/api/games?${params.toString()} `);
         } catch (error) {
             console.error('Error al obtener los juegos:', error);
         } finally {

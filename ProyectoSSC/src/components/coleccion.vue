@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import tarjetaJuego from '../components/tarjetaJuego.vue';
 
+//variables compartidas
 const props = defineProps({
     nombre: {
         type: String,
@@ -13,14 +14,18 @@ const props = defineProps({
     }
 });
 
+//Array que recoge los juegos de las colecciones
 const juegos = ref([]);
 
-// Método para obtener información de los juegos
+//importamos la clave del .env
+const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
+
+// Metodo para obtener información de los juegos, se recorre el array con los ID de los juegos, se busca cada juego, y se mete al final del objeto con todos los datos de los juegos
 const getJuegos = async () => {
 
     for (const id of props.items) {
         try {
-            const response = await fetch(`https://api.rawg.io/api/games/${id}?key=9c8533b1b08441e680f0d26ed85dc61b`);
+            const response = await fetch(`https://api.rawg.io/api/games/${id}?key=${claveAPI}`);
             const data = await response.json();
             juegos.value.push(data);
         } catch (error) {
