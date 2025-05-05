@@ -11,13 +11,8 @@ const {
   juegos,
   cargando,
   paginaInput,
-  numPagina,
   paginaAnterior,
   paginaSiguiente,
-  buscado,
-  idBuscar,
-  buscarInput,
-  generoSelect,
   juegosPagina,
   obtenerJuegos,
 } = getJuegos();
@@ -50,65 +45,4 @@ onMounted(() => {
   </main>
 </template>
 
-<style scoped>
-/* Los estilos permanecen igual */
-.buscador_container {
-  display: flex;
-  flex-direction: column;
-  margin: 0 20%;
-}
-
-.barra_busqueda input {
-  width: 80%;
-  padding: 10px;
-  border-radius: 3px;
-  border: 1px solid #ccc;
-  margin-bottom: 20px;
-}
-
-.buscador_avanzado {
-  margin-bottom: 20px;
-}
-
-.buscador_genero select,
-.buscador_pagina input {
-  padding: 10px;
-  border-radius: 3px;
-  border: 1px solid #ccc;
-  margin-bottom: 10px;
-  width: 50%;
-}
-
-.buscador_pagina {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.boton-buscar,
-button {
-  background-color: #2d2d44;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-right: 10px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-bottom: 20px;
-}
-
-button:hover,
-.boton-buscar:hover {
-  background-color: #4f4f6e;
-  transform: translateY(-2px);
-}
-
-.listadoJuegos {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
-}
-</style>
+<style scoped></style>

@@ -115,7 +115,7 @@ export default {
                 })
                 .eq('idauth', idAuth.value).single();
 
-            alert("¡Nombre de usuario actualizado correctamente a " + usernameEditado.value + "!");
+            alert("Nombre de usuario actualizado correctamente a " + usernameEditado.value + ".");
 
             username.value = usernameEditado.value; // Actualiza el nombre de usuario en la variable
         }
@@ -176,7 +176,7 @@ export default {
             }
 
             //Muestra un mensaje si todo fue bien
-            alert("¡Avatar subido y guardado correctamente!");
+            alert("Avatar subido y guardado correctamente");
         };
 
         onMounted(async () => {

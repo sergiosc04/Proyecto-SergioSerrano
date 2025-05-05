@@ -53,15 +53,18 @@ const cambiarJuegos = (direccion) => {
     emit('cambiarJuegos', nuevosJuegos);
 };
 
+//Funcion para cambiar la página
 const irAPagina = () => {
     if (props.cargando) return;
     emit('actualizarJuegos');
 };
 
+//Funcion para actualizar el num de página
 const actualizarNumPagina = (event) => {
     emit('update:numPagina', event.target.value);
 };
 
+//Funcion para actualizar los juegos por página
 const actualizarJuegosPagina = (event) => {
     emit('update:juegosPagina', event.target.value);
 };

@@ -56,7 +56,7 @@ const manejarRegistro = async () => {
 
         if (errorActualizarColeccion) throw errorActualizarColeccion;
 
-        alert('¡Registrado correctamente! Verifica tu correo electrónico.');
+        alert('¡Registrado correctamente! Comprueba tu correo electrónico para verificar la cuenta.');
 
     } catch (error) {
         if (error instanceof Error) {

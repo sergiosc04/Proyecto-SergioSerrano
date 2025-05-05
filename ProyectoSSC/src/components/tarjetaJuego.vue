@@ -1,6 +1,8 @@
 <script>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import axios from 'axios'; import { useRouter } from 'vue-router'
+
+
 
 export default {
     name: "tarjetaJuego",
@@ -11,6 +13,9 @@ export default {
         },
     },
     setup(props) {
+
+        const router = useRouter();
+
         // Referencia para almacenar la URL del video
         const videoUrl = ref(null)
 
@@ -36,12 +41,19 @@ export default {
             }
         }
 
+        const juegoParaColeccion = () => {
+
+            const idGuardar = props.juego.id;
+            router.push({ name: 'coleccion', query: { idRecibido: idGuardar } })
+        }
+
 
         onMounted(getVideos)
 
         return {
             videoUrl,
-            hovering
+            hovering,
+            juegoParaColeccion
         }
     }
 }
@@ -82,9 +94,7 @@ export default {
             </router-link>
 
             <!-- Enlace para añadir el juego a la colección -->
-            <router-link :to="`/coleccion`">
-                <button class="boton-accion">Añadir a colección</button>
-            </router-link>
+            <button @click="juegoParaColeccion()" class="boton-accion">Añadir a colección</button>
         </div>
     </div>
 </template>

@@ -7,25 +7,25 @@ export function getJuegos() {
     //Importamos la clave del .env
     const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
 
-    const juegos = ref([]); // Lista de juegos obtenidos
-    const cargando = ref(false); // Indicador de carga (loading)
+    const juegos = ref([]);
+    const cargando = ref(false);
 
-    const paginaInput = ref(1);  // Número de página deseada (input)
-    const numPagina = ref(0); // Página actual (0 para indicar aleatorio)
-    const juegosPagina = ref(20); // Juegos por página (número de resultados por petición)
+    const paginaInput = ref(1);
+    const numPagina = ref(0); // Pagina actual (0 para que sea aleatorio)
+    const juegosPagina = ref(20);
 
-    const paginaAnterior = ref(null); // URL de la página anterior (para paginación)
-    const paginaSiguiente = ref(null);  // URL de la página siguiente (para paginación)
+    const paginaAnterior = ref(null);
+    const paginaSiguiente = ref(null);
 
-    const buscado = ref(false); // Indica si se ha realizado una búsqueda activa
-    const idBuscar = ref('');  // Almacena el texto buscado
-    const buscarInput = ref(''); // Texto enlazado al formulario
-    const generoSelect = ref('');   // Género seleccionado en el filtro
+    const buscado = ref(false);
+    const idBuscar = ref('');
+    const buscarInput = ref('');
+    const generoSelect = ref('');
 
     // Watch para detectar cambios en numPagina y actualizar paginaInput
-    watch(numPagina, (newVal) => {
-        if (newVal > 0) {
-            paginaInput.value = newVal;
+    watch(numPagina, (nuevoValor) => {
+        if (nuevoValor > 0) {
+            paginaInput.value = nuevoValor;
         }
     });
 
@@ -61,18 +61,23 @@ export function getJuegos() {
             page_size: juegosPagina.value,
         });
 
-        // Si hay búsqueda activa, añade parámetros de búsqueda y género
+        // Ejecutado al buscar algo
         if (buscando) {
+            numPagina.value = 1;
+            paginaInput.value = 1;
+
+            params.set('page', 1); // Asegura que los parámetros también estén bien
             params.append('search', buscarInput.value);
+
             if (generoSelect.value) {
                 params.append('genres', generoSelect.value);
             }
         }
 
         try {
-            // Llamada a la API con los parámetros construidos
+            // Llama a la API con los parámetros construidos
             const { data } = await axios.get(
-                `http://api.rawg.io/api/games?${params.toString()}`
+                `https://api.rawg.io/api/games?${params.toString()}`
             );
 
             // Actualiza el estado con los resultados y enlaces de paginación
@@ -80,11 +85,11 @@ export function getJuegos() {
             paginaAnterior.value = data.previous;
             paginaSiguiente.value = data.next;
             buscado.value = buscando;
-            console.log(`Endpoint de la página ${numPagina.value} con ${juegosPagina.value} juegos: http://api.rawg.io/api/games?${params.toString()} `);
+            console.log(`Endpoint de la pagina ${numPagina.value} con ${juegosPagina.value} juegos: http://api.rawg.io/api/games?${params.toString()} `);
         } catch (error) {
             console.error('Error al obtener los juegos:', error);
         } finally {
-            cargando.value = false; // Finaliza el indicador de carga
+            cargando.value = false;
         }
     };
 
@@ -102,6 +107,6 @@ export function getJuegos() {
         generoSelect,
         juegosPagina,
         obtenerJuegos,
-        cambiarPagina, // Nueva función que combina actualización de página y carga
+        cambiarPagina,
     };
 }

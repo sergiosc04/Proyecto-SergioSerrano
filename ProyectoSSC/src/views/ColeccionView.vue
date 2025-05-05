@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { supabase } from '../supabase';
 import Coleccion from '../components/coleccion.vue';
+import { useRoute } from 'vue-router';
 
 //Importamos la clave del .env
 const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
@@ -16,6 +17,8 @@ const nombreColeccion = ref("");
 const loading = ref(false);
 const error = ref(null);
 
+const route = useRoute();
+const idRecibido = route.query.idRecibido;
 
 
 // Función para obtener la sesión actual y extraer el UUID de Supabase
@@ -43,13 +46,19 @@ async function getIdUsuario(uuid) {
       .from('usuarios')
       .select('idusuario')
       .eq('idauth', uuid)
-      .single();
 
     if (error) throw error;
 
     // Asignamos el ID interno de usuario
-    idusuario.value = data.idusuario;
-    console.log('IDUSUARIO:', idusuario.value);
+    if (data && data.length > 0) {
+      idusuario.value = data[0].idusuario;
+      console.log('IDUSUARIO:', idusuario.value);
+      await getColeccion(idusuario.value);
+    } else {
+      console.error('No se encontró un usuario con ese idauth');
+      error.value = 'Usuario no registrado en la base de datos.';
+    }
+
 
     // Obtenemos las colecciones asociadas a este usuario
     await getColeccion(idusuario.value);
@@ -61,7 +70,7 @@ async function getIdUsuario(uuid) {
 // Función para obtener las colecciones del usuario por su ID interno
 async function getColeccion(idUsuario) {
   try {
-    loading.value = true;  // Iniciamos indicador de carga
+    loading.value = true;
 
     const { data, error } = await supabase
       .from('coleccion')
@@ -117,6 +126,7 @@ async function crearColeccion() {
 }
 
 onMounted(async () => {
+
   // Llamamos a la función principal para obtener y mostrar datos
   await getIdAuth();
 
@@ -131,6 +141,12 @@ onMounted(async () => {
 
 <template>
   <h1 align="center">Colecciones</h1>
+
+  <div v-if="idRecibido">
+    <p>
+      idRecibido: {{ idRecibido }}
+    </p>
+  </div>
 
 
   <form @submit.prevent="crearColeccion(idUsuario)" class="formularioColeccion">
@@ -165,7 +181,8 @@ onMounted(async () => {
 
         <div v-else class="listaColecciones">
           <Coleccion v-for="(coleccion, index) in colecciones" :key="index" :nombre="coleccion.nombreColeccion"
-            :idcoleccion="coleccion.idcoleccion" :items="coleccion.datosentrada?.items || []" />
+            :idcoleccion="coleccion.idcoleccion" :idRecibido="idRecibido"
+            :juegos="coleccion.datosentrada?.juegos || []" />
         </div>
       </div>
     </div>
