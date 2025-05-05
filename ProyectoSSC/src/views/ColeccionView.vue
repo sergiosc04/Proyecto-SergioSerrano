@@ -65,7 +65,7 @@ async function getColeccion(idUsuario) {
 
     const { data, error } = await supabase
       .from('coleccion')
-      .select('datosentrada, nombreColeccion')
+      .select('datosentrada, nombreColeccion, idcoleccion')
       .eq('idusuario', idUsuario);
 
     console.log("RESPUESTA COMPLETA DE SUPABASE:", { data, error });
@@ -82,7 +82,6 @@ async function getColeccion(idUsuario) {
     loading.value = false;
   }
 }
-
 
 async function crearColeccion() {
   if (!idusuario.value) {
@@ -166,7 +165,7 @@ onMounted(async () => {
 
         <div v-else class="listaColecciones">
           <Coleccion v-for="(coleccion, index) in colecciones" :key="index" :nombre="coleccion.nombreColeccion"
-            :items="coleccion.datosentrada?.items || []" :index="index" />
+            :idcoleccion="coleccion.idcoleccion" :items="coleccion.datosentrada?.items || []" />
         </div>
       </div>
     </div>
