@@ -126,62 +126,95 @@ async function getDatosColeccion(idColeccionIntro) {
     }
 }
 
-async function nuevoJuego(idColeccionBuscar, idJuego) {
-    if (!idJuego) {
-        do {
-            const entrada = prompt("Introduce la ID de un juego a eliminar:");
-            if (entrada === null) {
-                return;
+async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
+    if (idRecibido) {
+        console.log("idRecibido: " + idRecibido)
+
+
+        //Si el valor no existe en la coleccion lo añade al principio de la colección
+        let jsonDatos;
+        try {
+            jsonDatos = await getDatosColeccion(idColeccionBuscar);
+
+        } catch (err) {
+            console.error("Error al obtener datos de la colección:", err);
+            return;
+        }
+
+        jsonDatos[0].datosentrada.juegos.unshift(idRecibido);
+
+        try {
+            const { data, error } = await supabase
+                .from('coleccion')
+                .update({
+                    datosentrada: jsonDatos[0].datosentrada
+                })
+                .eq('idcoleccion', idColeccionBuscar);
+
+
+        } catch (err) {
+            console.error("error al añadir el juego:" + err)
+        } finally {
+            alert(`Juego ${idRecibido} añadido correctamente de idRecibido: ${idRecibido}.`);
+            location.reload();
+        }
+
+        console.log("Datos entrada actualizados:");
+        console.log(jsonDatos[0].datosentrada);
+
+    } else {
+        if (!idJuego) {
+            do {
+                const entrada = prompt("Introduce la ID de un juego a añadir:");
+                if (entrada === null) {
+                    return;
+                }
+                idJuego = Number(entrada);
+            } while (!Number.isInteger(idJuego) || idJuego <= 0);
+        }
+        console.log(`ID de juego seleccionada: ${idJuego}`);
+
+        //Obtenemos los datos de la colección
+        let jsonDatos;
+        try {
+            jsonDatos = await getDatosColeccion(idColeccionBuscar);
+
+        } catch (err) {
+            console.error("Error al obtener datos de la colección:", err);
+            return;
+        }
+
+        for (let juego of jsonDatos[0].datosentrada.juegos) {
+            if (juego === idJuego) {
+
+                //Si los valores coinciden muestra aviso de que ya existe en la coleccion
+                console.log("juego coincide: " + idJuego);
+                alert("El juego ya está en la colección")
+            } else {
+
+                //Si el valor no existe en la coleccion lo añade al principio de la colección
+                jsonDatos[0].datosentrada.juegos.unshift(idJuego);
+
+                try {
+                    const { data, error } = await supabase
+                        .from('coleccion')
+                        .update({
+                            datosentrada: jsonDatos[0].datosentrada
+                        })
+                        .eq('idcoleccion', idColeccionBuscar);
+
+
+                } catch (err) {
+                    console.error("error al añadir el juego:" + err)
+                } finally {
+                    alert(`Juego ${idJuego} añadido correctamente de idJuego.`);
+                    location.reload();
+                }
+
+                console.log("Datos entrada actualizados:");
+                console.log(jsonDatos[0].datosentrada);
+
             }
-            idJuego = Number(entrada);
-        } while (!Number.isInteger(idJuego) || idJuego <= 0);
-    }
-    console.log(`ID de juego seleccionada: ${idJuego}`);
-
-    //Obtenemos los datos de la colección
-    let jsonDatos;
-    try {
-        jsonDatos = await getDatosColeccion(idColeccionBuscar);
-
-    } catch (err) {
-        console.error("Error al obtener datos de la colección:", err);
-        return;
-    }
-
-    //se comprueba que no exista en la coleccion, si no existe lo metemos el valor del juego en el array de resultado
-    const comprobarCopia = jsonDatos[0].datosentrada.juegos;
-
-
-    for (let juego of jsonDatos[0].datosentrada.juegos) {
-        if (juego === idJuego) {
-
-            //Si los valores coinciden muestra aviso de que ya existe en la coleccion
-            console.log("juego coincide: " + idJuego);
-            alert("El juego ya está en la colección")
-        } else {
-
-            //Si el valor no existe en la coleccion lo añade al principio de la colección
-            jsonDatos[0].datosentrada.juegos.unshift(idJuego);
-
-            try {
-                const { data, error } = await supabase
-                    .from('coleccion')
-                    .update({
-                        datosentrada: jsonDatos[0].datosentrada
-                    })
-                    .eq('idcoleccion', idColeccionBuscar);
-
-
-            } catch (err) {
-                console.error("error al añadir el juego:" + err)
-            } finally {
-                alert(`Juego ${idJuego} añadido correctamente.`);
-                location.reload();
-            }
-
-            console.log("Datos entrada actualizados:");
-            console.log(jsonDatos[0].datosentrada);
-
         }
     }
 }
@@ -270,13 +303,17 @@ onMounted(() => {
 <template>
     <hr>
     <div class="listaColeccion">
-        <h3>
-            Colección {{ nombre }}, id {{ idcoleccion }} &nbsp;&nbsp;&nbsp; idRecibida: {{ idRecibido }}
+        <h2> Colección {{ nombre }}
+
             <button @click="cambiarNombre(idcoleccion)">Cambiar Nombre</button>
             <button @click="eliminarColeccion(nombre, idcoleccion)">Eliminar Colección</button>
+        </h2>
+        <h3>
+            ID colección: {{ idcoleccion }}, idRecibida: {{ idRecibido }}
+
         </h3>
 
-        <button @click="nuevoJuego(idcoleccion, 0)" :disabled="cargando">Añadir juegos</button>
+        <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando">Añadir juegos</button>
 
         <div v-if="cargando">
             <SpinnerCarga />Cargando colección...
@@ -285,7 +322,7 @@ onMounted(() => {
         <div v-else-if="juegos.length > 0" class="coleccionesJuegos">
             <div v-for="juego in juegos" :key="juego.id">
                 <br>
-                <button @click="eliminarJuego(idcoleccion, juego.id)" align="center">Eliminar juego</button>
+                <button @click="eliminarJuego(idcoleccion, juego.id,)" align="center">Eliminar juego</button>
                 <tarjetaJuego :juego="juego" />
 
             </div>

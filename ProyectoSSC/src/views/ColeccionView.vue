@@ -18,7 +18,7 @@ const loading = ref(false);
 const error = ref(null);
 
 const route = useRoute();
-const idRecibido = route.query.idRecibido;
+const idRecibido = Number(route.query.idRecibido);
 
 
 // Función para obtener la sesión actual y extraer el UUID de Supabase
