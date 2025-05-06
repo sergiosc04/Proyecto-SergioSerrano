@@ -27,6 +27,7 @@ const props = defineProps({
 const juegos = ref([]);
 let juegoUnico = ref(null);
 const cargando = ref(true);
+let mostrarOpciones = ref(false);
 
 
 //importamos la clave del .env
@@ -302,6 +303,11 @@ async function eliminarJuego(idColeccionBuscar, idJuego) {
     }
 
 
+
+}
+const cambiarOpciones = () => {
+    mostrarOpciones = !mostrarOpciones;
+    console.log(mostrarOpciones)
 }
 
 onMounted(async () => {
@@ -317,19 +323,25 @@ onMounted(async () => {
 });
 </script>
 
+
 <template>
     <hr>
     <div class="listaColeccion">
-        <h2> Colección {{ nombre }}
+        <div class="containerTitulo">
+            <h2> Colección {{ nombre }}</h2>
 
-            <button @click="cambiarNombre(idcoleccion)">Cambiar Nombre</button>
-            <button @click="eliminarColeccion(nombre, idcoleccion)">Eliminar Colección</button>
-        </h2>
+            <div v-if="mostrarOpciones" class="opciones">
+                <button @click="cambiarNombre(idcoleccion)">Cambiar Nombre</button>
+                <button @click="eliminarColeccion(nombre, idcoleccion)">Eliminar Colección</button>
+            </div>
+            <div v-else><img src=" ../assets/img/botones/opciones.png" @click="cambiarOpciones()" class="botonOpciones">
+            </div>
+
+        </div>
         <h3>
             ID colección: {{ idcoleccion }}, idRecibido: {{ idRecibido }}, Nombre juego ID: {{ juegoUnico?.name }}
 
         </h3>
-
         <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando">{{ idRecibido ? `Añadir
             ${juegoUnico?.name} a la colección ` :
             "Añadir juego nuevo por ID" }}</button>
@@ -338,7 +350,7 @@ onMounted(async () => {
             <SpinnerCarga />Cargando colección...
         </div>
 
-        <div v-else-if="juegos.length > 0" class="coleccionesJuegos">
+        <div v-else-if="juegos.length > 0" class="coleccionJuegos">
             <div v-for="juego in juegos" :key="juego.id">
                 <br>
                 <button @click="eliminarJuego(idcoleccion, juego.id,)" align="center">Eliminar juego</button>
@@ -355,7 +367,7 @@ onMounted(async () => {
 
 
 <style scoped>
-.coleccionesJuegos {
+.coleccionJuegos {
     display: flex;
     flex-direction: row;
     gap: 1rem;
@@ -365,9 +377,22 @@ onMounted(async () => {
     /* para crear un efecto de "snap" en el slider */
 }
 
+.containerTitulo {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    gap: 1rem;
+}
+
+.listaColeccion {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
 .contenedorJuegos>* {
     scroll-snap-align: start;
-
 }
 
 .contenedorJuegos {
@@ -403,5 +428,40 @@ li {
 
 .juego p {
     margin: 0.25rem 0;
+}
+
+botonSecundario:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+}
+
+
+
+button:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+}
+
+button {
+    background-color: #2d2d44;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    padding-right: 10px;
+    /* Transiciones al hacer hover en los botones */
+}
+
+button:hover {
+    background-color: #4f4f6e;
+    transform: translateY(-2px);
+    /* Efecto de movimiento en el botón al hacer hover */
+}
+
+.botonOpciones {
+    width: 30px;
+    height: 30px;
 }
 </style>
