@@ -4,9 +4,6 @@ import { supabase } from '../supabase';
 import Coleccion from '../components/coleccion.vue';
 import { useRoute } from 'vue-router';
 
-//Importamos la clave del .env
-const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
-
 // Variables reactivas para almacenar los IDs y datos
 const idauth = ref(0);
 const idusuario = ref(0);
@@ -138,37 +135,37 @@ onMounted(async () => {
 });
 
 </script>
-
 <template>
-  <h1 align="center" v-if="idRecibido">Añadir juego a colección</h1>
-  <h1 align="center" v-else>Colecciones</h1>
 
-  <form @submit.prevent="crearColeccion(idUsuario)" class="formularioColeccion">
-    <div>
-      <label for="nombreColeccion">Crear nueva colección</label><br>
-      <input id="nombreColeccion" v-model="nombreColeccion" type="text" required placeholder="Escribe un nombre..." />
+  <h1 class="tituloPrincipal" align="center" v-if="idRecibido">Añadir juego a colección</h1>
+  <h1 class="tituloPrincipal" align="center" v-else>Colecciones</h1>
+  <div class="vistaColecciones">
 
-      <button type="submit" :disabled="loading">
-        {{ loading ? 'Guardando...' : 'Crear colección' }}
-      </button>
-    </div>
 
-  </form>
-  <div>
-    <h2>Tus colecciones:</h2>
+    <form @submit.prevent="crearColeccion(idUsuario)">
+      <div class="grupoFormulario">
+        <label for="nombreColeccion" class="etiquetaFormulario">Crear nueva colección</label>
+        <input id="nombreColeccion" v-model="nombreColeccion" type="text" required placeholder="Escribe un nombre..."
+          class="campoTexto" />
+        <button type="submit" :disabled="loading" class="botonPrimario">
+          {{ loading ? 'Guardando...' : 'Crear colección' }}
+        </button>
+      </div>
+    </form>
 
-    <div v-if="loading">Cargando...</div>
+    <div class="seccionColecciones">
+      <h2 class="subtitulo">Tus colecciones:</h2>
 
-    <!-- si hay error muestra el error -->
-    <div v-else-if="error">{{ error }}</div>
+      <div v-if="loading" class="estadoCarga">
+        Cargando colecciones...
+      </div>
 
-    <div v-else>
-      <div v-if="colecciones.length === 0">
-        <p>No tienes colecciones creadas.</p>
+      <div v-else-if="error" class="mensajeError">
+        {{ error }}
       </div>
 
       <div v-else>
-        <div v-if="colecciones.length === 0">
+        <div v-if="colecciones.length === 0" class="sinColecciones">
           <p>No tienes colecciones creadas.</p>
         </div>
 
@@ -181,3 +178,96 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.vistaColecciones {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.tituloPrincipal {
+  color: #2c3e50;
+  margin-bottom: 2rem;
+}
+
+.subtitulo {
+  color: #2c3e50;
+  margin: 1.5rem 0;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.formularioCrearColeccion {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.grupoFormulario {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.etiquetaFormulario {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.campoTexto {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 70%;
+  max-width: 400px;
+}
+
+.botonPrimario {
+  padding: 0.5rem 1.5rem;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  align-self: flex-start;
+}
+
+.botonPrimario:hover {
+  background-color: rgb(102, 102, 102);
+}
+
+.botonPrimario:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.listaColecciones {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.estadoCarga,
+.mensajeError,
+.sinColecciones {
+  padding: 1rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.mensajeError {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.sinColecciones {
+  background-color: #f5f5f5;
+  color: #666;
+}
+</style>

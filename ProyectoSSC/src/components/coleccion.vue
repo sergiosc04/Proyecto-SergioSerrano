@@ -27,6 +27,8 @@ const props = defineProps({
 const juegos = ref([]);
 let juegoUnico = ref(null);
 const cargando = ref(true);
+let coleccion = ref("");
+let mostrarOpciones = ref(false);
 
 
 //importamos la clave del .env
@@ -70,6 +72,7 @@ async function cambiarNombre(idColeccionModificar) {
     let intro = false;
     let nuevoNombre = "";
     const cargando = ref(true);
+    let coleccion = ref("");
 
     do {
         nuevoNombre = prompt("Introduce el nuevo nombre:");
@@ -141,100 +144,82 @@ async function getDatosColeccion(idColeccionIntro) {
         console.error('Error al obtener las colecciones:', error);
     }
 }
-
 async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
-    if (props.idRecibido) {
-        console.log("idRecibido: " + props.idRecibido)
 
+    let idFinal = idRecibido || idJuego;
 
-        //Si el valor no existe en la coleccion lo añade al principio de la colección
-        let jsonDatos;
-        try {
-            jsonDatos = await getDatosColeccion(idColeccionBuscar);
-
-        } catch (err) {
-            console.error("Error al obtener datos de la colección:", err);
-            return;
-        }
-
-        jsonDatos[0].datosentrada.juegos.unshift(props.idRecibido);
-
-        try {
-            const { data, error } = await supabase
-                .from('coleccion')
-                .update({
-                    datosentrada: jsonDatos[0].datosentrada
-                })
-                .eq('idcoleccion', idColeccionBuscar);
-
-
-        } catch (err) {
-            console.error("error al añadir el juego:" + err)
-        } finally {
-            alert(`Juego ${props.idRecibido} añadido correctamente de props.idRecibido: ${props.idRecibido}.`);
-            location.reload();
-        }
-
-        console.log("Datos entrada actualizados:");
-        console.log(jsonDatos[0].datosentrada);
-
-    } else {
-        if (!idJuego) {
-            do {
-                const entrada = prompt("Introduce la ID de un juego a añadir:");
-                if (entrada === null) {
-                    return;
-                }
-                idJuego = Number(entrada);
-            } while (!Number.isInteger(idJuego) || idJuego <= 0);
-        }
-        console.log(`ID de juego seleccionada: ${idJuego}`);
-
-        //Obtenemos los datos de la colección
-        let jsonDatos;
-        try {
-            jsonDatos = await getDatosColeccion(idColeccionBuscar);
-
-        } catch (err) {
-            console.error("Error al obtener datos de la colección:", err);
-            return;
-        }
-
-        for (let juego of jsonDatos[0].datosentrada.juegos) {
-            if (juego === idJuego) {
-
-                //Si los valores coinciden muestra aviso de que ya existe en la coleccion
-                console.log("juego coincide: " + idJuego);
-                alert("El juego ya está en la colección")
-            } else {
-
-                //Si el valor no existe en la coleccion lo añade al principio de la colección
-                jsonDatos[0].datosentrada.juegos.unshift(idJuego);
-
-                try {
-                    const { data, error } = await supabase
-                        .from('coleccion')
-                        .update({
-                            datosentrada: jsonDatos[0].datosentrada
-                        })
-                        .eq('idcoleccion', idColeccionBuscar);
-
-
-                } catch (err) {
-                    console.error("error al añadir el juego:" + err)
-                } finally {
-                    alert(`Juego ${idJuego} añadido correctamente de idJuego.`);
-                    location.reload();
-                }
-
-                console.log("Datos entrada actualizados:");
-                console.log(jsonDatos[0].datosentrada);
-
+    // Si no hay ID, pedimos al usuario que introduzca una
+    if (!idFinal) {
+        do {
+            const entrada = prompt("Introduce la ID de un juego a añadir:");
+            if (entrada === null) {
+                return;
             }
+            idFinal = Number(entrada);
+        } while (!Number.isInteger(idFinal) || idFinal <= 0);
+    }
+
+    console.log("ID de juego a añadir: " + idFinal);
+
+    // Obtener datos de la colección
+    let jsonDatos;
+    try {
+        jsonDatos = await getDatosColeccion(idColeccionBuscar);
+        console.log("jsonDatos obtenidos:");
+
+    } catch (err) {
+        console.error("Error al obtener datos de la colección:", err);
+        return;
+    }
+
+    // Asegurar que el array de juegos existe
+    let juegos = jsonDatos[0].datosentrada.juegos;
+    if (!Array.isArray(juegos)) {
+        juegos = [];
+        jsonDatos[0].datosentrada.juegos = juegos;
+    }
+
+    // Comprobar si el juego ya está
+    let yaExiste = false;
+    for (let juego of juegos) {
+        if (juego === idFinal) {
+            yaExiste = true;
+            break;
         }
     }
+
+    if (yaExiste) {
+        console.log("El juego ya está en la colección: " + idFinal);
+        alert("El juego ya está en la colección.");
+        return;
+    }
+
+    // Añadir el nuevo juego al principio
+    juegos.unshift(idFinal);
+
+    // Guardar en Supabase
+    try {
+        const { data, error } = await supabase
+            .from('coleccion')
+            .update({
+                datosentrada: jsonDatos[0].datosentrada
+            })
+            .eq('idcoleccion', idColeccionBuscar);
+
+        if (error) throw error;
+
+        alert(`Juego ${idFinal} añadido correctamente.`);
+        location.reload();
+    } catch (err) {
+        console.error("Error al añadir el juego:", err);
+    }
+
+    console.log("Datos entrada actualizados:");
+    console.log(jsonDatos[0].datosentrada);
 }
 
+
+//Funcion para eliminar un juego mediante su id de coleccion y de juego
 async function eliminarJuego(idColeccionBuscar, idJuego) {
 
     if (!idJuego) {
@@ -259,7 +244,6 @@ async function eliminarJuego(idColeccionBuscar, idJuego) {
     }
 
     //Buscamos el juego en el array de la colección
-
     if (confirm("¿Eliminar " + idJuego + " de la colección?")) {
 
 
@@ -304,6 +288,10 @@ async function eliminarJuego(idColeccionBuscar, idJuego) {
 
 }
 
+const toggleFunciones = () => {
+    mostrarOpciones.value = !mostrarOpciones.value;
+}
+
 onMounted(async () => {
     if (props.juegos.length > 0) {
         await getJuegos();
@@ -312,7 +300,6 @@ onMounted(async () => {
     }
     if (props.idRecibido) {
         await getJuegoUnico(props.idRecibido);
-        console.log('en la ref juegoUnico.value:', juegoUnico.value);
     }
 });
 </script>
@@ -320,88 +307,117 @@ onMounted(async () => {
 <template>
     <hr>
     <div class="listaColeccion">
-        <h2> Colección {{ nombre }}
-
-            <button @click="cambiarNombre(idcoleccion)">Cambiar Nombre</button>
-            <button @click="eliminarColeccion(nombre, idcoleccion)">Eliminar Colección</button>
+        <h2> Colección {{ nombre }} <button v-if="!mostrarOpciones" @click="toggleFunciones()"
+                class="botonSecundario">Opciones</button>
+            <span v-if="mostrarOpciones" class="opciones">
+                <button @click="toggleFunciones()" class="botonSecundario">Cerrar opciones</button>
+                <button @click="cambiarNombre(idcoleccion)" class="botonSecundario">Cambiar Nombre</button>
+                <button @click="eliminarColeccion(nombre, idcoleccion)" class="botonSecundario">Eliminar
+                    Colección</button>
+                <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando" class="botonSecundario">
+                    Añadir juego por ID
+                </button>
+            </span>
         </h2>
-        <h3>
-            ID colección: {{ idcoleccion }}, idRecibido: {{ idRecibido }}, Nombre juego ID: {{ juegoUnico?.name }}
+        <h4 v-if="idRecibido">
+            Añadir {{ juegoUnico.value }} a la colección <br>
+            <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando" class="botonPrincipal">
+                Añadir {{ juegoUnico?.name }} a la colección
+            </button>
+        </h4>
 
-        </h3>
 
-        <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando">{{ idRecibido ? `Añadir
-            ${juegoUnico?.name} a la colección ` :
-            "Añadir juego nuevo por ID" }}</button>
+
+
 
         <div v-if="cargando">
-            <SpinnerCarga />Cargando colección...
+            <SpinnerCarga /> Cargando colección...
         </div>
 
         <div v-else-if="juegos.length > 0" class="coleccionesJuegos">
-            <div v-for="juego in juegos" :key="juego.id">
-                <br>
-                <button @click="eliminarJuego(idcoleccion, juego.id,)" align="center">Eliminar juego</button>
+            <div v-for="juego in juegos" :key="juego.id" class="tarjetaJuegoContainer">
+                <button @click="eliminarJuego(idcoleccion, juego.id)" class="botonSecundario">Eliminar
+                    juego</button>
                 <tarjetaJuego :juego="juego" />
-
             </div>
         </div>
 
         <div v-else>
-            <p>Esta colección no tiene juegos aún.</p>
+            <p class="textoVacio">Esta colección no tiene juegos aún.</p>
         </div>
     </div>
 </template>
 
+<style>
+.textoVacio {
+    background-color: #ebebeb;
+    color: #666;
+    padding: 0.5rem;
+    text-align: center;
+}
 
-<style scoped>
+.listaColeccion {
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
 .coleccionesJuegos {
     display: flex;
     flex-direction: row;
     gap: 1rem;
     overflow-x: auto;
-    /* Permite el deslizamiento horizontal */
     scroll-snap-type: x mandatory;
-    /* para crear un efecto de "snap" en el slider */
+    padding-bottom: 1rem;
 }
 
-.contenedorJuegos>* {
+.tarjetaJuegoContainer {
     scroll-snap-align: start;
-
-}
-
-.contenedorJuegos {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-}
-
-ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin-top: 0.5rem;
-}
-
-li {
-    padding: 0.25rem 0;
-}
-
-.juegos {
-    margin-top: 1rem;
-}
-
-.juego {
+    min-width: 200px;
     padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid #eee;
+    flex-shrink: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.botonPrincipal:hover {
+    background-color: #3f5972;
+}
+
+.botonPrincipal {
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-top: 20px;
+    margin-bottom: 20px;
     border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
 }
 
-.juego h5 {
-    margin: 0 0 0.5rem 0;
+.botonPrincipal:disabled {
+    background-color: #3f5972;
+    cursor: not-allowed;
 }
 
-.juego p {
-    margin: 0.25rem 0;
+.botonSecundario {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    margin: 0.3rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.botonSecundario:hover {
+    background-color: #d5d5d5;
 }
 </style>
