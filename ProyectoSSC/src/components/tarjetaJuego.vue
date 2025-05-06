@@ -1,8 +1,7 @@
 <script>
-import { ref, onMounted } from 'vue';
-import axios from 'axios'; import { useRouter } from 'vue-router'
-
-
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
 
 export default {
     name: "tarjetaJuego",
@@ -13,91 +12,110 @@ export default {
         },
     },
     setup(props) {
-
         const router = useRouter();
 
         // Referencia para almacenar la URL del video
-        const videoUrl = ref(null)
+        const videoUrl = ref(null);
 
         // Referencia para detectar si el ratón está encima de la tarjeta
-        const hovering = ref(false)
+        const hovering = ref(false);
 
-        //Importamos la clave del .env
+        // Referencia para la tarjeta (se usará para el lazy load)
+        const tarjetaRef = ref(null);
+
+        // Importamos la clave del .env
         const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
 
         // Función para obtener videos del juego desde la API
-        const getVideos = async () => {
+        const obtenerVideos = async () => {
             try {
                 const endpoint = `https://api.rawg.io/api/games/${props.juego.id}/movies?key=${claveAPI}`;
-                const response = await axios.get(endpoint);
-                const results = response.data.results;
+                const respuesta = await axios.get(endpoint);
+                const resultados = respuesta.data.results;
 
                 // Si hay un video disponible, se guarda la URL del video 480p
-                if (results.length > 0 && results[0].data && results[0].data['480']) {
-                    videoUrl.value = results[0].data['480'];
+                if (resultados.length > 0 && resultados[0].data && resultados[0].data['480']) {
+                    videoUrl.value = resultados[0].data['480'];
                 }
             } catch (error) {
-                console.error('Error al obtener el video:', error)
+                console.error('Error al obtener el video:', error);
             }
-        }
+        };
 
         const juegoParaColeccion = () => {
-
             const idGuardar = props.juego.id;
-            router.push({ name: 'coleccion', query: { idRecibido: idGuardar } })
-        }
+            router.push({ name: 'coleccion', query: { idRecibido: idGuardar } });
+        };
 
+        // Función para cargar la tarjeta cuando entra en el viewport
+        const cargarTarjeta = () => {
+            obtenerVideos();
+        };
 
-        onMounted(getVideos)
+        // Crear el IntersectionObserver
+        const observer = new IntersectionObserver((entradas) => {
+            entradas.forEach(entrada => {
+                if (entrada.isIntersecting) {
+                    cargarTarjeta();  // Cargar el video y otros datos cuando entra en el viewport
+                    observer.unobserve(entrada.target);  // Dejar de observar la tarjeta después de cargarla
+                }
+            });
+        });
+
+        // Observar la tarjeta cuando se monte
+        onMounted(() => {
+            if (tarjetaRef.value) {
+                observer.observe(tarjetaRef.value);
+            }
+        });
+
+        // Limpiar el observer cuando el componente se destruya
+        onBeforeUnmount(() => {
+            if (tarjetaRef.value) {
+                observer.unobserve(tarjetaRef.value);
+            }
+        });
 
         return {
             videoUrl,
             hovering,
-            juegoParaColeccion
-        }
+            juegoParaColeccion,
+            tarjetaRef,
+        };
     }
-}
+};
 </script>
 
+
 <template>
-    <!-- Detecta cuando el raton entra en la tarjeta -->
-    <div class="tarjetaJuego" :class="{ 'con-video': videoUrl }" @mouseenter="hovering = true"
-        @mouseleave="hovering = false"> <!-- Detecta cuando el ratón sale de la tarjeta -->
-
+    <div ref="tarjetaRef" class="tarjetaJuego" :class="{ 'con-video': videoUrl }" @mouseenter="hovering = true"
+        @mouseleave="hovering = false">
         <div class="contenedor-img">
-            <!-- Muestra la imagen si no se está haciendo hover o si no hay video -->
-            <img v-if="!hovering || !videoUrl" :src="juego.background_image" alt="Imagen del juego" class="juego-img" />
-
-            <!-- Muestra el video si se hace hover y hay un video disponible -->
-            <video v-if="hovering && videoUrl" :src="videoUrl" class="video-preview" autoplay muted loop
-                playsinline></video>
-
-            <!-- Muestra un icono de video en la esquina inferior si hay un video disponible -->
+            <img v-if="!hovering || !videoUrl" :src="juego.background_image" alt="Imagen del juego" class="juego-img"
+                loading="lazy" />
+            <video v-if="hovering && videoUrl" :src="videoUrl" class="video-preview" autoplay muted loop playsinline
+                preload="none"></video>
             <span v-if="videoUrl && !hovering" class="icono-video"></span>
         </div>
 
         <div class="tarjeta--contenido">
-            <!-- Muestra el nombre del juego con un enlace -->
             <h2><router-link :to="`/juego/${juego.slug}`">{{ juego.name }}</router-link></h2>
             <ul>
                 <li><strong>ID:</strong> {{ juego.id }}</li>
                 <li><strong>Fecha de salida:</strong> {{ juego.released }}</li>
                 <li><strong>Calificación:</strong> {{ juego.rating }} / 5 ★</li>
-
             </ul>
         </div>
 
         <div class="accionesJuegos">
-            <!-- Enlace para ver más detalles del juego -->
             <router-link :to="`/juego/${juego.slug}`">
                 <button class="boton-accion">Ver juego</button>
             </router-link>
-
-            <!-- Enlace para añadir el juego a la colección -->
             <button @click="juegoParaColeccion()" class="boton-accion">Añadir a colección</button>
         </div>
     </div>
 </template>
+
 
 <style scoped>
 a {

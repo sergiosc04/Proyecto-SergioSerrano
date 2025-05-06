@@ -3,6 +3,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
+import SpinnerCarga from '@/components/SpinnerCarga.vue';
 
 // Variables reactivas
 const juego = ref(null);        // Detalles del juego
@@ -87,6 +88,13 @@ const getTiendas = async () => {
   }
 };
 
+//Función para obtener el nombre de la tienda dependiendo del valor
+function obtenerNombreTienda(storeId) {
+  const tienda = detallesTiendas.value.find(tienda => tienda.id === storeId);
+  return tienda ? tienda.name : "No disponible";
+}
+
+
 // Obtener datos cuando el componente se monta
 onMounted(() => {
   getDetalleJuegos();
@@ -106,30 +114,40 @@ onMounted(() => {
 
 
       <!-- Grupo de datos generales -->
-      <div class="datosGenerales">
+      <div class="detalles datosGenerales">
         <h2>Datos del juego</h2>
+        <span style="font-style: italic;">Información básica sobre el título, ID y nombre original.</span>
+
         <p><strong>Nombre original:</strong> {{ juego.name_original || "No disponible" }}</p>
         <p><strong>Slug:</strong> {{ juego.slug || "No disponible" }}</p>
         <p><strong>ID:</strong> {{ juego.id || "No disponible" }}</p>
       </div>
 
       <!-- Descripción con desplegable -->
-      <div class="descripcion">
+      <div class="detalles descripcion">
+        <h2>Descripción</h2>
+        <span style="font-style: italic; margin-bottom: 10px;">Resumen general y detalles narrativos del juego.</span>
+
         <details>
           <summary><strong>Desplegar descripción...</strong></summary>
           <div v-html="juego.description"></div>
         </details>
       </div>
+
       <!-- Fechas de lanzamiento y actualización -->
-      <div class="fechas">
+      <div class="detalles fechas">
         <h2>Fechas relevantes</h2>
+        <span style="font-style: italic;">Información sobre el lanzamiento y actualizaciones del juego.</span>
+
         <p><strong>Fecha de lanzamiento:</strong> {{ juego.released || "No disponible" }}</p>
         <p><strong>Última actualización:</strong> {{ juego.updated || "No disponible" }}</p>
       </div>
 
       <!-- Géneros del juego -->
-      <div class="generos">
+      <div class="detalles generos">
         <h2>Géneros</h2>
+        <span style="font-style: italic;">Clasificaciones temáticas asignadas al juego.</span>
+
         <span v-for="(genre, index) in juego.genres" :key="index">
           {{ genre.name }}<span v-if="index < juego.genres.length - 1">, </span>
         </span>
@@ -137,16 +155,21 @@ onMounted(() => {
       </div>
 
       <!-- Calificaciones y puntuaciones -->
-      <div class="calificaciones">
+      <div class="detalles calificaciones">
         <h2>Calificaciones</h2>
+        <span style="font-style: italic;">Puntuaciones y calificaciones de los jugadores y críticos.</span>
+
+
         <p><strong>Calificación:</strong> {{ juego.rating || "No disponible" }}/5★</p>
         <p><strong>Puntuación Metacritic:</strong> {{ juego.metacritic || "No disponible" }}</p>
         <p><strong>ESRB:</strong> {{ juego.esrb_rating?.name || "No disponible" }}</p>
       </div>
 
       <!-- Plataformas compatibles -->
-      <div class="plataformas">
+      <div class="detalles plataformas">
         <h2>Plataformas</h2>
+        <span style="font-style: italic;">Sistemas compatibles donde se puede jugar el título.</span><br><br>
+
         <span v-for="(plataforma, index) in juego.parent_platforms" :key="index">
           {{ plataforma.platform.name || "No disponible" }}<span v-if="index < juego.parent_platforms.length - 1">,
           </span>
@@ -154,23 +177,23 @@ onMounted(() => {
       </div>
 
       <!-- enlaces de compra -->
-      <div class="enlacesCompra">
+      <div class="detalles enlacesCompra">
         <h2>Enlaces de compra</h2>
-        <span style="font-style: italic;">Es posible que los enlaces estén incorrectos, la respuesta de la api de las
-          tiendas devuelve una id de tienda que no se corresponde con el id de tienda que devuelve el endpoint de
-          enlaces.</span>
+        <span style="font-style: italic;">Enlaces de compra para este juego.</span>
         <ul>
           <li v-for="(enlace, index) in tiendas" :key="index">
-            ID de tienda: {{ enlace.store_id + 2 || "No disponible" }}<br>
-            {{ detallesTiendas[enlace.store_id + 2]?.name || "No disponible" }} —
+            {{ obtenerNombreTienda(enlace.store_id) }}
+            —
             <a :href="enlace.url" target="_blank">{{ enlace.url || "No disponible" }}</a>
           </li>
         </ul>
       </div>
 
       <!-- Desarrolladores y editores -->
-      <div class="desarrolladores">
+      <div class="detalles desarrolladores">
         <h2>Desarrolladores y editores</h2>
+        <span style="font-style: italic;">Equipos responsables de la creación y publicación del juego.</span>
+
         <p><strong>Desarrolladores:</strong>
           <span v-for="(dev, index) in juego.developers" :key="index">
             {{ dev.name }}<span v-if="index < juego.developers.length - 1">, </span>
@@ -185,15 +208,18 @@ onMounted(() => {
       </div>
 
       <!-- tags -->
-      <div class="tags">
+      <div class="detalles tags">
         <h2>Tags</h2>
+        <span style="font-style: italic;">Palabras clave asociadas al juego que facilitan su clasificación..</span>
         <span v-for="(tag, index) in juego.tags" :key="index">
           {{ tag.name }}<span v-if="index < juego.tags.length - 1">, </span>
         </span>
       </div>
 
       <!-- Enlaces varios -->
-      <div class="enlaces">
+      <div class="detalles enlaces">
+        <span style="font-style: italic;">Enlaces útiles relacionados con el juego</span>
+
         <h2>Enlaces varios</h2>
         <p><strong>Website:</strong> <a :href="juego.website" target="_blank">{{ juego.website || "No disponible" }}</a>
         </p>
@@ -204,7 +230,9 @@ onMounted(() => {
       </div>
 
       <!-- Estadísticas de jugadores -->
-      <div class="estadisticas">
+      <div class="detalles estadisticas">
+        <span style="font-style: italic;">Datos sobre la actividad de los jugadores con el juego.</span>
+
         <h2>Estadísticas de jugadores</h2>
         <ul>
           <li>Total añadidos: {{ juego.added || "No disponible" }}</li>
@@ -244,24 +272,17 @@ onMounted(() => {
             alt="Imagen adicional del juego" />
         </div>
       </div>
+
+    </div>
+    <div v-else class="cargando">
+      <SpinnerCarga />
     </div>
   </div>
 
 </template>
 
 <style scoped>
-.datos,
-.datosGenerales,
-.fechas,
-.generos,
-.calificaciones,
-.plataformas,
-.desarrolladores,
-.tags,
-.enlaces,
-.enlacesCompra,
-.estadisticas,
-.descripcion {
+.detalles {
   margin-bottom: 20px;
   padding: 10px;
   background-color: #f9f9fc;
@@ -324,10 +345,8 @@ onMounted(() => {
 .container>.juego-detalles,
 .container>.containerFotos {
   width: 50%;
-  /* Añadido para prevenir desbordamiento */
   box-sizing: border-box;
   padding: 10px;
   overflow: auto;
-  /* Añade scroll si el contenido es demasiado grande */
 }
 </style>

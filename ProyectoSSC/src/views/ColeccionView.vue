@@ -140,20 +140,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h1 align="center">Colecciones</h1>
-
-  <div v-if="idRecibido">
-    <p>
-      idRecibido: {{ idRecibido }}
-    </p>
-  </div>
-
+  <h1 align="center" v-if="idRecibido">Añadir juego a colección</h1>
+  <h1 align="center" v-else>Colecciones</h1>
 
   <form @submit.prevent="crearColeccion(idUsuario)" class="formularioColeccion">
     <div>
       <label for="nombreColeccion">Crear nueva colección</label><br>
       <input id="nombreColeccion" v-model="nombreColeccion" type="text" required placeholder="Escribe un nombre..." />
-
 
       <button type="submit" :disabled="loading">
         {{ loading ? 'Guardando...' : 'Crear colección' }}

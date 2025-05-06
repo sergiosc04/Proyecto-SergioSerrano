@@ -25,11 +25,27 @@ const props = defineProps({
 });
 
 const juegos = ref([]);
+let juegoUnico = ref(null);
 const cargando = ref(true);
-let coleccion = ref("");
+
 
 //importamos la clave del .env
 const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
+
+// Metodo para obtener información de in juego, para usar cuando haya idRecibido
+const getJuegoUnico = async (id) => {
+    try {
+        const response = await fetch(`https://api.rawg.io/api/games/${id}?key=${claveAPI}`);
+        const data = await response.json();
+
+        juegoUnico.value = data;
+        return juegoUnico.value;
+
+    } catch (error) {
+        console.error(`Error al obtener el juego ${id}:`, error);
+    }
+    cargando.value = false;
+};
 
 // Metodo para obtener información de los juegos, se recorre el array con los ID de los juegos, se busca cada juego, y se mete al final del objeto con todos los datos de los juegos
 const getJuegos = async () => {
@@ -127,8 +143,8 @@ async function getDatosColeccion(idColeccionIntro) {
 }
 
 async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
-    if (idRecibido) {
-        console.log("idRecibido: " + idRecibido)
+    if (props.idRecibido) {
+        console.log("idRecibido: " + props.idRecibido)
 
 
         //Si el valor no existe en la coleccion lo añade al principio de la colección
@@ -141,7 +157,7 @@ async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
             return;
         }
 
-        jsonDatos[0].datosentrada.juegos.unshift(idRecibido);
+        jsonDatos[0].datosentrada.juegos.unshift(props.idRecibido);
 
         try {
             const { data, error } = await supabase
@@ -155,7 +171,7 @@ async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
         } catch (err) {
             console.error("error al añadir el juego:" + err)
         } finally {
-            alert(`Juego ${idRecibido} añadido correctamente de idRecibido: ${idRecibido}.`);
+            alert(`Juego ${props.idRecibido} añadido correctamente de props.idRecibido: ${props.idRecibido}.`);
             location.reload();
         }
 
@@ -288,17 +304,18 @@ async function eliminarJuego(idColeccionBuscar, idJuego) {
 
 }
 
-onMounted(() => {
+onMounted(async () => {
     if (props.juegos.length > 0) {
-        getJuegos();
+        await getJuegos();
     } else {
         cargando.value = false;
     }
-
+    if (props.idRecibido) {
+        await getJuegoUnico(props.idRecibido);
+        console.log('en la ref juegoUnico.value:', juegoUnico.value);
+    }
 });
 </script>
-
-
 
 <template>
     <hr>
@@ -309,11 +326,13 @@ onMounted(() => {
             <button @click="eliminarColeccion(nombre, idcoleccion)">Eliminar Colección</button>
         </h2>
         <h3>
-            ID colección: {{ idcoleccion }}, idRecibida: {{ idRecibido }}
+            ID colección: {{ idcoleccion }}, idRecibido: {{ idRecibido }}, Nombre juego ID: {{ juegoUnico?.name }}
 
         </h3>
 
-        <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando">Añadir juegos</button>
+        <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando">{{ idRecibido ? `Añadir
+            ${juegoUnico?.name} a la colección ` :
+            "Añadir juego nuevo por ID" }}</button>
 
         <div v-if="cargando">
             <SpinnerCarga />Cargando colección...
