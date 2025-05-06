@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import tarjetaJuego from '../components/tarjetaJuego.vue';
 import { supabase } from '../supabase'
 import SpinnerCarga from './SpinnerCarga.vue';
+import { useRouter } from 'vue-router';
 
 //variables recibidas desde el coleccionView
 const props = defineProps({
@@ -24,12 +25,14 @@ const props = defineProps({
     }
 });
 
-const juegos = ref([]);
+let juegos = ref([]);
 let juegoUnico = ref(null);
-const cargando = ref(true);
+let cargando = ref(true);
 let coleccion = ref("");
 let mostrarOpciones = ref(false);
+let longColeccion = ref();
 
+const router = useRouter();
 
 //importamos la clave del .env
 const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
@@ -41,7 +44,6 @@ const getJuegoUnico = async (id) => {
         const data = await response.json();
 
         juegoUnico.value = data;
-        return juegoUnico.value;
 
     } catch (error) {
         console.error(`Error al obtener el juego ${id}:`, error);
@@ -71,8 +73,6 @@ async function cambiarNombre(idColeccionModificar) {
 
     let intro = false;
     let nuevoNombre = "";
-    const cargando = ref(true);
-    let coleccion = ref("");
 
     do {
         nuevoNombre = prompt("Introduce el nuevo nombre:");
@@ -94,10 +94,14 @@ async function cambiarNombre(idColeccionModificar) {
             else {
                 alert("Nombre modificado correctamente a " + nuevoNombre);
                 intro = true;
-                location.reload();
+
+                router.replace({ name: 'coleccion' });
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
             }
         } else {
-            alert("Cambio de nombre cancelado");
+            console.log("Cambio de nombre cancelado");
             intro = true;
         }
 
@@ -109,18 +113,20 @@ async function eliminarColeccion(nombreColeccionEliminar, idColeccionEliminar) {
 
     if (confirm(`¿Eliminar colección ${nombreColeccionEliminar}?`)) {
 
-        console.log(nombreColeccionEliminar);
-
         const { data, error } = await supabase
             .from('coleccion')
             .delete()
             .eq('idcoleccion', idColeccionEliminar)
 
         if (error) alert(error);
-        location.reload();
+
+        router.replace({ name: 'coleccion' });
+        setTimeout(() => {
+            location.reload();
+        }, 500);
 
     } else {
-        alert("Eliminado cancelado");
+        console.log("Eliminado de coleccion " + nombreColeccionEliminar + " cancelado");
     }
 }
 
@@ -131,13 +137,9 @@ async function getDatosColeccion(idColeccionIntro) {
             .select('datosentrada, nombreColeccion, idcoleccion')
             .eq('idcoleccion', idColeccionIntro);
 
-        console.log(`Datos de coleccion:`);
-        console.log(data);
-
         if (error) throw error;
 
         coleccion = data;
-
         return coleccion;
 
     } catch (error) {
@@ -165,7 +167,7 @@ async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
     let jsonDatos;
     try {
         jsonDatos = await getDatosColeccion(idColeccionBuscar);
-        console.log("jsonDatos obtenidos:");
+
 
     } catch (err) {
         console.error("Error al obtener datos de la colección:", err);
@@ -209,82 +211,99 @@ async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
         if (error) throw error;
 
         alert(`Juego ${idFinal} añadido correctamente.`);
-        location.reload();
+        console.log("Redirigiendo a la página de colección...");
+
+
     } catch (err) {
         console.error("Error al añadir el juego:", err);
     }
-
-    console.log("Datos entrada actualizados:");
-    console.log(jsonDatos[0].datosentrada);
+    router.replace({ name: 'coleccion' });
+    setTimeout(() => {
+        location.reload();
+    }, 500);
 }
-
 
 //Funcion para eliminar un juego mediante su id de coleccion y de juego
 async function eliminarJuego(idColeccionBuscar, idJuego) {
-
+    // Solicitar ID si no se proporciona
     if (!idJuego) {
         do {
             const entrada = prompt("Introduce la ID de un juego a eliminar:");
-            if (entrada === null) {
-                return;
-            }
+            if (entrada === null) return;
             idJuego = Number(entrada);
         } while (!Number.isInteger(idJuego) || idJuego <= 0);
     }
     console.log(`ID de juego seleccionada: ${idJuego}`);
 
-    //Obtenemos los datos de la colección
+    // Obtener datos de la colección
     let jsonDatos;
     try {
         jsonDatos = await getDatosColeccion(idColeccionBuscar);
-
     } catch (err) {
-        console.error("Error al obtener datos de la colección:", err);
+        console.error("Error al obtener datos:", err);
+        alert("Error al cargar la colección");
         return;
     }
 
-    //Buscamos el juego en el array de la colección
-    if (confirm("¿Eliminar " + idJuego + " de la colección?")) {
+    if (!confirm(`¿Eliminar juego ${idJuego} de la colección?`)) return;
 
+    // Verificar estructura de datos
+    const juegos = jsonDatos[0].datosentrada.juegos;
+    if (!Array.isArray(juegos)) {
+        alert("La colección no contiene juegos");
+        return;
+    }
 
-        //Comprueba los valores del array de juegos y compara con el idJuego
-        for (let juego of jsonDatos[0].datosentrada.juegos) {
-            if (juego === idJuego) {
-
-                //Si los valores coinciden los asigna al valor de index
-                console.log("juego coincide: " + idJuego);
-                const coincide = jsonDatos[0].datosentrada.juegos.indexOf(juego);
-
-                //Si coincide no es -1 (no lo ha encontrado) elimina el valor del array
-                if (coincide !== -1) {
-                    jsonDatos[0].datosentrada.juegos.splice(coincide, 1);
-                    console.log(jsonDatos[0].datosentrada.juegos);
-
-                    //Actializar en Supabase
-                    try {
-                        const { data, error } = await supabase
-                            .from('coleccion')
-                            .update({ datosentrada: jsonDatos[0].datosentrada })
-                            .eq('idcoleccion', idColeccionBuscar);
-
-                        if (error) {
-                            throw error;
-                        }
-
-                        console.log("Respuesta Supabase:", data);
-                        alert(`Juego ${idJuego} eliminado correctamente de la colección.`);
-
-                        location.reload();
-
-                    } catch (err) {
-                        console.error("Error al actualizar en Supabase:", err);
-                        alert("Error al guardar los cambios. Revisa la consola.");
-                    }
-                }
-            }
+    // Buscar existencia del juego
+    let existe = false;
+    for (const juego of juegos) {
+        if (juego === idJuego) {
+            existe = true;
+            break;
         }
     }
 
+    if (!existe) {
+        alert("Este juego no está en la colección");
+        return;
+    }
+
+    // Eliminar el juego
+    const indice = juegos.indexOf(idJuego);
+    juegos.splice(indice, 1);
+
+    // Actualizar en Supabase
+    try {
+        const { error } = await supabase
+            .from('coleccion')
+            .update({ datosentrada: jsonDatos[0].datosentrada })
+            .eq('idcoleccion', idColeccionBuscar);
+
+        if (error) throw error;
+
+        alert(`Juego ${idJuego} eliminado correctamente`);
+        location.reload();
+
+    } catch (err) {
+        console.error("Error en Supabase:", err);
+        alert("Error al guardar cambios");
+    }
+}
+
+const getLongColeccion = async () => {
+    let jsonDatos;
+    try {
+        jsonDatos = await getDatosColeccion(props.idcoleccion);
+
+        longColeccion.value = jsonDatos[0].datosentrada.juegos.length;
+        console.log(jsonDatos[0].datosentrada.juegos)
+
+        return longColeccion.value;
+
+    } catch (err) {
+        console.error("Error al obtener datos:", err);
+        return;
+    }
 
 }
 
@@ -301,34 +320,35 @@ onMounted(async () => {
     if (props.idRecibido) {
         await getJuegoUnico(props.idRecibido);
     }
+    longColeccion.value = await getLongColeccion();
+    console.log(longColeccion.value)
 });
+
 </script>
 
 <template>
     <hr>
     <div class="listaColeccion">
         <h2> Colección {{ nombre }} <button v-if="!mostrarOpciones" @click="toggleFunciones()"
-                class="botonSecundario">Opciones</button>
+                class="botonSecundario">Opciones ►</button>
             <span v-if="mostrarOpciones" class="opciones">
-                <button @click="toggleFunciones()" class="botonSecundario">Cerrar opciones</button>
+                <button @click="toggleFunciones()" class="botonSecundario">Opciones ◄</button>
                 <button @click="cambiarNombre(idcoleccion)" class="botonSecundario">Cambiar Nombre</button>
                 <button @click="eliminarColeccion(nombre, idcoleccion)" class="botonSecundario">Eliminar
                     Colección</button>
-                <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando" class="botonSecundario">
-                    Añadir juego por ID
+                <button @click="nuevoJuego(idcoleccion, 0)" :disabled="cargando" class="botonSecundario">
+                    <strong> Añadir juego por ID</strong>
                 </button>
             </span>
         </h2>
-        <h4 v-if="idRecibido">
-            Añadir {{ juegoUnico.value }} a la colección <br>
+
+        <p v-if="longColeccion">{{ longColeccion }} juegos.</p>
+
+        <span v-if="idRecibido">
             <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando" class="botonPrincipal">
-                Añadir {{ juegoUnico?.name }} a la colección
+                {{ `Añadir ${juegoUnico?.name || "juego"} a esta colección` }}
             </button>
-        </h4>
-
-
-
-
+        </span>
 
         <div v-if="cargando">
             <SpinnerCarga /> Cargando colección...
@@ -343,8 +363,11 @@ onMounted(async () => {
         </div>
 
         <div v-else>
-            <p class="textoVacio">Esta colección no tiene juegos aún.</p>
+            <p class="textoVacio">Esta colección no tiene juegos aún. <router-link to="/buscar">Explorar
+                    juegos.</router-link> </p>
         </div>
+
+
     </div>
 </template>
 

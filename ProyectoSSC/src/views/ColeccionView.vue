@@ -17,6 +17,8 @@ const error = ref(null);
 const route = useRoute();
 const idRecibido = Number(route.query.idRecibido);
 
+let mostrarCreacion = ref(false);
+
 
 // Función para obtener la sesión actual y extraer el UUID de Supabase
 async function getIdAuth() {
@@ -122,6 +124,10 @@ async function crearColeccion() {
   }
 }
 
+let toggleCreacion = () => {
+  mostrarCreacion.value = !mostrarCreacion.value;
+}
+
 onMounted(async () => {
 
   // Llamamos a la función principal para obtener y mostrar datos
@@ -141,20 +147,30 @@ onMounted(async () => {
   <h1 class="tituloPrincipal" align="center" v-else>Colecciones</h1>
   <div class="vistaColecciones">
 
+    <div class="containerCreacion">
+      <button class="botonPrimario" @click="toggleCreacion()" v-if="!mostrarCreacion">+ Crear nueva colección</button>
 
-    <form @submit.prevent="crearColeccion(idUsuario)">
-      <div class="grupoFormulario">
-        <label for="nombreColeccion" class="etiquetaFormulario">Crear nueva colección</label>
-        <input id="nombreColeccion" v-model="nombreColeccion" type="text" required placeholder="Escribe un nombre..."
-          class="campoTexto" />
-        <button type="submit" :disabled="loading" class="botonPrimario">
-          {{ loading ? 'Guardando...' : 'Crear colección' }}
-        </button>
-      </div>
-    </form>
+      <form v-if="mostrarCreacion" @submit.prevent="crearColeccion(idUsuario)">
+        <div class="grupoFormulario">
+
+          <label for="nombreColeccion" class="etiquetaFormulario">Crear nueva colección</label>
+          <input id="nombreColeccion" v-model="nombreColeccion" type="text" required placeholder="Escribe un nombre..."
+            class="campoTexto" />
+
+          <div class="containerBotones">
+            <button type="submit" :disabled="loading" class="botonPrimario">
+              {{ loading ? 'Guardando...' : 'Crear colección' }}
+            </button>
+            <button class="botonPrimario" @click="toggleCreacion()">
+              Cancelar creación
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
 
     <div class="seccionColecciones">
-      <h2 class="subtitulo">Tus colecciones:</h2>
 
       <div v-if="loading" class="estadoCarga">
         Cargando colecciones...
@@ -180,6 +196,25 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.containerCreacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.containerBotones {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  width: 100%;
+}
+
+
+.containerBotones button {
+  /* Hacer que cada botón ocupe el mismo espacio */
+  flex: 1;
+}
+
 .vistaColecciones {
   max-width: 1200px;
   margin: 0 auto;
@@ -210,6 +245,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  width: 400px;
 }
 
 .etiquetaFormulario {
@@ -222,8 +258,7 @@ onMounted(async () => {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  width: 70%;
-  max-width: 400px;
+  max-width: 1000px;
 }
 
 .botonPrimario {
