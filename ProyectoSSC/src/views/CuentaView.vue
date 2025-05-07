@@ -67,7 +67,7 @@ const subirAvatar = async (evento) => {
     }
 
     const nombreArchivo = `${idAuth.value}_${archivo.name}`;
-    const rutaArchivo = `avatars/${nombreArchivo}`;
+    const rutaArchivo = nombreArchivo;
 
     const { error: uploadError } = await supabase.storage
         .from('avatars')
