@@ -88,29 +88,33 @@ export default {
 
 
 <template>
+
     <div ref="tarjetaRef" class="tarjetaJuego" :class="{ 'con-video': videoUrl }" @mouseenter="hovering = true"
         @mouseleave="hovering = false">
-        <div class="contenedor-img">
-            <img v-if="!hovering || !videoUrl" :src="juego.background_image" alt="Imagen del juego" class="juego-img"
-                loading="lazy" />
-            <video v-if="hovering && videoUrl" :src="videoUrl" class="video-preview" autoplay muted loop playsinline
-                preload="none"></video>
-            <span v-if="videoUrl && !hovering" class="icono-video"></span>
-        </div>
 
-        <div class="tarjeta--contenido">
-            <h2><router-link :to="`/juego/${juego.slug}`">{{ juego.name }}</router-link></h2>
-            <ul>
-                <li><strong>ID:</strong> {{ juego.id }}</li>
-                <li><strong>Fecha de salida:</strong> {{ juego.released }}</li>
-                <li><strong>Calificación:</strong> {{ juego.rating }} / 5 ★</li>
-            </ul>
-        </div>
+        <router-link :to="`/juego/${juego.slug}`">
 
+            <div class="contenedor-img">
+                <img v-if="!hovering || !videoUrl" :src="juego.background_image" alt="Imagen del juego"
+                    class="juego-img" loading="lazy" />
+                <video v-if="hovering && videoUrl" :src="videoUrl" class="video-preview" autoplay muted loop playsinline
+                    preload="none"></video>
+                <span v-if="videoUrl && !hovering" class="icono-video"></span>
+            </div>
+
+            <div class="tarjeta--contenido">
+                <h2>{{ juego.name }}</h2>
+                <ul>
+                    <li><strong>ID:</strong> {{ juego.id }}</li>
+                    <li><strong>Fecha de salida:</strong> {{ juego.released }}</li>
+                    <li><strong>Calificación:</strong> {{ juego.rating }} / 5 ★</li>
+                </ul>
+            </div>
+        </router-link>
         <div class="accionesJuegos">
-            <router-link :to="`/juego/${juego.slug}`">
-                <button class="boton-accion">Ver juego</button>
-            </router-link>
+            <router-link :to="`/juego/${juego.slug}`"></router-link>
+            <button class="boton-accion">Ver juego</button>
+
             <button @click="juegoParaColeccion()" class="boton-accion">Añadir a colección</button>
         </div>
     </div>
@@ -127,7 +131,7 @@ a {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: #f9f9fc;
+    background-color: #f0f0f8;
     border: 1px solid gray;
     border-radius: 10px;
     width: 20vw;
@@ -139,10 +143,6 @@ a {
     /* Transición suave al hacer hover */
 }
 
-.tarjetaJuego:hover {
-    transform: scale(1.03);
-    /* Efecto de ampliación al hacer hover */
-}
 
 .contenedor-img {
     position: relative;
@@ -209,6 +209,10 @@ a {
     margin-bottom: 0.4rem;
 }
 
+.tarjetaJuego:hover {
+    background-color: #f9f9fc;
+}
+
 .accionesJuegos {
     display: flex;
     justify-content: center;
@@ -232,7 +236,8 @@ a {
 
 .boton-accion:hover {
     background-color: #4f4f6e;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+
     /* Efecto de movimiento en el botón al hacer hover */
 }
 </style>

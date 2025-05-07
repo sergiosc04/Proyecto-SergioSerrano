@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 export default {
-    name: "BannerJuego", // Nombre del componente en PascalCase siguiendo convenciones de Vue
+    name: "BannerJuego",
     props: {
         juegos: {
             type: Array,
@@ -13,27 +13,18 @@ export default {
     },
     setup(props) {
         const router = useRouter();
-
-        // Estado para almacenar el juego aleatorio seleccionado
         const juegoAleatorio = ref(null);
-
-        // Estado para almacenar la URL del video del juego
         const urlVideo = ref(null);
-
-        // Estado para detectar si el cursor está sobre el banner
         const estaEncima = ref(false);
-
-        // Referencia al elemento del banner para el IntersectionObserver
         const refBanner = ref(null);
-
-        // Clave API de RAWG obtenida desde variables de entorno
         const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
 
-        /**
-         * Selecciona un juego aleatorio del array de juegos recibido
-         */
+
+        //Funcion que selecciona un juego aleatorio del array de juegos recibido
         const seleccionarJuegoAleatorio = () => {
             if (props.juegos && props.juegos.length > 0) {
+                // Limpiar el video antes de cambiar de juego
+                urlVideo.value = null;
                 const indiceAleatorio = Math.floor(Math.random() * props.juegos.length);
                 juegoAleatorio.value = props.juegos[indiceAleatorio];
             }
@@ -45,24 +36,26 @@ export default {
         const obtenerVideos = async () => {
             if (!juegoAleatorio.value) return;
 
+            // Limpiar el video anterior
+            urlVideo.value = null;
+
             try {
-                // Llamada a la API para obtener videos del juego
                 const endpoint = `https://api.rawg.io/api/games/${juegoAleatorio.value.id}/movies?key=${claveAPI}`;
                 const respuesta = await axios.get(endpoint);
                 const resultados = respuesta.data.results;
 
-                // Si hay videos disponibles, guardar la URL del video en calidad 480p
-                if (resultados.length > 0 && resultados[0].data && resultados[0].data['480']) {
+                if (resultados && resultados.length > 0 && resultados[0].data && resultados[0].data['480']) {
                     urlVideo.value = resultados[0].data['480'];
                 }
             } catch (error) {
                 console.error('Error al obtener el video:', error);
+                // Asegurarnos de que urlVideo sea null en caso de error
+                urlVideo.value = null;
             }
         };
 
-        /**
-         * Navega a la página de colección con el ID del juego seleccionado
-         */
+
+        //Funcion para navegar a la página de colección con el ID del juego seleccionado
         const agregarAColeccion = () => {
             if (!juegoAleatorio.value) return;
 
@@ -70,9 +63,7 @@ export default {
             router.push({ name: 'coleccion', query: { idRecibido: idGuardar } });
         };
 
-        /**
-         * Inicializa los datos del banner cuando se activa
-         */
+        // Inicializa los datos del banner cuando se activa
         const cargarBanner = () => {
             seleccionarJuegoAleatorio();
             obtenerVideos();
@@ -160,7 +151,7 @@ export default {
         <div class="banner--contenido">
             <!-- Título del juego con enlace a la página de detalles -->
             <h1 class="titulo-juego"><router-link :to="`/juego/${juegoAleatorio.slug}`">{{ juegoAleatorio.name
-                    }}</router-link></h1>
+            }}</router-link></h1>
             <!-- Información adicional del juego -->
             <div class="info-juego">
                 <p><strong>Fecha de lanzamiento:</strong> {{ juegoAleatorio.released }}</p>
@@ -174,7 +165,7 @@ export default {
                 </router-link>
                 <button @click="agregarAColeccion()" class="boton-accion">Añadir a colección</button>
                 <button @click="seleccionarJuegoAleatorio(); obtenerVideos()" class="boton-accion boton-aleatorio">
-                    Otro juego
+                    Siguiente juego
                 </button>
             </div>
         </div>
@@ -195,9 +186,12 @@ a {
 /* Contenedor principal del banner */
 .bannerJuego {
     position: relative;
-    width: 100%;
+    width: 100vw;
     height: 40vh;
-    min-height: 250px;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding: 0;
+    min-height: 450px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -251,7 +245,7 @@ a {
 .icono-video {
     position: absolute;
     bottom: 20px;
-    left: 20px;
+    left: 50%;
     width: 40px;
     height: 40px;
     background-image: url('../assets/img/botones/play.png');
@@ -300,7 +294,6 @@ a {
 .info-juego p {
     color: white;
     font-size: 1rem;
-    /* antes 1.2rem */
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     margin: 0;
 }
@@ -319,12 +312,9 @@ a {
     color: white;
     border: 2px solid white;
     padding: 0.5rem 1rem;
-    /* antes 0.7rem 1.5rem */
     border-radius: 4px;
-    /* antes 6px */
     cursor: pointer;
     font-size: 0.85rem;
-    /* antes 1rem */
     font-weight: 600;
     transition: all 0.3s ease;
 }
@@ -333,21 +323,17 @@ a {
 .boton-accion:hover {
     background-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
-    /* antes -3px */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    /* antes 0 5px 15px */
 }
 
 /* Adaptación responsive */
 @media (max-width: 768px) {
     .titulo-juego {
         font-size: 1.6rem;
-        /* antes 2rem */
     }
 
     .info-juego p {
         font-size: 0.9rem;
-        /* antes 1rem */
     }
 
     .banner--contenido {
@@ -358,5 +344,7 @@ a {
 /* Estilos específicos para el botón aleatorio (padding reducido) */
 .boton-aleatorio {
     padding: 0.5rem 1rem;
+    border-color: #ff9800;
+    color: #ffc163;
 }
 </style>

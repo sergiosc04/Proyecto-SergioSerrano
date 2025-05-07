@@ -327,7 +327,6 @@ onMounted(async () => {
 </script>
 
 <template>
-    <hr>
     <div class="listaColeccion">
         <h2> Colección {{ nombre }} <button v-if="!mostrarOpciones" @click="toggleFunciones()"
                 class="botonSecundario">Opciones ►</button>
@@ -356,8 +355,7 @@ onMounted(async () => {
 
         <div v-else-if="juegos.length > 0" class="coleccionesJuegos">
             <div v-for="juego in juegos" :key="juego.id" class="tarjetaJuegoContainer">
-                <button @click="eliminarJuego(idcoleccion, juego.id)" class="botonSecundario">Eliminar
-                    juego</button>
+                <button @click="eliminarJuego(idcoleccion, juego.id)" class="botonEliminar">x</button>
                 <tarjetaJuego :juego="juego" />
             </div>
         </div>
@@ -400,10 +398,11 @@ onMounted(async () => {
     min-width: 200px;
     padding: 0.5rem;
     flex-shrink: 0;
-    background-color: #fff;
-    border: 1px solid #ccc;
+
     border-radius: 8px;
     text-align: center;
+    position: relative;
+    /* Añadir esta línea */
 }
 
 .botonPrincipal:hover {
@@ -442,5 +441,28 @@ onMounted(async () => {
 
 .botonSecundario:hover {
     background-color: #d5d5d5;
+}
+
+.botonEliminar {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    border: 1px solid black;
+    background-color: rgba(255, 0, 0, 0.8);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    z-index: 10;
+    transition: background-color 0.2s;
+}
+
+.botonEliminar:hover {
+    background-color: rgba(255, 0, 0, 1);
 }
 </style>

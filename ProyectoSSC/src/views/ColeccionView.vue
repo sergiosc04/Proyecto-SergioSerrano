@@ -251,6 +251,7 @@ onMounted(async () => {
 .etiquetaFormulario {
   font-weight: 600;
   color: #2c3e50;
+  margin-bottom: 50px;
 }
 
 .campoTexto {
@@ -271,6 +272,7 @@ onMounted(async () => {
   cursor: pointer;
   transition: background-color 0.3s;
   align-self: flex-start;
+  margin-bottom: 20px;
 }
 
 .botonPrimario:hover {

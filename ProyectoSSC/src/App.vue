@@ -16,7 +16,6 @@ export default {
 </script>
 
 <template>
-    <!-- Barra superior. Siempre se muestra por lo que no hace falta cargarla en el router -->
     <span class="navbar--container">
         <navbar />
     </span>
@@ -27,4 +26,17 @@ export default {
     </span>
 </template>
 
-<style></style>
+<style>
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+}
+</style>

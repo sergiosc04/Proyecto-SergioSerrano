@@ -1,1 +1,1 @@
-El proyecto esta en ProyectoSSC
+El proyecto esta en la carpeta ProyectoSSC

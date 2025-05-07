@@ -12,7 +12,7 @@ export function getJuegos() {
 
     const paginaInput = ref(1);
     const numPagina = ref(0); // Pagina actual (0 para que sea aleatorio)
-    const juegosPagina = ref(20);
+    const juegosPagina = ref(50);
 
     const paginaAnterior = ref(null);
     const paginaSiguiente = ref(null);

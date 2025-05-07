@@ -30,8 +30,13 @@ onMounted(() => {
 
     <div class="contenedorJuegos">
       <!-- Listado de juegos cuando no está cargando -->
+      <div class="titulos">
+        <span class="titulo">¡Bienvenido a <strong>PixelRift!</strong></span>
+        <span class="subtitulo">Aquí tienes algunas de nuestras recomendaciones:</span>
+      </div>
+
       <div v-if="!cargando" class="listadoJuegos">
-        <tarjetaJuego v-for="juego in juegos" :key="juego.id" :juego="juego" />
+        <tarjetaJuego v-for="juego in juegos.slice(0, 10)" :key="juego.id" :juego="juego" />
       </div>
 
       <!-- Spinner de carga mientras se obtienen los juegos -->
@@ -47,4 +52,24 @@ onMounted(() => {
   </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+.titulos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 2rem;
+}
+
+.titulo {
+  text-align: center;
+  font-size: 2rem;
+}
+
+.subtitulo {
+  text-align: center;
+  font-size: 1.25rem;
+  color: #000000;
+  margin-top: 1rem;
+}
+</style>

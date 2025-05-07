@@ -42,8 +42,10 @@ const avatarUrl = computed(() =>
     background: linear-gradient(to right, #1f1f2e, #2d2d44);
     padding: 1rem 2rem;
     box-shadow: 0 2px 10px rgba(116, 9, 255, 0.2);
-    border-radius: 12px;
-    margin: 1rem 10vw;
+    border-radius: 0;
+    /* Eliminamos el border-radius */
+    margin: 0;
+    /* Eliminamos los márgenes */
     color: #fff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -52,6 +54,10 @@ const avatarUrl = computed(() =>
     display: flex;
     align-items: center;
     justify-content: space-between;
+    max-width: 1400px;
+    /* Opcional: para mantener el contenido centrado en pantallas muy grandes */
+    margin: 0 auto;
+    /* Opcional: para centrar el contenido */
 }
 
 .navbar--logo img {
