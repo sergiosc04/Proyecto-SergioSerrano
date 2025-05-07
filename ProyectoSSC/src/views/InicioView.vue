@@ -4,9 +4,13 @@ import tarjetaJuego from '../components/tarjetaJuego.vue';
 import Paginacion from '../components/paginacion.vue';
 import { getJuegos } from '../compostables/obtenerJuegos';
 import SpinnerCarga from '@/components/SpinnerCarga.vue';
-import BannerJuego from '@/components/bannerJuego.vue'; // Componente para mostrar un juego destacado
+import { useSessionStore } from '../stores/session.js';
+import BannerJuego from '@/components/bannerJuego.vue';
 
 // Obtener funciones y estados para gestionar los juegos
+
+const sessionStore = useSessionStore();
+
 const {
   juegos,
   cargando,
@@ -17,9 +21,32 @@ const {
   obtenerJuegos,
 } = getJuegos();
 
+const obtenerUsername = async () => {
+  const sesionRecuperada = await sessionStore.recuperarSesion();
+  if (sesionRecuperada && sessionStore.session?.user) {
+    console.log('UID de la sesión:', sessionStore.session.user.id);
+    return sessionStore.session.user.id;
+  } else {
+    console.warn('La sesión del usuario no está disponible, prueba a iniciar sesión');
+    return null;
+  }
+
+  //HACER UN GET A LA BASE DE DATOS PARA OBTENER EL NOMBRE DE USUARIO
+
+}
+
 // Cargar los juegos cuando se monte el componente
-onMounted(() => {
-  obtenerJuegos();
+onMounted(async () => {
+  sessionStore.recuperarSesion();
+  await obtenerJuegos();
+
+  await obtenerUsername();
+
+  if (sessionStore.session) {
+    console.log('Sesión recuperada:', sessionStore.session);
+  } else {
+    console.log('No hay sesión activa.');
+  }
 });
 </script>
 
@@ -31,24 +58,46 @@ onMounted(() => {
     <div class="contenedorJuegos">
       <!-- Listado de juegos cuando no está cargando -->
       <div class="titulos">
-        <span class="titulo">¡Bienvenido a <strong>PixelRift!</strong></span>
-        <span class="subtitulo">Aquí tienes algunas de nuestras recomendaciones:</span>
+
+
+        <span v-if="sessionStore.session">
+          <span class="titulo">¡Bienvenido de vuelta,<strong> {{ sessionStore.session.username || usuario
+              }}!</strong></span><br><br>
+        </span>
+
+        <span v-else class="">
+          <div class="titulo">¡Bienvenido a <strong>PixelRift!</strong></div><br>
+
+          <router-link to="/cuenta/" class="subtitulo" align="center">Regístrate o Inicia Sesión</router-link>
+          para acceder
+          a tu
+          cuenta y
+          guardar tus juegos favoritos.
+        </span>
+
+        <p>Mientras tanto, echa un vistazo a nuestro catálogo:</p>
       </div>
 
       <div v-if="!cargando" class="listadoJuegos">
         <tarjetaJuego v-for="juego in juegos.slice(0, 10)" :key="juego.id" :juego="juego" />
       </div>
 
-      <!-- Spinner de carga mientras se obtienen los juegos -->
       <p v-else align="center">
         <SpinnerCarga />
         <br><strong>Cargando...</strong>
       </p>
 
-      <!-- Componente de paginación para navegar entre resultados -->
       <Paginacion v-model:numPagina="paginaInput" v-model:juegosPagina="juegosPagina" :cargando="cargando"
         :paginaAnterior="paginaAnterior" :paginaSiguiente="paginaSiguiente" @actualizarJuegos="obtenerJuegos" />
     </div>
+
+    <div class="titulo">Tus <strong>Colecciones</strong></div>
+    <span align="center">
+      mostrar aqui 2 colecciones max<br>
+      <router-link to="/coleccion"><button>Ver todas</button></router-link>
+
+      <br><br><br><br><br>
+    </span>
   </main>
 </template>
 
@@ -68,7 +117,7 @@ onMounted(() => {
 
 .subtitulo {
   text-align: center;
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: #000000;
   margin-top: 1rem;
 }
