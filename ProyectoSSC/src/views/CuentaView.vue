@@ -1,206 +1,136 @@
-<script>
-import { ref, onMounted, inject } from 'vue';
+<script setup>
+import { ref, onMounted } from 'vue';
 import { useSessionStore } from '../stores/session';
 import auth from '../components/auth.vue';
 import { supabase } from '../supabase';
 import { useRouter } from 'vue-router';
 
-export default {
-    components: {
-        auth
-    },
+const sessionStore = useSessionStore();
+const router = useRouter();
+const username = ref("");
+const usernameEditado = ref("");
+const idAuth = ref(null);
+const error = ref(null);
 
-    setup() {
-        const sessionStore = useSessionStore();  // Instancia del store de la sesión
-        const router = useRouter();
-
-        let username = ref("");
-        let usernameEditado = ref("");
-
-        let avatar = inject('avatar');
-
-        if (avatar.value === null) console.log("Avatar inyectado: " + avatar.value);
-
-        // Verifica que el avatar esté disponible
-        const idAuth = ref(null);
-        const error = ref(null);
-
-        //Función para cerrar sesión --------
-
-        const cerrarSesion = async () => {
-            let confirmacion = "";
-            if (confirmacion !== confirm("¿Estás seguro de que quieres cerrar sesión?")) {
-                // Llama al método de Supabase para cerrar la sesión
-                await supabase.auth.signOut();
-
-                // Limpia los datos de la sesión en el store
-                sessionStore.logout();
-                alert('Sesión cerrada correctamente');
-                location.reload();
-
-                // Redirige al usuario a la página de inicio tras recargar la pagina
-                router.push('/');
-            }
+// Función para cerrar sesión
+const cerrarSesion = async () => {
+    if (confirm("¿Estás seguro de que quieres cerrar sesión?")) {
+        try {
+            await supabase.auth.signOut();
+            sessionStore.logout();
+            alert('Sesión cerrada correctamente');
+            router.push('/');
+            location.reload();
+        } catch (error) {
+            console.error("Error al cerrar sesión:", error);
         }
+    }
+}
 
-        //Función para obtener el UID -----------
+// Función para obtener el UID
+const getUID = async () => {
+    const sesionRecuperada = await sessionStore.recuperarSesion();
 
-        const getUID = async () => {
-            // Llama al método de Supabase para obtener la sesión actual
-            const { data, error } = await supabase.auth.getSession();
+    if (sesionRecuperada && sessionStore.session?.user) {
+        console.log("UID de la sesion: " + sessionStore.session.user.id);
+        idAuth.value = sessionStore.session.user.id;
+        console.log("idAuth recogido de getSession: " + idAuth.value);
+    } else {
+        console.warn("La sesión del usuario no está disponible, prueba a iniciar sesion");
+    }
+}
 
-            if (data?.session) {
-                sessionStore.setSession(data.session);
-            } else if (error) {
-                console.error('Error al obtener la sesión:', error.message);
-            }
+// Función para obtener el nombre de usuario
+const getNombre = async () => {
+    let { data: usuario, error: nombreError } = await supabase
+        .from('usuarios')
+        .select('username')
+        .eq('idauth', idAuth.value)
+        .single();
 
-            //Comprobamos si la sesión existe y si el usuario está autenticado
-            if (sessionStore.session && sessionStore.session.user) {
+    if (nombreError) {
+        console.error("error al conseguir el nombre: " + nombreError.message);
+        return;
+    }
 
-                console.log("UID de la sesion: " + sessionStore.session.user.id);
-                idAuth.value = sessionStore.session.user.id; // Asigna el id de usuario
-                console.log("idAuth recogido de getSession: " + idAuth.value);
+    username.value = usuario.username;
+    usernameEditado.value = usuario.username;
+}
 
-            } else {
-                console.warn("La sesión del usuario no está disponible, prueba a iniciar sesion");
-            }
-        }
+// Función para subir avatar
+const subirAvatar = async (evento) => {
+    const archivo = evento.target.files[0];
 
-        //Funcion para obtener el nombre de usuario----------
-        const getNombre = async () => {
-            let { data: usuario, error } = await supabase
-                .from('usuarios')
-                .select('username')
-                .eq('idauth', idAuth.value).single();
+    if (!archivo) {
+        error.value = "No se ha seleccionado ningún archivo.";
+        return;
+    }
 
-            if (error) {
-                console.error("error al conseguir el nombre: " + error.message);
-            }
+    const nombreArchivo = `${idAuth.value}_${archivo.name}`;
+    const rutaArchivo = `avatars/${nombreArchivo}`;
 
-            username.value = usuario.username; //Variable que contiene el nombre de usuario
-            usernameEditado.value = usuario.username; // Asigna el nombre de usuario a la variable de edición
-        }
-
-        //funcion para obtener el avatar del usuario -----------
-
-        const getAvatar = async () => {
-
-            //si idauth no existe muestra error
-            if (!idAuth.value) {
-                console.warn("idAuth no está disponible aún, prueba a iniciar sesion");
-                return null;
-            }
-
-            let { data: usuario, error } = await supabase
-                .from('usuarios')
-                .select('avatar_url')
-                .eq('idauth', idAuth.value).single();
-
-            if (error) {
-                console.error("error al conseguir el avatar: " + error.message);
-            }
-
-            const avatarUrl = usuario ? usuario.avatar_url : null;
-            return avatarUrl;
-        }
-
-        //funcion para obtener el avatar del usuario -----------
-
-        const actualizarUsername = async () => {
-            let { data: usuario, error } = await supabase
-                .from('usuarios')
-                .update({
-                    username: usernameEditado.value
-                })
-                .eq('idauth', idAuth.value).single();
-
-            alert("Nombre de usuario actualizado correctamente a " + usernameEditado.value + ".");
-
-            username.value = usernameEditado.value; // Actualiza el nombre de usuario en la variable
-        }
-
-        //Funcion para subir el avatar al bucket avatars de supabase ----------
-
-        const subirAvatar = async (evento) => {
-            //1. Obtener el archivo seleccionado por el usuario
-            const archivo = evento.target.files[0];
-
-            //2. Verificar si no se ha seleccionado un archivo
-            if (!archivo) {
-                error.value = "No se ha seleccionado ningún archivo."; // Mostrar mensaje de error
-                return; // Detener la ejecución si no hay archivo
-            }
-
-            //3. Generar un nombre único para el archivo basado en el ID del usuario y el nombre original del archivo
-            const nombreArchivo = `${idAuth.value}_${archivo.name}`;
-
-            //-. definir la ruta donde se almacenara el archivo en el bucket  
-            const rutaArchivo = `avatars/${nombreArchivo}`;
-
-            // 4. Subir el archivo al bucket "avatars" en Supabase
-            const { error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(rutaArchivo, archivo, {
-                    upsert: true //sobrescribe el archivo si ya existe
-                });
-
-            //5. Control de errores
-            if (uploadError) {
-                console.error("Error al subir avatar:", uploadError.message);
-                error.value = uploadError.message;
-                return; // Detener la ejecución en caso de error
-            }
-
-            // 6. Obtener la URL pública del archivo subido
-            const { data } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(rutaArchivo);
-
-            const avatarUrl = data.publicUrl; //obtiene la URL pública del archivo
-
-            //7. Asignar la URL pública del avatar al valor de la variable `avatar`
-            avatar.value = avatarUrl;
-
-            //8. Actualizar la base de datos con la URL del avatar
-            const { error: dbError } = await supabase
-                .from('usuarios')
-                .update({ avatar_url: avatarUrl }) // Actualizar el campo `avatar_url` con la nueva URL
-                .eq('idauth', idAuth.value); // Asegurarse de que solo se actualice el avatar del usuario correcto
-
-            //9. Control de errores
-            if (dbError) {
-                console.error("Error al actualizar avatar_url:", dbError.message);
-                error.value = dbError.message;
-                return;
-            }
-
-            //Muestra un mensaje si todo fue bien
-            alert("Avatar subido y guardado correctamente");
-        };
-
-        onMounted(async () => {
-            await getUID();
-            await getNombre();
-            const url = await getAvatar();
-            avatar.value = url;
-            console.log(usernameEditado.value)
+    const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(rutaArchivo, archivo, {
+            upsert: true
         });
 
-        return {
-            avatar,
-            error,
-            cerrarSesion,
-            getUID,
-            sessionStore,
-            subirAvatar,
-            username,
-            usernameEditado,
-            actualizarUsername,
-            getNombre,
-        };
+    if (uploadError) {
+        console.error("Error al subir avatar:", uploadError.message);
+        error.value = uploadError.message;
+        return;
     }
-};
+
+    const { data } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(rutaArchivo);
+
+    const avatarUrl = data.publicUrl;
+    sessionStore.avatarUrl = avatarUrl;
+
+    const { error: dbError } = await supabase
+        .from('usuarios')
+        .update({ avatar_url: avatarUrl })
+        .eq('idauth', idAuth.value);
+
+    if (dbError) {
+        console.error("Error al actualizar avatar_url:", dbError.message);
+        error.value = dbError.message;
+        return;
+    }
+
+    alert("Avatar subido y guardado correctamente");
+}
+
+// Función para actualizar username
+const actualizarUsername = async () => {
+    if (!idAuth.value) {
+        error.value = "No hay usuario autenticado";
+        return;
+    }
+
+    const { error: dbError } = await supabase
+        .from('usuarios')
+        .update({ username: usernameEditado.value })
+        .eq('idauth', idAuth.value);
+
+    if (dbError) {
+        console.error("Error al actualizar el nombre de usuario:", dbError.message);
+        error.value = dbError.message;
+        return;
+    }
+
+    username.value = usernameEditado.value;
+    alert("Nombre de usuario actualizado correctamente");
+}
+
+// Mounted hook
+onMounted(async () => {
+    await getUID();
+    if (idAuth.value) {
+        await getNombre();
+    }
+});
 </script>
 
 <template>
@@ -214,8 +144,8 @@ export default {
                 <div class="container-foto">
                     <div class="grupo-foto">
 
-                        <div class="grupo-formulario" v-if="avatar">
-                            <img :src="avatar" alt="Avatar" style="height:100px;" />
+                        <div class="grupo-formulario" v-if="sessionStore.avatarUrl">
+                            <img :src="sessionStore.avatarUrl" alt="Avatar" style="height:100px;" />
                         </div>
                         <div>
                             <label for="cambioAvatar">Actualizar Avatar:</label><br>
@@ -265,7 +195,7 @@ export default {
                 <!-- Avatar -->
                 <div class="grupo-formulario">
                     <label for="avatarUrl">Enlace Avatar:</label><br>
-                    <input id="avatarUrl" type="text" v-model="avatar" disabled />
+                    <input id="avatarUrl" type="text" v-model="sessionStore.avatarUrl" disabled />
                 </div>
 
 

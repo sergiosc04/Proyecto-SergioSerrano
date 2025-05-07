@@ -151,7 +151,7 @@ export default {
         <div class="banner--contenido">
             <!-- Título del juego con enlace a la página de detalles -->
             <h1 class="titulo-juego"><router-link :to="`/juego/${juegoAleatorio.slug}`">{{ juegoAleatorio.name
-            }}</router-link></h1>
+                    }}</router-link></h1>
             <!-- Información adicional del juego -->
             <div class="info-juego">
                 <p><strong>Fecha de lanzamiento:</strong> {{ juegoAleatorio.released }}</p>
@@ -191,7 +191,7 @@ a {
     margin-left: calc(-50vw + 50%);
     margin-right: calc(-50vw + 50%);
     padding: 0;
-    min-height: 450px;
+    min-height: 550px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }

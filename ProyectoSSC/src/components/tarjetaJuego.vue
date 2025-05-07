@@ -231,13 +231,11 @@ a {
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    /* Transiciones al hacer hover en los botones */
 }
 
 .boton-accion:hover {
     background-color: #4f4f6e;
     transform: translateY(-3px);
 
-    /* Efecto de movimiento en el botón al hacer hover */
 }
 </style>

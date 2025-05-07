@@ -328,20 +328,32 @@ onMounted(async () => {
 
 <template>
     <div class="listaColeccion">
-        <h2> Colección {{ nombre }} <button v-if="!mostrarOpciones" @click="toggleFunciones()"
-                class="botonSecundario">Opciones ►</button>
+        <h2> Colección {{ nombre }} - {{ longColeccion }} juegos en la colección
+            <button v-if="!mostrarOpciones" @click="toggleFunciones()" class="botonSecundario">
+                <img class="botonesOpciones" src="../assets/img/botones/opciones.png"><span>
+                    &nbsp;►</span>
+            </button>
+
             <span v-if="mostrarOpciones" class="opciones">
-                <button @click="toggleFunciones()" class="botonSecundario">Opciones ◄</button>
-                <button @click="cambiarNombre(idcoleccion)" class="botonSecundario">Cambiar Nombre</button>
-                <button @click="eliminarColeccion(nombre, idcoleccion)" class="botonSecundario">Eliminar
-                    Colección</button>
+                <button @click="toggleFunciones()" class="botonSecundario">
+                    <img class="botonesOpciones" src="../assets/img/botones/opciones.png"><span> &nbsp;◄</span>
+                </button>
+                <button @click="cambiarNombre(idcoleccion)" class="botonSecundario">
+                    <img class="botonesOpciones" src="../assets/img/botones/editar.png"><span>
+                        &nbsp;Cambiar Nombre</span>
+                </button>
+                <button @click="eliminarColeccion(nombre, idcoleccion)" class="botonSecundario">
+                    <img class="botonesOpciones" src="../assets/img/botones/basura.png"><span>
+                        &nbsp;Eliminar Colección</span>
+                </button>
                 <button @click="nuevoJuego(idcoleccion, 0)" :disabled="cargando" class="botonSecundario">
-                    <strong> Añadir juego por ID</strong>
+                    <img class="botonesOpciones" src="../assets/img/botones/nuevoJuego.png"><span>
+                        &nbsp;<strong> Añadir juego por ID</strong></span>
                 </button>
             </span>
         </h2>
 
-        <p v-if="longColeccion">{{ longColeccion }} juegos.</p>
+        <p v-if="longColeccion"></p>
 
         <span v-if="idRecibido">
             <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando" class="botonPrincipal">
@@ -355,7 +367,10 @@ onMounted(async () => {
 
         <div v-else-if="juegos.length > 0" class="coleccionesJuegos">
             <div v-for="juego in juegos" :key="juego.id" class="tarjetaJuegoContainer">
-                <button @click="eliminarJuego(idcoleccion, juego.id)" class="botonEliminar">x</button>
+
+                <button @click="eliminarJuego(idcoleccion, juego.id)" class="botonEliminar"><img
+                        src="../assets/img/botones/basura.png" alt=""></button>
+
                 <tarjetaJuego :juego="juego" />
             </div>
         </div>
@@ -370,6 +385,15 @@ onMounted(async () => {
 </template>
 
 <style>
+.botonesOpciones {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
 .textoVacio {
     background-color: #ebebeb;
     color: #666;
@@ -447,11 +471,12 @@ onMounted(async () => {
     position: absolute;
     top: 15px;
     left: 15px;
-    width: 24px;
-    height: 24px;
+    width: 35px;
+    height: 35px;
     border-radius: 3px;
     border: 1px solid black;
     background-color: rgba(255, 0, 0, 0.8);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     color: white;
     cursor: pointer;
     display: flex;
@@ -459,10 +484,15 @@ onMounted(async () => {
     justify-content: center;
     font-size: 18px;
     z-index: 10;
-    transition: background-color 0.2s;
+    transition: background-color, transform 0.2s;
+}
+
+.botonEliminar img {
+    height: 1.5rem;
 }
 
 .botonEliminar:hover {
     background-color: rgba(255, 0, 0, 1);
+    transform: translateY(-3px);
 }
 </style>

@@ -1,13 +1,15 @@
 <script setup>
+import { onMounted } from 'vue';
+import { useSessionStore } from '../stores/session.js';
+import { RouterLink } from 'vue-router';
 
-import { inject, computed } from 'vue';
+const sessionStore = useSessionStore();
 
-const avatar = inject('avatar');
+onMounted(async () => {
+    console.log("Navbar");
+    await sessionStore.recuperarSesion();
 
-//propiedad computada que usa el avatar si está disponible, o una imagen por defecto si no hay avatar aún cargado
-const avatarUrl = computed(() =>
-    avatar?.value || new URL('../assets/img/usuarioPH.jpg', import.meta.url).href
-);
+});
 </script>
 
 <template>
@@ -30,7 +32,8 @@ const avatarUrl = computed(() =>
             <!-- Botón del usuario con clase nueva -->
             <RouterLink class="navbar--user" to="/cuenta/">
                 <button>
-                    <img :src="avatarUrl" alt="Usuario" />
+                    <img v-if="sessionStore.avatarUrl" :src="sessionStore.avatarUrl" alt="Usuario" />
+                    <img v-else src="../assets/img/usuarioPH.jpg" alt="">
                 </button>
             </RouterLink>
         </div>
