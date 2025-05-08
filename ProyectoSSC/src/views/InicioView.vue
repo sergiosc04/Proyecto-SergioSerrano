@@ -40,9 +40,9 @@ onMounted(async () => {
     <BannerJuego v-if="juegos && juegos.length > 0" :juegos="juegos" />
 
     <div class="contenedorJuegos">
+
       <!-- Listado de juegos cuando no está cargando -->
       <div class="titulos">
-
 
         <span v-if="sessionStore.session">
           <span class="titulo" v-if="nombreUsuario">
@@ -64,6 +64,9 @@ onMounted(async () => {
 
       </div>
 
+
+      <!-- Listado de 10 juegos aleatorios cada vez que carga la pagina -->
+
       <div v-if="!cargando" class="listadoJuegos">
         <tarjetaJuego v-for="juego in juegos.slice(0, 10)" :key="juego.id" :juego="juego" />
       </div>
@@ -72,32 +75,50 @@ onMounted(async () => {
         <SpinnerCarga />
         <br><strong>Cargando...</strong>
       </p>
-
+      <br>
+      <span class="titulo2"> <strong> ¿Buscas algo en específico?</strong></span>
       <router-link to="/buscar"><br>
-        <button>Explorar catálogo completo</button>
+        <button class="botonPrimario">Explorar catálogo completo</button>
       </router-link>
     </div>
+
+    <br>
     <hr>
+    <br>
+
+
+    <!-- Sección de colecciones -->
+
     <div class="titulo">Tus <strong>Colecciones</strong></div>
 
+    <div>
+      <h3>¿Quieres administrar tus colecciones?</h3>
+      <router-link to="/coleccion"><button class="botonPrimario">Ver colecciones</button></router-link>
+    </div>
+
+
+    <!-- Muestra de colecciones del usuario con menos detalles para optimizar la carga inicial -->
     <div v-if="sessionStore.session" class="colecciones-preview">
+
       <div v-if="loadingColecciones">
         <SpinnerCarga />
         <p>Cargando colecciones...</p>
       </div>
 
       <div v-else-if="colecciones && colecciones.length > 0" class="lista-colecciones">
-        <div v-for="coleccion in colecciones.slice(0, 2)" :key="coleccion.idcoleccion" class="coleccion-item">
+        <div v-for="coleccion in colecciones" :key="coleccion.idcoleccion" class="coleccion-item">
           <h3>{{ coleccion.nombreColeccion }}</h3>
-          <!-- Puedes añadir más detalles de la colección aquí -->
+
+          <h5 v-if="coleccion.datosentrada.juegos.length"> Esta colección tiene {{ coleccion.datosentrada.juegos.length
+          }} juegos. </h5>
+
+          <h5 v-else> Esta colección no tiene juegos aún.</h5>
+
+          <router-link to="/coleccion"><button class="botonSecundario">Ver colecciones</button></router-link>
+
         </div>
-        <router-link to="/coleccion"><button>Ver todas</button></router-link>
       </div>
 
-      <div v-else class="sin-colecciones">
-        <p>No tienes colecciones creadas</p>
-        <router-link to="/coleccion"><button>Crear colección</button></router-link>
-      </div>
     </div>
 
     <div v-else>
@@ -117,7 +138,8 @@ onMounted(async () => {
 }
 
 .colecciones-preview {
-  margin: 2rem 0;
+  margin-left: 13%;
+  margin-right: 13%;
   padding: 1rem;
 }
 

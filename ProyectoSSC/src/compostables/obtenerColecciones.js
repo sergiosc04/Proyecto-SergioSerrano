@@ -11,17 +11,17 @@ export function obtenerColecciones() {
     // Obtener el ID de autenticación
     const getIdAuth = async () => {
         try {
-            const { data, error } = await supabase.auth.getSession()
-            if (error) throw error
+            const { data, error } = await supabase.auth.getSession();
+            if (error) throw error;
 
-            idauth.value = data.session.user.id
-            console.log('IDAUTH:', idauth.value)
+            idauth.value = data.session.user.id;
+            console.log('IDAUTH:', idauth.value);
 
             await getIdUsuario(idauth.value)
         } catch (err) {
             console.error('Error obteniendo sesión:', err)
-            error.value = 'Error al obtener la sesión'
-            return null
+            error.value = 'Error al obtener la sesión';
+            return null;
         }
     }
 
@@ -31,20 +31,20 @@ export function obtenerColecciones() {
             const { data, error } = await supabase
                 .from('usuarios')
                 .select('idusuario')
-                .eq('idauth', uuid)
+                .eq('idauth', uuid);
 
-            if (error) throw error
+            if (error) throw error;
 
             if (data && data.length > 0) {
-                idusuario.value = data[0].idusuario
-                console.log('IDUSUARIO:', idusuario.value)
-                await getColeccion(idusuario.value)
+                idusuario.value = data[0].idusuario;
+                console.log('IDUSUARIO:', idusuario.value);
+                await getColeccion(idusuario.value);
             } else {
-                error.value = 'Usuario no registrado en la base de datos.'
+                error.value = 'Usuario no registrado en la base de datos.';
             }
         } catch (err) {
-            console.error('Error obteniendo ID de usuario:', err)
-            error.value = 'Error al obtener ID de usuario'
+            console.error('Error obteniendo ID de usuario:', err);
+            error.value = 'Error al obtener ID de usuario';
         }
     }
 
@@ -55,46 +55,48 @@ export function obtenerColecciones() {
             const { data, error } = await supabase
                 .from('coleccion')
                 .select('datosentrada, nombreColeccion, idcoleccion')
-                .eq('idusuario', idUsuario)
+                .eq('idusuario', idUsuario);
 
-            if (error) throw error
+            if (error) throw error;
 
-            colecciones.value = data
-            console.log('Colecciones:', colecciones.value)
+            colecciones.value = data;
+            console.log('Colecciones obtenidas:', colecciones.value);
         } catch (err) {
-            error.value = 'Error al cargar las colecciones'
-            console.error('Error al obtener las colecciones:', err)
+            error.value = 'Error al cargar las colecciones';
+            console.error('Error al obtener las colecciones:', err);
         } finally {
-            loading.value = false
+            loading.value = false;
         }
     }
 
     // Crear nueva colección
     const crearColeccion = async (nombreColeccion) => {
         if (!idusuario.value) {
-            error.value = "Regístrate o inicia sesión para administrar colecciones."
-            return false
+            error.value = "Regístrate o inicia sesión para administrar colecciones.";
+            return false;
         }
 
-        loading.value = true
+        loading.value = true;
         try {
             const { data, error } = await supabase
                 .from('coleccion')
                 .insert([{
                     idusuario: idusuario.value,
                     nombreColeccion: nombreColeccion
-                }])
+                }]);
 
-            if (error) throw error
+            if (error) throw error;
 
-            await getColeccion(idusuario.value)
-            return true
+            await getColeccion(idusuario.value);
+
+
+            return true;
         } catch (err) {
-            console.error('Error al crear colección:', err)
-            error.value = 'No se pudo crear la colección.'
-            return false
+            console.error('Error al crear colección:', err);
+            error.value = 'No se pudo crear la colección.';
+            return false;
         } finally {
-            loading.value = false
+            loading.value = false;
         }
     }
 
