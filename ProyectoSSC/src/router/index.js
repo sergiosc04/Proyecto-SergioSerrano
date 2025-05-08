@@ -15,8 +15,8 @@ const router = createRouter({
       component: () => import('../views/DetallesJuegoView.vue'),
     },
     {
-      path: '/buscar/',
-      name: 'buscar',
+      path: '/catalogo/',
+      name: 'catalogo',
       component: () => import('../views/BuscarView.vue'),
     },
     {

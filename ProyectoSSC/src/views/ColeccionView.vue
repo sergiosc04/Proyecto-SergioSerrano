@@ -1,156 +1,49 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { supabase } from '../supabase';
 import Coleccion from '../components/coleccion.vue';
 import { useRoute } from 'vue-router';
-
-// Variables reactivas para almacenar los IDs y datos
-const idauth = ref(0);
-const idusuario = ref(0);
-const colecciones = ref("");
-
-const nombreColeccion = ref("");
-
-const loading = ref(false);
-const error = ref(null);
+import { obtenerColecciones } from '../compostables/obtenerColecciones';
 
 const route = useRoute();
 const idRecibido = Number(route.query.idRecibido);
+const nombreColeccion = ref("");
+const mostrarCreacion = ref(false);
 
-let mostrarCreacion = ref(false);
+const {
+  colecciones,
+  loading,
+  error,
+  getIdAuth,
+  crearColeccion
+} = obtenerColecciones();
 
-
-// Función para obtener la sesión actual y extraer el UUID de Supabase
-async function getIdAuth() {
-  try {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) throw error;
-
-    // Asignamos el UUID del usuario autenticado
-    idauth.value = data.session.user.id;
-    console.log('IDAUTH:', idauth.value);
-
-    // Obtenemos el ID interno de usuario en nuestra tabla 'usuarios'
-    await getIdUsuario(idauth.value);
-  } catch (err) {
-    console.error('Error obteniendo sesión:', err);
-    return;
-  }
-}
-
-// Función para mapear el UUID de Supabase a nuestro ID interno en la tabla 'usuarios'
-async function getIdUsuario(uuid) {
-  try {
-    const { data, error } = await supabase
-      .from('usuarios')
-      .select('idusuario')
-      .eq('idauth', uuid)
-
-    if (error) throw error;
-
-    // Asignamos el ID interno de usuario
-    if (data && data.length > 0) {
-      idusuario.value = data[0].idusuario;
-      console.log('IDUSUARIO:', idusuario.value);
-      await getColeccion(idusuario.value);
-    } else {
-      console.error('No se encontró un usuario con ese idauth');
-      error.value = 'Usuario no registrado en la base de datos.';
-    }
-
-
-    // Obtenemos las colecciones asociadas a este usuario
-    await getColeccion(idusuario.value);
-  } catch (err) {
-    console.error('Error obteniendo ID de usuario:', err);
-  }
-}
-
-// Función para obtener las colecciones del usuario por su ID interno
-async function getColeccion(idUsuario) {
-  try {
-    loading.value = true;
-
-    const { data, error } = await supabase
-      .from('coleccion')
-      .select('datosentrada, nombreColeccion, idcoleccion')
-      .eq('idusuario', idUsuario);
-
-    console.log("RESPUESTA COMPLETA DE SUPABASE:", { data, error });
-    if (error) throw error;
-
-    // Asignamos el array de colecciones
-    colecciones.value = data;
-    console.log('Colecciones:', colecciones.value);
-
-  } catch (err) {
-    error.value = 'Inicia sesión para ver las colecciones.';
-    console.error('Error al obtener las colecciones:', err);
-  } finally {
-    loading.value = false;
-  }
-}
-
-async function crearColeccion() {
-  if (!idusuario.value) {
-    alert("Regístrate o inicia sesión para administrar colecciones.");
-    return;
-  }
-
-  loading.value = true;
-  try {
-    const { data, error } = await supabase
-      .from('coleccion')
-      .insert([{
-        idusuario: idusuario.value,
-        nombreColeccion: nombreColeccion.value,
-      }]);
-
-    if (error) {
-      throw error;
-    }
-
-    alert(`Colección del usuario ${idusuario.value} llamada ${nombreColeccion.value} creada`);
-    location.reload();
-
-    // Limpiar formulario
-    nombreColeccion.value = '';
-
-  } catch (err) {
-    console.error('Error al crear colección:', err);
-    error.value = 'No se pudo crear la colección.';
-  } finally {
-    loading.value = false;
-  }
-}
-
-let toggleCreacion = () => {
+const toggleCreacion = () => {
   mostrarCreacion.value = !mostrarCreacion.value;
 }
 
-onMounted(async () => {
-
-  // Llamamos a la función principal para obtener y mostrar datos
-  await getIdAuth();
-
-  if (idauth.value) {
-    console.log('Usuario autenticado:', idauth.value);
-  } else {
-    error.value = 'Regístrate o inicia sesión para ver y administrar las colecciones.';
+const manejarCrearColeccion = async () => {
+  const resultado = await crearColeccion(nombreColeccion.value);
+  if (resultado) {
+    alert(`Colección creada correctamente`);
+    nombreColeccion.value = '';
+    mostrarCreacion.value = false;
   }
-});
+}
 
+onMounted(async () => {
+  await getIdAuth();
+});
 </script>
 <template>
 
   <h1 class="tituloPrincipal" align="center" v-if="idRecibido">Añadir juego a colección</h1>
-  <h1 class="tituloPrincipal" align="center" v-else>Colecciones</h1>
+  <h1 align="center" v-else>Colecciones</h1>
   <div class="vistaColecciones">
 
     <div class="containerCreacion">
       <button class="botonPrimario" @click="toggleCreacion()" v-if="!mostrarCreacion">+ Crear nueva colección</button>
 
-      <form v-if="mostrarCreacion" @submit.prevent="crearColeccion(idUsuario)">
+      <form v-if="mostrarCreacion" @submit.prevent="manejarCrearColeccion">
         <div class="grupoFormulario">
 
           <label for="nombreColeccion" class="etiquetaFormulario">Crear nueva colección</label>
@@ -161,7 +54,7 @@ onMounted(async () => {
             <button type="submit" :disabled="loading" class="botonPrimario">
               {{ loading ? 'Guardando...' : 'Crear colección' }}
             </button>
-            <button class="botonPrimario" @click="toggleCreacion()">
+            <button class="botonPrimario2" @click="toggleCreacion()">
               Cancelar creación
             </button>
           </div>
@@ -251,7 +144,6 @@ onMounted(async () => {
 .etiquetaFormulario {
   font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 50px;
 }
 
 .campoTexto {
@@ -260,28 +152,6 @@ onMounted(async () => {
   border-radius: 4px;
   font-size: 1rem;
   max-width: 1000px;
-}
-
-.botonPrimario {
-  padding: 0.5rem 1.5rem;
-  background-color: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  align-self: flex-start;
-  margin-bottom: 20px;
-}
-
-.botonPrimario:hover {
-  background-color: rgb(102, 102, 102);
-}
-
-.botonPrimario:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
 }
 
 .listaColecciones {

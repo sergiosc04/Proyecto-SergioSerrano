@@ -1,46 +1,30 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import tarjetaJuego from '../components/tarjetaJuego.vue';
 import Paginacion from '../components/paginacion.vue';
 import { getJuegos } from '../compostables/obtenerJuegos';
 import SpinnerCarga from '@/components/SpinnerCarga.vue';
 import { useSessionStore } from '../stores/session.js';
 import BannerJuego from '@/components/bannerJuego.vue';
-
-// Obtener funciones y estados para gestionar los juegos
+import { useObtenerNombreUsuario } from '../compostables/obtenerNombreUsuario';
+import { obtenerColecciones } from '../compostables/obtenerColecciones';
 
 const sessionStore = useSessionStore();
+const { nombreUsuario, obtenerUsername } = useObtenerNombreUsuario();
+const { colecciones, loading: loadingColecciones, getIdAuth } = obtenerColecciones();
 
 const {
   juegos,
   cargando,
-  paginaInput,
-  paginaAnterior,
-  paginaSiguiente,
-  juegosPagina,
   obtenerJuegos,
 } = getJuegos();
-
-const obtenerUsername = async () => {
-  const sesionRecuperada = await sessionStore.recuperarSesion();
-  if (sesionRecuperada && sessionStore.session?.user) {
-    console.log('UID de la sesión:', sessionStore.session.user.id);
-    return sessionStore.session.user.id;
-  } else {
-    console.warn('La sesión del usuario no está disponible, prueba a iniciar sesión');
-    return null;
-  }
-
-  //HACER UN GET A LA BASE DE DATOS PARA OBTENER EL NOMBRE DE USUARIO
-
-}
 
 // Cargar los juegos cuando se monte el componente
 onMounted(async () => {
   sessionStore.recuperarSesion();
   await obtenerJuegos();
-
   await obtenerUsername();
+  await getIdAuth(); // Añadimos la carga de colecciones
 
   if (sessionStore.session) {
     console.log('Sesión recuperada:', sessionStore.session);
@@ -61,21 +45,23 @@ onMounted(async () => {
 
 
         <span v-if="sessionStore.session">
-          <span class="titulo">¡Bienvenido de vuelta,<strong> {{ sessionStore.session.username || usuario
-              }}!</strong></span><br><br>
+          <span class="titulo" v-if="nombreUsuario">
+            ¡Bienvenido de vuelta, <strong> {{ nombreUsuario || "usuario" }}!</strong>
+
+            <p class="subtitulo">Aquí tienes una selección aleatoria de juegos para ti:</p>
+          </span>
         </span>
 
         <span v-else class="">
           <div class="titulo">¡Bienvenido a <strong>PixelRift!</strong></div><br>
 
-          <router-link to="/cuenta/" class="subtitulo" align="center">Regístrate o Inicia Sesión</router-link>
-          para acceder
-          a tu
-          cuenta y
-          guardar tus juegos favoritos.
+          <router-link to="/cuenta/" class="subtitulo" align="center">Regístrate o Inicia Sesión</router-link> para
+          acceder a tu cuenta y guardar tus juegos favoritos.
+
+          <p>Mientras tanto, echa un vistazo a nuestro catálogo:</p>
         </span>
 
-        <p>Mientras tanto, echa un vistazo a nuestro catálogo:</p>
+
       </div>
 
       <div v-if="!cargando" class="listadoJuegos">
@@ -87,17 +73,37 @@ onMounted(async () => {
         <br><strong>Cargando...</strong>
       </p>
 
-      <Paginacion v-model:numPagina="paginaInput" v-model:juegosPagina="juegosPagina" :cargando="cargando"
-        :paginaAnterior="paginaAnterior" :paginaSiguiente="paginaSiguiente" @actualizarJuegos="obtenerJuegos" />
+      <router-link to="/buscar"><br>
+        <button>Explorar catálogo completo</button>
+      </router-link>
+    </div>
+    <hr>
+    <div class="titulo">Tus <strong>Colecciones</strong></div>
+
+    <div v-if="sessionStore.session" class="colecciones-preview">
+      <div v-if="loadingColecciones">
+        <SpinnerCarga />
+        <p>Cargando colecciones...</p>
+      </div>
+
+      <div v-else-if="colecciones && colecciones.length > 0" class="lista-colecciones">
+        <div v-for="coleccion in colecciones.slice(0, 2)" :key="coleccion.idcoleccion" class="coleccion-item">
+          <h3>{{ coleccion.nombreColeccion }}</h3>
+          <!-- Puedes añadir más detalles de la colección aquí -->
+        </div>
+        <router-link to="/coleccion"><button>Ver todas</button></router-link>
+      </div>
+
+      <div v-else class="sin-colecciones">
+        <p>No tienes colecciones creadas</p>
+        <router-link to="/coleccion"><button>Crear colección</button></router-link>
+      </div>
     </div>
 
-    <div class="titulo">Tus <strong>Colecciones</strong></div>
-    <span align="center">
-      mostrar aqui 2 colecciones max<br>
-      <router-link to="/coleccion"><button>Ver todas</button></router-link>
-
-      <br><br><br><br><br>
-    </span>
+    <div v-else>
+      <p>Inicia sesión para ver tus colecciones</p>
+      <router-link to="/cuenta/"><button>Iniciar sesión</button></router-link>
+    </div>
   </main>
 </template>
 
@@ -110,15 +116,29 @@ onMounted(async () => {
   margin-top: 2rem;
 }
 
-.titulo {
-  text-align: center;
-  font-size: 2rem;
+.colecciones-preview {
+  margin: 2rem 0;
+  padding: 1rem;
 }
 
-.subtitulo {
+.lista-colecciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.coleccion-item {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sin-colecciones {
   text-align: center;
-  font-size: 1rem;
-  color: #000000;
-  margin-top: 1rem;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 8px;
 }
 </style>

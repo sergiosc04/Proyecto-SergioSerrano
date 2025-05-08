@@ -134,7 +134,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <h1 v-if="username" align="center">Bienvenido, {{ username }} </h1>
+    <h1 v-if="username" align="center">Perfil de {{ username }} </h1>
     <div class="container">
 
         <div v-if="sessionStore.session">

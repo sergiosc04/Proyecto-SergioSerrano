@@ -56,7 +56,7 @@ onMounted(() => {
 
 <template>
   <main>
-    <h1 align="center">Buscar juegos</h1>
+    <h1 align="center">Catálogo</h1>
     <div class="buscador_container" align="center">
       <div class="barra_busqueda">
         <input type="text" placeholder="Busca un juego..." v-model="buscarInput" />

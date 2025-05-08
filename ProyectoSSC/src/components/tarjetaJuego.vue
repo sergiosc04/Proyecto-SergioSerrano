@@ -86,7 +86,6 @@ export default {
 };
 </script>
 
-
 <template>
 
     <div ref="tarjetaRef" class="tarjetaJuego" :class="{ 'con-video': videoUrl }" @mouseenter="hovering = true"
@@ -112,8 +111,8 @@ export default {
             </div>
         </router-link>
         <div class="accionesJuegos">
-            <router-link :to="`/juego/${juego.slug}`"></router-link>
-            <button class="boton-accion">Ver juego</button>
+            <router-link :to="`/juego/${juego.slug}`"><button class="boton-accion">Ver juego</button></router-link>
+
 
             <button @click="juegoParaColeccion()" class="boton-accion">Añadir a colección</button>
         </div>
@@ -142,7 +141,6 @@ a {
     transition: transform 0.3s ease;
     /* Transición suave al hacer hover */
 }
-
 
 .contenedor-img {
     position: relative;

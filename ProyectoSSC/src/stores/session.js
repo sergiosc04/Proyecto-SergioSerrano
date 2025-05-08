@@ -11,12 +11,12 @@ export const useSessionStore = defineStore('session', {
         avatarUrl: null
     }),
 
-    //"actions" son métodos que permiten modificar el estado
     actions: {
+
         //Este método establece la sesión y el usuario en el store
         setSession(sessionData) {
-            this.session = sessionData;    //asigna los datos de la sesión al estado "session"
-            this.user = sessionData?.user || null; //si hay datos en "sessionData", los asignamos, si no, lo dejamos en null
+            this.session = sessionData;
+            this.user = sessionData?.user || null;
         },
 
         //Este método limpia los datos de la sesión y el usuario (se usa cuando se cierra sesión)
