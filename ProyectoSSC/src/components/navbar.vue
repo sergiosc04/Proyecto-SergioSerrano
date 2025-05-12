@@ -12,8 +12,8 @@ onMounted(async () => {
     console.log("Navbar");
     await sessionStore.recuperarSesion();
     await obtenerUsername();
-
 });
+
 </script>
 
 <template>
@@ -42,12 +42,14 @@ onMounted(async () => {
                         {{ nombreUsuario }}
                     </RouterLink>
                 </span>
+
                 <RouterLink class="navbar--user" to="/cuenta/">
                     <button>
                         <img v-if="sessionStore.avatarUrl" :src="sessionStore.avatarUrl" alt="Usuario" />
                         <img v-else src="../assets/img/usuarioPH.jpg" alt="">
                     </button>
                 </RouterLink>
+
             </div>
         </div>
     </nav>

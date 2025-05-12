@@ -20,7 +20,7 @@ export function obtenerColecciones() {
             await getIdUsuario(idauth.value)
         } catch (err) {
             console.error('Error obteniendo sesión:', err)
-            error.value = 'Error al obtener la sesión';
+            error.value = 'Sin sesión activa';
             return null;
         }
     }
@@ -72,7 +72,7 @@ export function obtenerColecciones() {
     // Crear nueva colección
     const crearColeccion = async (nombreColeccion) => {
         if (!idusuario.value) {
-            error.value = "Regístrate o inicia sesión para administrar colecciones.";
+            error.value = "Regístrate o inicia sesión para crear colecciones.";
             return false;
         }
 

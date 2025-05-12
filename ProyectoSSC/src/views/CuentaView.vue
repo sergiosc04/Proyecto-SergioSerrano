@@ -9,6 +9,8 @@ const sessionStore = useSessionStore();
 const router = useRouter();
 const username = ref("");
 const usernameEditado = ref("");
+
+
 const idAuth = ref(null);
 const error = ref(null);
 
@@ -207,6 +209,7 @@ onMounted(async () => {
             </form>
         </div>
 
+        <!-- si no carga la sesion, carga el componente de autenticación el cual tiene login y registro, alternando dependiendo del contexto -->
         <div v-else>
             <auth />
         </div>

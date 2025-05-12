@@ -1,26 +1,21 @@
 <script setup>
-
 const props = defineProps({
     numPagina: {
         type: [Number, String],
         required: true
     },
-
     juegosPagina: {
         type: [Number, String],
         required: true
     },
-
     cargando: {
         type: Boolean,
         default: false
     },
-
     paginaAnterior: {
         type: [Boolean, String, null],
         default: null
     },
-
     paginaSiguiente: {
         type: [Boolean, String, null],
         default: null
@@ -40,184 +35,176 @@ const cambiarPagina = (direccion) => {
     emit('cambiarPagina', nuevaPagina);
 };
 
-
-const cambiarJuegos = (direccion) => {
-    if (props.cargando) return;
-    let nuevosJuegos = Number(props.juegosPagina);
-    if (direccion === 'siguiente' && props.paginaSiguiente) nuevosJuegos++;
-    else if (direccion === 'anterior' && props.paginaAnterior && nuevosJuegos > 1) nuevosJuegos--;
-    else return;
-
-    emit('update:juegosPagina', nuevosJuegos);
-    emit('cambiarJuegos', nuevosJuegos);
-};
-
-//Funcion para cambiar la página
 const irAPagina = () => {
     if (props.cargando) return;
     emit('actualizarJuegos');
 };
 
-//Funcion para actualizar el num de página
 const actualizarNumPagina = (event) => {
     emit('update:numPagina', event.target.value);
 };
 
-//Funcion para actualizar los juegos por página
 const actualizarJuegosPagina = (event) => {
     emit('update:juegosPagina', event.target.value);
 };
 </script>
 
 <template>
-    <div class="paginacion">
+    <div class="paginador">
+        <div class="paginador-contenedor">
+            <!-- Controles de navegación de páginas -->
+            <div class="paginador-navegacion">
+                <button class="paginador-btn" :disabled="!paginaAnterior || cargando || Number(numPagina) <= 1"
+                    @click="cambiarPagina('anterior')">
+                    <img src="../assets/img/botones/back.png" alt="Anterior" class="paginador-icono" />
+                </button>
 
-        <div class="inputs">
-            <!-- controles de paginas -->
-            <div class="controles pagina">
-                <img src="../assets/img/botones/back.png" alt="Anterior"
-                    :class="{ 'boton-img': true, 'disabled': !paginaAnterior || cargando || Number(numPagina) <= 1 }"
-                    @click="cambiarPagina('anterior')" />
-
-                <div class="campo">
+                <div class="paginador-pagina">
                     <label for="numPagina">Página</label>
                     <input id="numPagina" type="number" :value="numPagina" @input="actualizarNumPagina" min="1"
-                        :disabled="cargando" class="input" />
+                        :disabled="cargando" />
                 </div>
 
-                <img src="../assets/img/botones/next.png" alt="Siguiente"
-                    :class="{ 'boton-img': true, 'disabled': !paginaSiguiente || cargando }"
-                    @click="cambiarPagina('siguiente')" />
+                <button class="paginador-btn" :disabled="!paginaSiguiente || cargando"
+                    @click="cambiarPagina('siguiente')">
+                    <img src="../assets/img/botones/next.png" alt="Siguiente" class="paginador-icono" />
+                </button>
             </div>
 
-            <!-- controles de juegos/pagina -->
-            <div class="controles juegos">
-                <img src="../assets/img/botones/back.png" alt="Menos juegos"
-                    :class="{ 'boton-img': true, 'disabled': !paginaAnterior || cargando || Number(numPagina) <= 1 }"
-                    @click="cambiarJuegos('anterior')" />
-
-                <div class="campo">
-                    <label for="juegosPagina">Juegos/Página</label>
-                    <input id="juegosPagina" type="number" :value="juegosPagina" @input="actualizarJuegosPagina" min="1"
-                        :disabled="cargando" class="input" />
-                </div>
-
-                <img src="../assets/img/botones/next.png" alt="Más juegos"
-                    :class="{ 'boton-img': true, 'disabled': !paginaSiguiente || cargando }"
-                    @click="cambiarJuegos('siguiente')" />
+            <!-- Selector de elementos por página -->
+            <div class="paginador-selector">
+                <label for="juegosPagina">Mostrar</label>
+                <input id="juegosPagina" type="number" :value="juegosPagina" @input="actualizarJuegosPagina" min="1"
+                    :disabled="cargando" />
+                <span>por página</span>
             </div>
 
-
-        </div><button @click="irAPagina" :disabled="cargando" class="ir-btn"
-            title="Ir a la página especificada">Ir</button>
-
+            <!-- Botón de ir a página -->
+            <button @click="irAPagina" :disabled="cargando" class="paginador-ir-btn">
+                Ir
+            </button>
+        </div>
     </div>
 </template>
 
 <style scoped>
-.paginacion {
+.paginador {
     display: flex;
-    margin-left: 38%;
-    margin-right: 38%;
-    margin-bottom: 20px;
-    margin-top: 20px;
+    justify-content: center;
+    width: 100%;
+    margin: 30px 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
 
+.paginador-contenedor {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 15px;
-
-    padding: 10px 20px;
-    background: #f9f9fb;
-
-    border: 0.5px solid #ccc;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    font-family: 'Segoe UI', sans-serif;
+    gap: 20px;
+    padding: 12px 24px;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    max-width: 600px;
 }
 
-.controles {
+.paginador-navegacion {
     display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 5px;
-}
-
-.inputs {
-    display: flex;
-    align-items: flex-end;
+    align-items: center;
     gap: 10px;
 }
 
-.campo {
+.paginador-pagina {
     display: flex;
-    flex-direction: column;
-    font-size: 12px;
-    color: #333;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
 }
 
-.campo label {
-    margin-bottom: 4px;
+.paginador-pagina label {
+    color: #555;
     font-weight: 500;
 }
 
-.input {
-    width: 70px;
-    padding: 6px 8px;
+.paginador-pagina input {
+    width: 60px;
     text-align: center;
-    border: 1px solid #ccc;
+    padding: 8px;
+    border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 14px;
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.input:focus {
-    outline: none;
-    border-color: #7b84ff;
-    box-shadow: 0 0 0 2px #c7ccff;
+.paginador-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #555;
 }
 
-.boton,
-.ir-btn {
-    background-color: #2d2d44;
-    color: #fff;
+.paginador-selector input {
+    width: 50px;
+    text-align: center;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.paginador-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
     border: none;
     border-radius: 6px;
-    padding: 6px 14px;
+    background-color: #fff;
     cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.boton:hover:not(:disabled),
-.ir-btn:hover:not(:disabled) {
-    background-color: #505072;
+.paginador-btn:hover:not(:disabled) {
+    background-color: #eef1f6;
     transform: translateY(-1px);
 }
 
-.boton:disabled,
-.ir-btn:disabled {
-    background-color: #bbbcc5;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.boton-img {
-    width: 32px;
-    height: 32px;
-    padding: 6px;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-.boton-img:hover:not(.disabled) {
-    background-color: #505072;
-    transform: translateY(-1px);
-}
-
-.boton-img.disabled {
+.paginador-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background-color: #bbbcc5;
+    background-color: #f0f0f0;
+}
+
+.paginador-icono {
+    width: 16px;
+    height: 16px;
+}
+
+.paginador-ir-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #4a55b5;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.paginador-ir-btn:hover:not(:disabled) {
+    background-color: #3a44a0;
+    transform: translateY(-1px);
+}
+
+.paginador-ir-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+input:focus {
+    outline: none;
+    border-color: #4a55b5;
+    box-shadow: 0 0 0 2px rgba(74, 85, 181, 0.2);
 }
 </style>

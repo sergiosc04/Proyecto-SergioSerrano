@@ -69,6 +69,11 @@ onMounted(async () => {
         Cargando colecciones...
       </div>
 
+      <div v-else-if="error === 'Sin sesión activa'">
+        <div class="sinColecciones">Regístrate o Inicia sesión para ver tus colecciones.</div>
+
+      </div>
+
       <div v-else-if="error" class="mensajeError">
         {{ error }}
       </div>

@@ -46,33 +46,132 @@ const cambiarARegistro = () => {
 </script>
 
 <template>
-    <div class="header">
-        <h1>Inicio de sesión</h1>
-        <p>Inicia sesión con tu email y contraseña.</p>
-    </div>
+    <div class="contenedorInicioSesion">
+        <div class="barraLateral"></div>
+        <div class="contenidoInicioSesion">
+            <div class="contenedorFormularioInicioSesion">
+                <h2 class="tituloInicioSesion">Iniciar Sesión</h2>
 
-    <div class="container">
-        <div v-if="!cargando" class="form">
+                <div v-if="!cargando" class="formularioInicioSesion">
+                    <div class="grupoEntrada">
+                        <input required type="email" placeholder="Correo electrónico" v-model="email"
+                            class="entradaInicioSesion" />
+                    </div>
+                    <div class="grupoEntrada">
+                        <input required type="password" placeholder="Contraseña" v-model="password"
+                            class="entradaInicioSesion" />
+                    </div>
 
-            <form @submit.prevent="manejarLogin">
-                <div class="inputForm">
-                    <input required type="email" placeholder="Email:" v-model="email" />
-                    <input required type="password" placeholder="Contraseña:" v-model="password" />
+                    <div class="accionesInicioSesion">
+                        <button type="button" class="botonInicioSesion" @click="manejarLogin">
+                            Iniciar Sesión
+                        </button>
+
+                        <div class="enlaceRegistro">
+                            <span>No tienes cuenta?</span>
+                            <button type="button" class="botonRegistro" @click="cambiarARegistro">
+                                Regístrate
+                            </button>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="botonesForm">
-                    <button type="submit">Iniciar sesión</button>
-                    <button type="button" class="button secondary" @click="cambiarARegistro">
-                        ¿No tienes una cuenta? Regístrate.
-                    </button>
+                <div v-else class="cargando">
+                    <p>Cargando...</p>
                 </div>
-
-            </form>
-        </div>
-        <div v-else>
-            <p>Cargando...</p>
+            </div>
         </div>
     </div>
 </template>
 
-<style></style>
+<style scoped>
+.contenedorInicioSesion {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+.barraLateral {
+    flex: 1;
+    background-color: #f0f0f0;
+    max-width: 40%;
+}
+
+.contenidoInicioSesion {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.contenedorFormularioInicioSesion {
+    width: 100%;
+    max-width: 400px;
+}
+
+.tituloInicioSesion {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.formularioInicioSesion {
+    display: flex;
+    flex-direction: column;
+}
+
+.grupoEntrada {
+    margin-bottom: 15px;
+}
+
+.entradaInicioSesion {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.accionesInicioSesion {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.botonInicioSesion {
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.botonInicioSesion:hover {
+    background-color: #555;
+}
+
+.enlaceRegistro {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.botonRegistro {
+    background: none;
+    border: none;
+    color: #333;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+}
+
+.cargando {
+    text-align: center;
+}
+</style>

@@ -66,7 +66,6 @@ onMounted(async () => {
 
             <p>Mientras tanto, echa un vistazo a nuestro catálogo:</p>
           </span>
-
         </div>
 
         <!-- Listado de 10 juegos aleatorios cada vez que carga la pagina -->
@@ -97,14 +96,14 @@ onMounted(async () => {
       <div class="coleccionesContainer">
         <div class="titulo">Tus <strong>Colecciones</strong></div>
 
-        <router-link to="/coleccion/" align="center" class="botonVerColecciones">
-          <button class="botonPrimario">Ver todas las colecciones</button>
-        </router-link>
+
 
         <!-- Muestra de colecciones del usuario con menos detalles para optimizar la carga inicial -->
 
         <div v-if="sessionStore.session" class="colecciones-preview">
-
+          <router-link to="/coleccion/" align="center" class="botonVerColecciones">
+            <button class="botonPrimario">Ver todas las colecciones</button>
+          </router-link>
           <div v-if="loadingColecciones">
             <SpinnerCarga />
             <p>Cargando colecciones...</p>
@@ -128,9 +127,9 @@ onMounted(async () => {
 
         </div>
 
-        <div v-else>
-          <p>Inicia sesión para ver tus colecciones</p>
-          <router-link to="/cuenta/"><button>Iniciar sesión</button></router-link>
+        <div v-else class="sinColecciones">
+          <p>Inicia sesión para ver y crear colecciones.</p>
+          <router-link to="/cuenta/"><button class="botonPrimario">Iniciar sesión</button></router-link>
         </div>
       </div>
     </div>
@@ -138,6 +137,11 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.sinColecciones {
+  text-align: center;
+  padding: 10px;
+}
+
 .botonVerColecciones {
   display: flex;
   justify-content: center;
