@@ -10,6 +10,11 @@ const router = useRouter();
 const username = ref("");
 const usernameEditado = ref("");
 
+const biografia = ref("");
+const biografiaEditada = ref("");
+
+const idioma = ref("");
+const idiomaEditado = ref("");
 
 const idAuth = ref(null);
 const error = ref(null);
@@ -43,20 +48,35 @@ const getUID = async () => {
 }
 
 // Función para obtener el nombre de usuario
-const getNombre = async () => {
-    let { data: usuario, error: nombreError } = await supabase
+const getDatos = async () => {
+    let { data: usuario, error: datosError } = await supabase
         .from('usuarios')
-        .select('username')
+        .select('*')
         .eq('idauth', idAuth.value)
         .single();
 
-    if (nombreError) {
-        console.error("error al conseguir el nombre: " + nombreError.message);
+    if (datosError) {
+        console.error("error al conseguir el nombre: " + datosError.message);
         return;
     }
 
+    //Corregir, mostrar en el template
+    console.log("Usuario encontrado: ");
+    console.log(usuario);
+
+    console.log("biografia: " + usuario.biografia);
+
     username.value = usuario.username;
     usernameEditado.value = usuario.username;
+
+    biografia.value = usuario.biografia;
+    biografiaEditada.value = usuario.biografia;
+
+    idioma.value = usuario.idioma;
+    idiomaEditado.value = usuario.idioma;
+
+
+    console.log("valor de username: " + username.value);
 }
 
 // Función para subir avatar
@@ -105,7 +125,7 @@ const subirAvatar = async (evento) => {
 }
 
 // Función para actualizar username
-const actualizarUsername = async () => {
+const actualizarDatos = async () => {
     if (!idAuth.value) {
         error.value = "No hay usuario autenticado";
         return;
@@ -113,29 +133,29 @@ const actualizarUsername = async () => {
 
     const { error: dbError } = await supabase
         .from('usuarios')
-        .update({ username: usernameEditado.value })
+        .update({ username: usernameEditado.value, biografia: biografiaEditada.value, idioma: idiomaEditado.value })
         .eq('idauth', idAuth.value);
 
     if (dbError) {
-        console.error("Error al actualizar el nombre de usuario:", dbError.message);
+        console.error("Error al guardar los cambios:", dbError.message);
         error.value = dbError.message;
         return;
     }
-
     username.value = usernameEditado.value;
-    alert("Nombre de usuario actualizado correctamente");
+    alert("Se han guardado los cambios correctamente");
 }
 
 onMounted(async () => {
     await getUID();
     if (idAuth.value) {
-        await getNombre();
+        await getDatos();
     }
 });
 </script>
 
 <template>
     <h1 v-if="username" align="center">Perfil de {{ username }} </h1>
+
     <div class="container">
 
         <div v-if="sessionStore.session">
@@ -156,18 +176,39 @@ onMounted(async () => {
                 </div>
 
                 <!-- Nombre de usuario -->
+
+                <span class="titulo2">
+                    <p>Datos de la cuenta:</p>
+                </span>
+
                 <div class="grupo-formulario">
                     <label for="username">Nombre de Usuario:</label><br>
                     <input id="username" type="text" v-model="usernameEditado" />
-                    <button type="button" @click="actualizarUsername()">Guardar cambios</button>
-                </div><br>
+                </div>
+
+                <div class="grupo-formulario">
+                    <label for="biografia">Biografía:</label><br>
+                    <input id="username" type="text" v-model="biografiaEditada" />
 
 
-                <!-- Email -->
+                </div>
+                <div class="grupo-formulario">
+                    <label for="biografia">Idiomas:</label><br>
+                    <input id="username" type="text" v-model="idiomaEditado" />
+                </div>
+
+
+
+                <button type="button" @click="actualizarDatos()">Guardar cambios</button> <br><br>
                 <div class="grupo-formulario">
                     <label for="email">Correo Electrónico:</label><br>
                     <input id="email" type="email" v-model="sessionStore.user.email" disabled />
                 </div>
+                <!-- Email -->
+                <span class="titulo2">
+                    <p>Metadatos de la cuenta:</p>
+                </span>
+
 
 
                 <!-- UID -->
@@ -236,12 +277,7 @@ input {
     gap: 5px
 }
 
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
+
 
 .botonesForm {
     display: flex;

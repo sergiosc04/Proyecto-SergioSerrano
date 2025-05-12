@@ -20,14 +20,13 @@ const manejarLogin = async () => {
         if (error) throw error;
 
         if (data?.session) {
-            //despues del login , se guarda la sesión en el store
+            // Después del login, se guarda la sesión en el store
             sessionStore.setSession(data.session)
             alert("Sesión iniciada correctamente.");
             location.reload();
         } else {
             alert("Error al recuperar la sesión");
         }
-
     } catch (error) {
         if (error instanceof Error) {
             alert(error.message)
@@ -36,7 +35,6 @@ const manejarLogin = async () => {
         cargando.value = false;
     }
 }
-
 
 const emit = defineEmits(['cambiarARegistro']);
 
@@ -50,25 +48,46 @@ const cambiarARegistro = () => {
         <div class="barraLateral"></div>
         <div class="contenidoInicioSesion">
             <div class="contenedorFormularioInicioSesion">
-                <h2 class="tituloInicioSesion">Iniciar Sesión</h2>
+                <div class="cabeceraFormulario">
+                    <h2 class="tituloInicioSesion">Bienvenido</h2>
+                    <p class="subtituloInicioSesion">Ingresa a tu cuenta</p>
+                </div>
 
                 <div v-if="!cargando" class="formularioInicioSesion">
                     <div class="grupoEntrada">
-                        <input required type="email" placeholder="Correo electrónico" v-model="email"
-                            class="entradaInicioSesion" />
+                        <label class="etiquetaEntrada">Correo electrónico</label>
+                        <div class="contenedorInput">
+                            <span class="iconoInput">✉️</span>
+                            <input required type="email" placeholder="ejemplo@correo.com" v-model="email"
+                                class="entradaInicioSesion" />
+                        </div>
                     </div>
                     <div class="grupoEntrada">
-                        <input required type="password" placeholder="Contraseña" v-model="password"
-                            class="entradaInicioSesion" />
+                        <label class="etiquetaEntrada">Contraseña</label>
+                        <div class="contenedorInput">
+                            <span class="iconoInput">🔒</span>
+                            <input required type="password" placeholder="Ingresa tu contraseña" v-model="password"
+                                class="entradaInicioSesion" />
+                        </div>
+                        <div class="olvidoPassword">
+                            <a href="#" class="enlaceOlvido">¿Olvidaste tu contraseña?</a>
+                        </div>
                     </div>
 
                     <div class="accionesInicioSesion">
                         <button type="button" class="botonInicioSesion" @click="manejarLogin">
-                            Iniciar Sesión
+                            <span class="textoBoton">Iniciar Sesión</span>
+                            <span class="iconoBoton">→</span>
                         </button>
 
+                        <div class="separadorOr">
+                            <span class="lineaSeparador"></span>
+                            <span class="textoSeparador">o</span>
+                            <span class="lineaSeparador"></span>
+                        </div>
+
                         <div class="enlaceRegistro">
-                            <span>No tienes cuenta?</span>
+                            <span>¿No tienes cuenta?</span>
                             <button type="button" class="botonRegistro" @click="cambiarARegistro">
                                 Regístrate
                             </button>
@@ -76,7 +95,8 @@ const cambiarARegistro = () => {
                     </div>
                 </div>
                 <div v-else class="cargando">
-                    <p>Cargando...</p>
+                    <div class="spinnerCarga"></div>
+                    <p>Iniciando sesión...</p>
                 </div>
             </div>
         </div>
@@ -88,12 +108,31 @@ const cambiarARegistro = () => {
     display: flex;
     height: 100vh;
     width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1c2e;
 }
 
 .barraLateral {
     flex: 1;
-    background-color: #f0f0f0;
-    max-width: 40%;
+    background-image: url('../assets/img/fondos/barraregistro.gif');
+    max-width: 33%;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.barraLateral::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(81, 45, 168, 0.3), rgba(41, 53, 125, 0.4));
 }
 
 .contenidoInicioSesion {
@@ -102,17 +141,48 @@ const cambiarARegistro = () => {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    background-color: #1a1c2e;
 }
 
 .contenedorFormularioInicioSesion {
     width: 100%;
     max-width: 400px;
+    background-color: #1f2136;
+    border-radius: 12px;
+    padding: 28px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+}
+
+.contenedorFormularioInicioSesion::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #d000ff, #00d9ff);
+    border-radius: 14px;
+    z-index: -1;
+}
+
+.cabeceraFormulario {
+    margin-bottom: 25px;
+    text-align: center;
 }
 
 .tituloInicioSesion {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
+    margin: 0;
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.subtituloInicioSesion {
+    color: #a4a8e0;
+    margin-top: 6px;
+    font-size: 15px;
 }
 
 .formularioInicioSesion {
@@ -121,37 +191,120 @@ const cambiarARegistro = () => {
 }
 
 .grupoEntrada {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
+}
+
+.etiquetaEntrada {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #c3c7f7;
+    font-weight: 500;
+}
+
+.contenedorInput {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.iconoInput {
+    position: absolute;
+    left: 12px;
+    color: #8a8ebd;
+    font-size: 16px;
 }
 
 .entradaInicioSesion {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #333654;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border-color 0.2s ease;
+    background-color: #1a1c2e;
+    color: #ffffff;
+}
+
+.entradaInicioSesion::placeholder {
+    color: #6a6f9c;
+}
+
+.entradaInicioSesion:focus {
+    outline: none;
+    border-color: #00d9ff;
+}
+
+.olvidoPassword {
+    text-align: right;
+    margin-top: 6px;
+}
+
+.enlaceOlvido {
+    color: #00d9ff;
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.enlaceOlvido:hover {
+    color: #d000ff;
+    text-decoration: underline;
 }
 
 .accionesInicioSesion {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 16px;
+    margin-top: 8px;
 }
 
 .botonInicioSesion {
     width: 100%;
     padding: 12px;
-    background-color: #333;
+    background: linear-gradient(90deg, #d000ff, #00d9ff);
     color: white;
     border: none;
-    border-radius: 4px;
-    font-size: 16px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: opacity 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 .botonInicioSesion:hover {
-    background-color: #555;
+    opacity: 0.9;
+}
+
+.textoBoton {
+    flex: 1;
+    text-align: center;
+}
+
+.iconoBoton {
+    font-size: 18px;
+}
+
+.separadorOr {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+}
+
+.lineaSeparador {
+    flex: 1;
+    height: 1px;
+    background-color: #333654;
+}
+
+.textoSeparador {
+    padding: 0 15px;
+    color: #9d9fc3;
+    font-size: 14px;
 }
 
 .enlaceRegistro {
@@ -160,18 +313,33 @@ const cambiarARegistro = () => {
     justify-content: center;
     align-items: center;
     gap: 5px;
+    font-size: 14px;
+    color: #9d9fc3;
 }
 
 .botonRegistro {
     background: none;
     border: none;
-    color: #333;
-    text-decoration: underline;
+    color: #00d9ff;
+    font-weight: 600;
+    text-decoration: none;
     cursor: pointer;
     padding: 0;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.botonRegistro:hover {
+    color: #d000ff;
 }
 
 .cargando {
     text-align: center;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    color: #a4a8e0;
 }
 </style>
