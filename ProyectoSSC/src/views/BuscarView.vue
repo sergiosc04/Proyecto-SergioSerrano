@@ -103,25 +103,22 @@ onMounted(() => {
       <div v-if="!cargando" class="listadoJuegos">
         <tarjetaJuego v-for="juego in juegos" :key="juego.id" :juego="juego" />
 
-
         <Paginacion v-model:numPagina="paginaInput" v-model:juegosPagina="juegosPagina" :cargando="cargando"
           :paginaAnterior="paginaAnterior" :paginaSiguiente="paginaSiguiente" @actualizarJuegos="obtenerJuegos" />
       </div>
 
       <div v-else align="center">
         <spinnerCarga />
+        <p> <strong>Cargando catálogo...</strong></p>
       </div>
 
-
-
     </div>
-
   </main>
+
 </template>
 
 <style scoped>
-/* Los estilos permanecen igual */
-.buscador_container {
+#buscador_container {
   display: flex;
   flex-direction: column;
   margin: 0 20%;

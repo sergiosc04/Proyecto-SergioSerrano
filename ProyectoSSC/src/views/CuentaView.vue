@@ -124,7 +124,6 @@ const actualizarUsername = async () => {
     alert("Nombre de usuario actualizado correctamente");
 }
 
-// Mounted hook
 onMounted(async () => {
     await getUID();
     if (idAuth.value) {

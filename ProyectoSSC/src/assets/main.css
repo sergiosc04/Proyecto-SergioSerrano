@@ -20,6 +20,11 @@
     font-size: 1.5rem;
 }
 
+.titulo2 {
+    text-align: center;
+    font-size: 1.25rem;
+}
+
 .subtitulo {
     text-align: center;
     font-size: 1rem;
@@ -43,7 +48,7 @@
 }
 
 .botonPrimario:hover {
-    background-color: rgb(102, 102, 102);
+    background-color: rgb(70, 78, 113);
 }
 
 .botonPrimario:disabled {
@@ -71,6 +76,22 @@
 .botonPrimario2:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
+}
+
+.botonSecundario {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    margin: 0.3rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.botonSecundario:hover {
+    background-color: #d5d5d5;
 }
 
 /* estilos varios */

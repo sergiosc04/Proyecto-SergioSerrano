@@ -8,6 +8,12 @@
 </template>
 
 <style scoped>
+* {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .spinner {
     margin: 15px;
     border: 4px solid #a4a4a4;

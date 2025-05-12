@@ -2,12 +2,16 @@
 import { onMounted } from 'vue';
 import { useSessionStore } from '../stores/session.js';
 import { RouterLink } from 'vue-router';
+import { useObtenerNombreUsuario } from '../compostables/obtenerNombreUsuario.js';
 
 const sessionStore = useSessionStore();
+const { nombreUsuario, obtenerUsername } = useObtenerNombreUsuario();
+
 
 onMounted(async () => {
     console.log("Navbar");
     await sessionStore.recuperarSesion();
+    await obtenerUsername();
 
 });
 </script>
@@ -15,6 +19,7 @@ onMounted(async () => {
 <template>
     <nav class="navbar--container">
         <div class="navbar--content">
+
             <!-- Logo -->
             <a href="/" class="navbar--logo">
                 <img src="../assets/img/logo/PixelRift-Logo-Colores.png" alt="PixelRift Logo" height="60" />
@@ -29,18 +34,55 @@ onMounted(async () => {
                 <RouterLink class="link--navbar" to="/cuenta/"><button>CUENTA</button></RouterLink>
             </div>
 
-            <!-- Botón del usuario con clase nueva -->
-            <RouterLink class="navbar--user" to="/cuenta/">
-                <button>
-                    <img v-if="sessionStore.avatarUrl" :src="sessionStore.avatarUrl" alt="Usuario" />
-                    <img v-else src="../assets/img/usuarioPH.jpg" alt="">
-                </button>
-            </RouterLink>
+            <!-- datos de la sesión -->
+
+            <div class="navbar--sesion">
+                <span v-if="nombreUsuario" class="navbar--sesion_nombre">
+                    <RouterLink class="navbar--user" to="/cuenta/">
+                        {{ nombreUsuario }}
+                    </RouterLink>
+                </span>
+                <RouterLink class="navbar--user" to="/cuenta/">
+                    <button>
+                        <img v-if="sessionStore.avatarUrl" :src="sessionStore.avatarUrl" alt="Usuario" />
+                        <img v-else src="../assets/img/usuarioPH.jpg" alt="">
+                    </button>
+                </RouterLink>
+            </div>
         </div>
     </nav>
 </template>
 
 <style scoped>
+.navbar--sesion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.navbar--sesion_nombre {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    margin-right: 1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.navbar--sesion a {
+    text-decoration: none;
+    color: #fff;
+}
+
+.navbar--sesion_nombre:hover {
+    text-decoration: underline;
+    color: #fff;
+}
+
 .navbar--container {
     background: linear-gradient(to right, #1f1f2e, #2d2d44);
     padding: 1rem 2rem;

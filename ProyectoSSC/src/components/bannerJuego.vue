@@ -149,9 +149,11 @@ export default {
 
         <!-- Contenido informativo sobre el juego -->
         <div class="banner--contenido">
+
             <!-- Título del juego con enlace a la página de detalles -->
             <h1 class="titulo-juego"><router-link :to="`/juego/${juegoAleatorio.slug}`">{{ juegoAleatorio.name
-                    }}</router-link></h1>
+            }}</router-link></h1>
+
             <!-- Información adicional del juego -->
             <div class="info-juego">
                 <p><strong>Fecha de lanzamiento:</strong> {{ juegoAleatorio.released }}</p>
@@ -170,6 +172,7 @@ export default {
             </div>
         </div>
     </div>
+
     <!-- Mensaje alternativo cuando no hay juego disponible -->
     <div v-else class="bannerError">
         <p>No se pudo cargar el banner. No hay datos de juegos disponibles.</p>
@@ -186,11 +189,9 @@ a {
 /* Contenedor principal del banner */
 .bannerJuego {
     position: relative;
-    width: 100vw;
-    height: 40vh;
-    margin-left: calc(-50vw + 50%);
-    margin-right: calc(-50vw + 50%);
-    padding: 0;
+    width: 99.2vw;
+    height: 80vh;
+    max-width: 100vw;
     min-height: 550px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -244,16 +245,17 @@ a {
 /* Estilos para el icono de video */
 .icono-video {
     position: absolute;
-    bottom: 20px;
+    top: 50%;
     left: 50%;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     background-image: url('../assets/img/botones/play.png');
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
+    transform: translate(-50%, -50%);
     z-index: 2;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    pointer-events: none;
 }
 
 /* Contenedor del contenido informativo */

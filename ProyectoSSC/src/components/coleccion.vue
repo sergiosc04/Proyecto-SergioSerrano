@@ -451,21 +451,7 @@ onMounted(async () => {
     cursor: not-allowed;
 }
 
-.botonSecundario {
-    background-color: #e0e0e0;
-    color: #333;
-    border: none;
-    padding: 0.4rem 0.8rem;
-    margin: 0.3rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.2s;
-}
 
-.botonSecundario:hover {
-    background-color: #d5d5d5;
-}
 
 .botonEliminar {
     position: absolute;
