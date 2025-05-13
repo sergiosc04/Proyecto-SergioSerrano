@@ -6,94 +6,80 @@ import axios from 'axios';
 import SpinnerCarga from '@/components/SpinnerCarga.vue';
 
 // Variables reactivas
-const juego = ref(null);        // Detalles del juego
-const capturas = ref([]);       // Capturas de pantalla
-const tiendas = ref([]);        // Tiendas donde se puede comprar el juego
-const detallesTiendas = ref([]); // Detalles de las tiendas
+const juego = ref(null);
+const capturas = ref([]);
+const tiendas = ref([]);
+const detallesTiendas = ref([]);
+const indiceSlider = ref(0);
+const cargando = ref(true);
+const route = useRoute();
 
-const indiceSlider = ref(0);     // Índice actual del slider
-const route = useRoute();       // Acceso a parámetros de ruta
-
-//Importamos la clave del .env
+// Importamos la clave del .env
 const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
 
 // Función para obtener los detalles del juego
 const getDetalleJuegos = async () => {
   try {
+    cargando.value = true;
     const endpoint = `https://api.rawg.io/api/games/${route.params.slug}?key=${claveAPI}`;
     const response = await axios.get(endpoint);
     juego.value = response.data;
   } catch (error) {
     console.error("Error al obtener los juegos:", error);
+  } finally {
+    cargando.value = false;
   }
 };
 
-
-//Funciones de capturas de pantalla-----------------
 // Función para obtener capturas de pantalla
 const getCapturas = async () => {
   try {
     const endpoint = `https://api.rawg.io/api/games/${route.params.slug}/screenshots?key=${claveAPI}`;
     const response = await axios.get(endpoint);
     capturas.value = response.data.results;
-    console.log("capturas.value");
-    console.log(capturas.value); // Verifica la respuesta de capturas
   } catch (error) {
     console.error("Error al obtener las capturas:", error);
   }
 };
 
-// Función para ir a la siguiente captura
-
-//si indiceSlider.value + 1 iguala o supera capturas.value.length se reinicia a 0 creando un bucle
+// Navegación en el slider
 function capSiguiente() {
   if (capturas.value.length) {
     indiceSlider.value = (indiceSlider.value + 1) % capturas.value.length;
   }
 }
 
-// Función para ir a la captura anterior
 function capAnterior() {
   if (capturas.value.length) {
     indiceSlider.value = (indiceSlider.value - 1 + capturas.value.length) % capturas.value.length;
   }
 }
 
-//Funciones de tiendas -------------------------
-
-//funcion para obtener detalles de las tiendas (necesario para poner el nombre, por ejemplo)
+// Funciones de tiendas
 const getDetallesTiendas = async () => {
   try {
     const endpoint = `https://api.rawg.io/api/stores?key=${claveAPI}`;
     const response = await axios.get(endpoint);
     detallesTiendas.value = response.data.results;
-    console.log("detallesTiendas.value");
-    console.log(detallesTiendas.value); // Verifica la respuesta de tiendas
   } catch (error) {
     console.error("Error al obtener las tiendas:", error);
   }
 }
 
-//Función para obtener tiendas del juego especifico
 const getTiendas = async () => {
   try {
     const endpoint = `https://api.rawg.io/api/games/${route.params.slug}/stores?key=${claveAPI}`;
     const response = await axios.get(endpoint);
     tiendas.value = response.data.results;
-
-    console.log("tiendas.value");
-    console.log(tiendas.value); // Verifica la respuesta de tiendas
   } catch (error) {
     console.error("Error al obtener las tiendas:", error);
   }
 };
 
-//Función para obtener el nombre de la tienda dependiendo del valor
 function obtenerNombreTienda(storeId) {
   const tienda = detallesTiendas.value.find(tienda => tienda.id === storeId);
   return tienda ? tienda.name : "No disponible";
 }
-
 
 // Obtener datos cuando el componente se monta
 onMounted(() => {
@@ -102,251 +88,604 @@ onMounted(() => {
   getTiendas();
   getDetallesTiendas();
 });
-
 </script>
 
 <template>
-  <h1 v-if="juego" class="titulo" align="center"> {{ juego.name }}</h1>
-  <div class="container">
+  <!-- Pantalla de carga -->
+  <div v-if="cargando" class="contenedorCarga">
+    <SpinnerCarga />
+    <p>Cargando detalles del juego...</p>
+  </div>
 
-    <!-- Mostrar detalles del juego si ya está cargado -->
-    <div v-if="juego" class="juego-detalles">
+  <!-- Contenido principal -->
+  <div v-else-if="juego" class="contenedorPrincipal">
+    <!-- Cabecera del juego -->
+    <header class="cabeceraJuego">
+      <h1 class="tituloJuego">{{ juego.name }}</h1>
+      <p class="subtituloJuego">{{ juego.released || "Fecha no disponible" }}</p>
+      <button class="botonControl" @click="añadirAColeccion">Añadir a colección</button>
+    </header>
 
+    <div class="contenidoFlex">
+      <!-- Panel izquierdo: Capturas y datos clave -->
 
-      <!-- Grupo de datos generales -->
-      <div class="detalles datosGenerales">
-        <h2>Datos del juego</h2>
-        <span style="font-style: italic;">Información básica sobre el título, ID y nombre original.</span>
-
-        <p><strong>Nombre original:</strong> {{ juego.name_original || "No disponible" }}</p>
-        <p><strong>Slug:</strong> {{ juego.slug || "No disponible" }}</p>
-        <p><strong>ID:</strong> {{ juego.id || "No disponible" }}</p>
-      </div>
-
-      <!-- Descripción con desplegable -->
-      <div class="detalles descripcion">
-        <h2>Descripción</h2>
-        <span style="font-style: italic; margin-bottom: 10px;">Resumen general y detalles narrativos del juego.</span>
-
-        <details>
-          <summary><strong>Desplegar descripción...</strong></summary>
-          <div v-html="juego.description"></div>
-        </details>
-      </div>
-
-      <!-- Fechas de lanzamiento y actualización -->
-      <div class="detalles fechas">
-        <h2>Fechas relevantes</h2>
-        <span style="font-style: italic;">Información sobre el lanzamiento y actualizaciones del juego.</span>
-
-        <p><strong>Fecha de lanzamiento:</strong> {{ juego.released || "No disponible" }}</p>
-        <p><strong>Última actualización:</strong> {{ juego.updated || "No disponible" }}</p>
-      </div>
-
-      <!-- Géneros del juego -->
-      <div class="detalles generos">
-        <h2>Géneros</h2>
-        <span style="font-style: italic;">Clasificaciones temáticas asignadas al juego.</span>
-
-        <span v-for="(genre, index) in juego.genres" :key="index">
-          {{ genre.name }}<span v-if="index < juego.genres.length - 1">, </span>
-        </span>
-
-      </div>
-
-      <!-- Calificaciones y puntuaciones -->
-      <div class="detalles calificaciones">
-        <h2>Calificaciones</h2>
-        <span style="font-style: italic;">Puntuaciones y calificaciones de los jugadores y críticos.</span>
-
-
-        <p><strong>Calificación:</strong> {{ juego.rating || "No disponible" }}/5★</p>
-        <p><strong>Puntuación Metacritic:</strong> {{ juego.metacritic || "No disponible" }}</p>
-        <p><strong>ESRB:</strong> {{ juego.esrb_rating?.name || "No disponible" }}</p>
-      </div>
-
-      <!-- Plataformas compatibles -->
-      <div class="detalles plataformas">
-        <h2>Plataformas</h2>
-        <span style="font-style: italic;">Sistemas compatibles donde se puede jugar el título.</span><br><br>
-
-        <span v-for="(plataforma, index) in juego.parent_platforms" :key="index">
-          {{ plataforma.platform.name || "No disponible" }}<span v-if="index < juego.parent_platforms.length - 1">,
-          </span>
-        </span>
-      </div>
-
-      <!-- enlaces de compra -->
-      <div class="detalles enlacesCompra">
-        <h2>Enlaces de compra</h2>
-        <span style="font-style: italic;">Enlaces de compra para este juego.</span>
-        <ul>
-          <li v-for="(enlace, index) in tiendas" :key="index">
-            {{ obtenerNombreTienda(enlace.store_id) }}
-            —
-            <a :href="enlace.url" target="_blank">{{ enlace.url || "No disponible" }}</a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Desarrolladores y editores -->
-      <div class="detalles desarrolladores">
-        <h2>Desarrolladores y editores</h2>
-        <span style="font-style: italic;">Equipos responsables de la creación y publicación del juego.</span>
-
-        <p><strong>Desarrolladores:</strong>
-          <span v-for="(dev, index) in juego.developers" :key="index">
-            {{ dev.name }}<span v-if="index < juego.developers.length - 1">, </span>
-          </span>
-        </p>
-
-        <p><strong>Editores:</strong>
-          <span v-for="(pub, index) in juego.publishers" :key="index">
-            {{ pub.name }}<span v-if="index < juego.publishers.length - 1">, </span>
-          </span>
-        </p>
-      </div>
-
-      <!-- tags -->
-      <div class="detalles tags">
-        <h2>Tags</h2>
-        <span style="font-style: italic;">Palabras clave asociadas al juego que facilitan su clasificación..</span>
-        <span v-for="(tag, index) in juego.tags" :key="index">
-          {{ tag.name }}<span v-if="index < juego.tags.length - 1">, </span>
-        </span>
-      </div>
-
-      <!-- Enlaces varios -->
-      <div class="detalles enlaces">
-        <span style="font-style: italic;">Enlaces útiles relacionados con el juego</span>
-
-        <h2>Enlaces varios</h2>
-        <p><strong>Website:</strong> <a :href="juego.website" target="_blank">{{ juego.website || "No disponible" }}</a>
-        </p>
-        <p><strong v-if="juego.metacritic_url">Metacritic URL:</strong> <a :href="juego.metacritic_url"
-            target="_blank">{{ juego.metacritic_url }}</a></p>
-        <p v-if="juego.reddit_url"><strong>Subreddit:</strong> <a :href="juego.reddit_url" target="_blank">{{
-          juego.reddit_url }}</a></p>
-      </div>
-
-      <!-- Estadísticas de jugadores -->
-      <div class="detalles estadisticas">
-        <span style="font-style: italic;">Datos sobre la actividad de los jugadores con el juego.</span>
-
-        <h2>Estadísticas de jugadores</h2>
-        <ul>
-          <li>Total añadidos: {{ juego.added || "No disponible" }}</li>
-          <li>Completados: {{ juego.added_by_status?.beaten || "No disponible" }}</li>
-          <li>En juego: {{ juego.added_by_status?.playing || "No disponible" }}</li>
-          <li>Abandonados: {{ juego.added_by_status?.dropped || "No disponible" }}</li>
-        </ul>
-      </div>
-    </div>
-
-    <div v-if="juego" class="containerFotos">
-      <div class="slider">
-        <h2>Capturas de pantalla:</h2>
-        <p>(Recogidos del endpoint /screenshots)</p>
-        <div v-if="capturas.length > 0" class="slider">
-
-          <img :src="capturas[indiceSlider].image" class="slide-img" />
-
+      <aside class="panelIzquierdo">
+        <!-- Slider de imágenes -->
+        <div v-if="capturas.length > 0" class="sliderGaleria">
+          <img :src="capturas[indiceSlider].image" class="imagenCaptura" alt="Captura del juego" />
           <div class="controlesSlider">
-            <button @click="capAnterior"> ⇐ Anterior</button>
-            <span> &nbsp; Imagen {{ indiceSlider + 1 || "No disponible" }} de {{ capturas.length || "No disponible" }}
-              &nbsp; </span>
-            <button @click="capSiguiente">Siguiente ⇒</button>
-
+            <button @click="capAnterior" class="botonControl">⇐</button>
+            <span class="contadorImagenes">Imagen {{ indiceSlider + 1 }} de {{ capturas.length }}</span>
+            <button @click="capSiguiente" class="botonControl">⇒</button>
           </div>
         </div>
-      </div>
-      <br>
-      <!-- Imagen principal y adicional -->
-      <div class="containerAdicionales">
-        <h2>Imagenes adicionales:</h2>
-        <p>(Recogidas desde el endpoint de detalles)</p>
-        <div class="imagenesAdicionales">
 
-          <img v-if="juego.background_image" :src="juego.background_image" alt="Imagen principal del juego" />
-          <img v-if="juego.background_image_additional" :src="juego.background_image_additional"
-            alt="Imagen adicional del juego" />
+
+        <!-- Datos clave -->
+        <div class="tarjetaInfo">
+          <h2 class="tituloSeccion">Calificaciones</h2>
+          <div class="datosCalificacion">
+            <div class="itemCalificacion">
+              <span class="valorCalificacion">{{ juego.rating || "N/A" }}</span>
+              <span class="etiquetaCalificacion">Rating</span>
+            </div>
+            <div class="itemCalificacion">
+              <span class="valorCalificacion">{{ juego.metacritic || "N/A" }}</span>
+              <span class="etiquetaCalificacion">Metacritic</span>
+            </div>
+            <div class="itemCalificacion">
+              <span class="valorCalificacion">{{ juego.esrb_rating?.name || "N/A" }}</span>
+              <span class="etiquetaCalificacion">ESRB</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-    </div>
-    <div v-else class="cargando">
-      <SpinnerCarga />
+        <!-- Plataformas -->
+        <div class="tarjetaInfo">
+          <h2 class="tituloSeccion">Plataformas</h2>
+          <div class="listaTags">
+            <span v-for="(plataforma, index) in juego.parent_platforms" :key="index" class="tag">
+              {{ plataforma.platform.name }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Enlaces de compra -->
+        <div class="tarjetaInfo" v-if="tiendas.length > 0">
+          <h2 class="tituloSeccion">Dónde comprar</h2>
+          <ul class="listaEnlaces">
+            <li v-for="(enlace, index) in tiendas" :key="index" class="itemEnlace">
+              <a :href="enlace.url" target="_blank" class="botonTienda">
+                {{ obtenerNombreTienda(enlace.store_id) }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Panel derecho: Detalles e información -->
+      <main class="panelDerecho">
+        <!-- Descripción -->
+        <section class="seccionInfo">
+          <h2 class="tituloSeccion">Descripción</h2>
+          <details>
+            <summary class="botonDesplegar">Ver descripción completa</summary>
+            <div v-html="juego.description" class="contenidoDescripcion"></div>
+          </details>
+        </section>
+
+        <!-- Información general -->
+        <div class="infoGrid">
+          <!-- Géneros -->
+          <section class="seccionInfo">
+            <h2 class="tituloSeccion">Géneros</h2>
+            <div class="listaTags">
+              <span v-for="(genre, index) in juego.genres" :key="index" class="tag">
+                {{ genre.name }}
+              </span>
+            </div>
+          </section>
+
+          <!-- Desarrolladores y editores -->
+          <section class="seccionInfo">
+            <h2 class="tituloSeccion">Desarrolladores y editores</h2>
+            <div class="grupoInfo">
+              <h3 class="subtituloInfo">Desarrolladores:</h3>
+              <div class="listaTags">
+                <span v-for="(dev, index) in juego.developers" :key="index" class="tag">
+                  {{ dev.name }}
+                </span>
+              </div>
+            </div>
+            <div class="grupoInfo">
+              <h3 class="subtituloInfo">Editores:</h3>
+              <div class="listaTags">
+                <span v-for="(pub, index) in juego.publishers" :key="index" class="tag">
+                  {{ pub.name }}
+                </span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+
+
+        <!-- Enlaces y estadísticas -->
+        <div class="infoGrid">
+          <!-- Enlaces varios -->
+          <section class="seccionInfo">
+            <h2 class="tituloSeccion">Enlaces útiles</h2>
+            <ul class="listaEnlaces">
+              <li v-if="juego.website" class="itemEnlace">
+                <a :href="juego.website" target="_blank" class="enlaceExterno">Sitio web oficial</a>
+              </li>
+              <li v-if="juego.metacritic_url" class="itemEnlace">
+                <a :href="juego.metacritic_url" target="_blank" class="enlaceExterno">Metacritic</a>
+              </li>
+              <li v-if="juego.reddit_url" class="itemEnlace">
+                <a :href="juego.reddit_url" target="_blank" class="enlaceExterno">Reddit</a>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Estadísticas de jugadores -->
+          <section class="seccionInfo">
+            <h2 class="tituloSeccion">Estadísticas de jugadores</h2>
+            <ul class="listaEstadisticas">
+              <li class="itemEstadistica">
+                <span class="valorEstadistica">{{ juego.added || "0" }}</span>
+                <span class="etiquetaEstadistica">Total añadidos</span>
+              </li>
+              <li class="itemEstadistica">
+                <span class="valorEstadistica">{{ juego.added_by_status?.beaten || "0" }}</span>
+                <span class="etiquetaEstadistica">Completados</span>
+              </li>
+              <li class="itemEstadistica">
+                <span class="valorEstadistica">{{ juego.added_by_status?.playing || "0" }}</span>
+                <span class="etiquetaEstadistica">En juego</span>
+              </li>
+              <li class="itemEstadistica">
+                <span class="valorEstadistica">{{ juego.added_by_status?.dropped || "0" }}</span>
+                <span class="etiquetaEstadistica">Abandonados</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+        <!-- Tags -->
+        <section class="seccionInfo">
+          <h2 class="tituloSeccion">Tags</h2>
+          <div class="listaTags">
+            <span v-for="(tag, index) in juego.tags" :key="index" class="tag">
+              {{ tag.name }}
+            </span>
+          </div>
+        </section>
+
+        <!-- Detalles técnicos -->
+        <section class="seccionInfo">
+          <h2 class="tituloSeccion">Datos técnicos</h2>
+
+          <div class="gridInfoTecnica">
+
+            <div class="itemInfoTecnica">
+              <span class="etiquetaInfoTecnica">ID</span>
+              <span class="valorInfoTecnica">{{ juego.id || "No disponible" }}</span>
+            </div>
+
+            <div class="itemInfoTecnica">
+              <span class="etiquetaInfoTecnica">Slug</span>
+              <span class="valorInfoTecnica">{{ juego.slug || "No disponible" }}</span>
+            </div>
+
+            <div class="itemInfoTecnica">
+              <span class="etiquetaInfoTecnica">Nombre original</span>
+              <span class="valorInfoTecnica">{{ juego.name_original || "No disponible" }}</span>
+            </div>
+
+            <div class="itemInfoTecnica">
+              <span class="etiquetaInfoTecnica">Lanzamiento</span>
+              <span class="valorInfoTecnica">{{ juego.released || "No disponible" }}</span>
+            </div>
+
+            <div class="itemInfoTecnica">
+              <span class="etiquetaInfoTecnica">Última actualización</span>
+              <span class="valorInfoTecnica">{{ juego.updated || "No disponible" }}</span>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   </div>
 
+  <!-- Mensaje de error -->
+  <div v-else class="contenedorError">
+    <div class="mensajeError">
+      <h2>No se pudo cargar la información del juego</h2>
+      <p>Por favor, intenta nuevamente más tarde</p>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.detalles {
-  margin-bottom: 20px;
-  padding: 10px;
-  background-color: #f9f9fc;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Estilos principales */
+.contenedorPrincipal {
+  min-height: 100vh;
+  width: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #1a1c2e;
+  padding: 2rem;
 }
 
-.container {
-  margin-left: 10vw;
-  margin-right: 10vw;
-  padding: 20px;
-  font-family: sans-serif;
-  background: #f9f9f9;
+.cabeceraJuego {
+  text-align: center;
+  margin: 0 auto 2rem auto;
+  max-width: 1400px;
+  background: linear-gradient(90deg, #1f2136, #252744, #1f2136);
+  padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border: solid 1px black;
-  display: flex;
-  flex-direction: row;
-  /* Añadido para prevenir desbordamiento */
-  box-sizing: border-box;
+  position: relative;
   overflow: hidden;
-  /* Oculta cualquier contenido que pueda desbordar */
+  border: 1px solid #333654;
 }
 
-/* Asegurar que las imágenes no causen desbordamiento */
-.slider img {
-  max-width: 100%;
-  max-height: 400px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  /* Añadido para asegurar que las imágenes respeten el ancho del contenedor */
-  width: auto;
+.cabeceraJuego::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(45deg, #d000ff, #00d9ff);
+}
+
+.tituloJuego {
+  color: #ffffff;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 0 15px rgba(208, 0, 255, 0.3);
+}
+
+.subtituloJuego {
+  color: #a4a8e0;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.contenidoFlex {
+  display: flex;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Panel izquierdo (capturas y datos rápidos) */
+.panelIzquierdo {
+  flex: 1;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sliderGaleria {
+  background-color: #1f2136;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #333654;
+  padding: 10px;
+}
+
+.imagenCaptura {
+  width: 100%;
   height: auto;
-  object-fit: contain;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
-.imagenesAdicionales {
+.controlesSlider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.botonControl {
+  background: linear-gradient(90deg, #d000ff, #00d9ff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.botonControl:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.contadorImagenes {
+  color: #a4a8e0;
+  font-size: 14px;
+}
+
+.tarjetaInfo {
+  background-color: #1f2136;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #333654;
+}
+
+.datosCalificacion {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+
+.itemCalificacion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.valorCalificacion {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.etiquetaCalificacion {
+  color: #a4a8e0;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.listaEnlaces {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+}
+
+.itemEnlace {
+  margin-bottom: 0.5rem;
+}
+
+.botonTienda {
+  display: block;
+  background: linear-gradient(90deg, #2c2e48, #252744);
+  color: #00d9ff;
+  text-decoration: none;
+  padding: 0.75rem;
+  border-radius: 6px;
+  text-align: center;
+  border: 1px solid #333654;
+  transition: all 0.2s;
+}
+
+.botonTienda:hover {
+  background: linear-gradient(90deg, #252744, #2c2e48);
+  transform: translateY(-2px);
+  border-color: #00d9ff;
+}
+
+/* Panel derecho (información detallada) */
+.panelDerecho {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.seccionInfo {
+  background-color: #1f2136;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #333654;
+}
+
+.tituloSeccion {
+  color: #ffffff;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #333654;
+  position: relative;
+}
+
+.tituloSeccion::before {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 50px;
+  height: 2px;
+  background: linear-gradient(to right, #d000ff, #00d9ff);
+}
+
+.botonDesplegar {
+  background: linear-gradient(90deg, #252744, #2c2e48);
+  color: #ffffff;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid #333654;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.botonDesplegar:hover {
+  background: linear-gradient(90deg, #2c2e48, #333a5f);
+}
+
+.contenidoDescripcion {
+  margin-top: 1rem;
+  color: #c3c7f7;
+  line-height: 1.6;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.grupoInfo {
+  margin-bottom: 1rem;
+}
+
+.subtituloInfo {
+  color: #ffffff;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.listaTags {
   display: flex;
   flex-wrap: wrap;
-  /* Cambiado de 'flex-direction: wrap' a 'flex-wrap: wrap' */
-  gap: 5px;
-  /* Añadido para prevenir desbordamiento horizontal */
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tag {
+  background: linear-gradient(90deg, #2c2e48, #252744);
+  color: #a4a8e0;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  border: 1px solid #333654;
+}
+
+.enlaceExterno {
+  color: #00d9ff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.enlaceExterno:hover {
+  color: #d000ff;
+  text-decoration: underline;
+}
+
+.listaEstadisticas {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+  margin: 0.5rem 0 0;
+}
+
+.itemEstadistica {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #1a1c2e;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #333654;
+}
+
+.valorEstadistica {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.etiquetaEstadistica {
+  color: #a4a8e0;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.gridInfoTecnica {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.itemInfoTecnica {
+  display: flex;
+  flex-direction: column;
+  background: #1a1c2e;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #333654;
+}
+
+.etiquetaInfoTecnica {
+  color: #a4a8e0;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.valorInfoTecnica {
+  color: #ffffff;
+  word-break: break-word;
+}
+
+/* Pantallas de carga y error */
+.contenedorCarga {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  min-height: 100vh;
+  background-color: #1a1c2e;
+  color: #ffffff;
 }
 
-.imagenesAdicionales img {
-  max-width: 100%;
-  /* Cambiado de 300px a 100% para que se ajuste al contenedor */
-  max-height: 150px;
-  /* Añadido límite de altura */
-  margin-bottom: 10px;
-  border-radius: 10px;
-  /* Añadido para mejor ajuste de imágenes */
-  width: auto;
-  height: auto;
-  object-fit: cover;
+.contenedorError {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #1a1c2e;
 }
 
-/* Ajuste para los contenedores internos */
-.container>.juego-detalles,
-.container>.containerFotos {
-  width: 50%;
-  box-sizing: border-box;
-  padding: 10px;
-  overflow: auto;
+.mensajeError {
+  background-color: #291e23;
+  border: 1px solid #ff5555;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  color: #ff5555;
+  max-width: 500px;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .contenidoFlex {
+    flex-direction: column;
+  }
+
+  .panelIzquierdo {
+    max-width: 100%;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .contenedorPrincipal {
+    padding: 1rem;
+  }
+
+  .tituloJuego {
+    font-size: 1.75rem;
+  }
+
+  .gridInfoTecnica {
+    grid-template-columns: 1fr;
+  }
+
+  .listaEstadisticas {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
