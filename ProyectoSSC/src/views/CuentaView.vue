@@ -74,9 +74,6 @@ const getDatos = async () => {
 
     idioma.value = usuario.idioma;
     idiomaEditado.value = usuario.idioma;
-
-
-    console.log("valor de username: " + username.value);
 }
 
 // Función para subir avatar
@@ -122,6 +119,7 @@ const subirAvatar = async (evento) => {
     }
 
     alert("Avatar subido y guardado correctamente");
+    location.reload();
 }
 
 // Función para actualizar username
@@ -146,6 +144,13 @@ const actualizarDatos = async () => {
 }
 
 onMounted(async () => {
+
+    if (!sessionStore.session) {
+        console.log("No hay sesión activa");
+        router.push('/login');
+        return;
+    }
+
     await getUID();
     if (idAuth.value) {
         await getDatos();
@@ -154,143 +159,287 @@ onMounted(async () => {
 </script>
 
 <template>
-    <h1 v-if="username" align="center">Perfil de {{ username }} </h1>
+    <div class="perfilUsuario">
+        <h1 v-if="username" class="tituloPerfilCentrado">Perfil de {{ username }}</h1>
 
-    <div class="container">
-
-        <div v-if="sessionStore.session">
-            <form class="formulario">
-
-                <!-- Avatar -->
-                <div class="container-foto">
-                    <div class="grupo-foto">
-
-                        <div class="grupo-formulario" v-if="sessionStore.avatarUrl">
-                            <img :src="sessionStore.avatarUrl" alt="Avatar" style="height:100px;" />
-                        </div>
-                        <div>
-                            <label for="cambioAvatar">Actualizar Avatar:</label><br>
-                            <input id="cambioAvatar" type="file" accept="image/*" @change="subirAvatar" />
+        <div class="contenedorPrincipal">
+            <div v-if="sessionStore.session" class="tarjetaPerfil">
+                <form class="formularioPerfil">
+                    <!-- Sección de Avatar -->
+                    <div class="seccionAvatar">
+                        <div class="contenedorAvatar">
+                            <div class="imagenAvatar" v-if="sessionStore.avatarUrl">
+                                <img :src="sessionStore.avatarUrl" alt="Avatar" class="avatar" />
+                            </div>
+                            <div class="selectorAvatar">
+                                <label for="cambioAvatar" class="etiquetaArchivo">Actualizar Avatar</label>
+                                <input id="cambioAvatar" type="file" accept="image/*" @change="subirAvatar"
+                                    class="entradaArchivo" />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Nombre de usuario -->
+                    <!-- Datos Personales -->
+                    <div class="seccionDatos">
+                        <h2 class="subtituloPerfil">Datos de la cuenta</h2>
 
-                <span class="titulo2">
-                    <p>Datos de la cuenta:</p>
-                </span>
+                        <div class="grupoFormulario">
+                            <label for="username" class="etiquetaCampo">Nombre de Usuario:</label>
+                            <input id="username" type="text" v-model="usernameEditado" class="campoDatos" />
+                        </div>
 
-                <div class="grupo-formulario">
-                    <label for="username">Nombre de Usuario:</label><br>
-                    <input id="username" type="text" v-model="usernameEditado" />
-                </div>
+                        <div class="grupoFormulario">
+                            <label for="biografia" class="etiquetaCampo">Biografía:</label>
+                            <textarea id="biografia" v-model="biografiaEditada" class="campoTextarea"
+                                rows="3"></textarea>
+                        </div>
 
-                <div class="grupo-formulario">
-                    <label for="biografia">Biografía:</label><br>
-                    <input id="username" type="text" v-model="biografiaEditada" />
+                        <div class="grupoFormulario">
+                            <label for="idiomas" class="etiquetaCampo">Idiomas:</label>
+                            <input id="idiomas" type="text" v-model="idiomaEditado" class="campoDatos" />
+                        </div>
 
+                        <button type="button" @click="actualizarDatos()" class="botonPrimario">Guardar cambios</button>
+                    </div>
 
-                </div>
-                <div class="grupo-formulario">
-                    <label for="biografia">Idiomas:</label><br>
-                    <input id="username" type="text" v-model="idiomaEditado" />
-                </div>
+                    <!-- Email y Datos de Cuenta -->
+                    <div class="seccionMetadatos">
+                        <h2 class="subtituloPerfil">Metadatos de la cuenta</h2>
 
+                        <div class="grupoFormulario">
+                            <label for="email" class="etiquetaCampo">Correo Electrónico:</label>
+                            <input id="email" type="email" v-model="sessionStore.user.email" disabled
+                                class="campoDesactivado" />
+                        </div>
 
+                        <div class="grupoFormulario">
+                            <label for="uid" class="etiquetaCampo">UID del Usuario:</label>
+                            <input id="uid" type="text" v-model="sessionStore.session.user.id" disabled
+                                class="campoDesactivado" />
+                        </div>
 
-                <button type="button" @click="actualizarDatos()">Guardar cambios</button> <br><br>
-                <div class="grupo-formulario">
-                    <label for="email">Correo Electrónico:</label><br>
-                    <input id="email" type="email" v-model="sessionStore.user.email" disabled />
-                </div>
-                <!-- Email -->
-                <span class="titulo2">
-                    <p>Metadatos de la cuenta:</p>
-                </span>
+                        <div class="grupoFormulario">
+                            <label for="lastSignIn" class="etiquetaCampo">Último Acceso:</label>
+                            <input id="lastSignIn" type="text" :value="sessionStore.session.user.last_sign_in_at
+                                ? new Date(sessionStore.session.user.last_sign_in_at).toLocaleString()
+                                : 'Nunca'" disabled class="campoDesactivado" />
+                        </div>
 
+                        <div class="grupoFormulario">
+                            <label for="role" class="etiquetaCampo">Nivel acceso BBDD:</label>
+                            <input id="role" type="text" v-model="sessionStore.session.user.role" disabled
+                                class="campoDesactivado" />
+                        </div>
 
+                        <div class="grupoFormulario">
+                            <label for="avatarUrl" class="etiquetaCampo">Enlace Avatar:</label>
+                            <input id="avatarUrl" type="text" v-model="sessionStore.avatarUrl" disabled
+                                class="campoDesactivado" />
+                        </div>
 
-                <!-- UID -->
-                <div class="grupo-formulario">
-                    <label for="uid">UID del Usuario:</label><br>
-                    <input id="uid" type="text" v-model="sessionStore.session.user.id" disabled />
-                </div>
+                        <div class="grupoFormulario">
+                            <button type="button" @click="cerrarSesion()" class="botonCerrarSesion">Cerrar
+                                Sesión</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-
-                <!-- Último acceso -->
-                <div class="grupo-formulario">
-                    <label for="lastSignIn">Último Acceso:</label><br>
-                    <input id="lastSignIn" type="text" :value="sessionStore.session.user.last_sign_in_at
-                        ? new Date(sessionStore.session.user.last_sign_in_at).toLocaleString()
-                        : 'Nunca'" disabled />
-                </div>
-
-
-                <!-- Rol en BBDD -->
-                <div class="grupo-formulario">
-                    <label for="role">Nivel acceso BBDD:</label><br>
-                    <input id="role" type="text" v-model="sessionStore.session.user.role" disabled />
-                </div>
-
-
-                <!-- Avatar -->
-                <div class="grupo-formulario">
-                    <label for="avatarUrl">Enlace Avatar:</label><br>
-                    <input id="avatarUrl" type="text" v-model="sessionStore.avatarUrl" disabled />
-                </div>
-
-
-                <!-- Cerrar sesión -->
-                <div class="grupo-formulario">
-                    <button type="button" @click="cerrarSesion()">
-                        Cerrar Sesión
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- si no carga la sesion, carga el componente de autenticación el cual tiene login y registro, alternando dependiendo del contexto -->
-        <div v-else>
-            <auth />
         </div>
     </div>
+
 </template>
 
-<style>
-button {
-    cursor: pointer;
+
+<style scoped>
+.perfilUsuario {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-input {
-    margin-bottom: 10px;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+.tituloPerfilCentrado {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.contenedorPrincipal {
+    display: flex;
+    justify-content: center;
+}
+
+.tarjetaPerfil {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    overflow: hidden;
+}
+
+.formularioPerfil {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.seccionAvatar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.contenedorAvatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.imagenAvatar {
+    border-radius: 50%;
+    overflow: hidden;
+    width: 150px;
+    height: 150px;
+    border: 3px solid #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.selectorAvatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.etiquetaArchivo {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 0.9rem;
+}
+
+.etiquetaArchivo:hover {
+    background-color: #2980b9;
+}
+
+.entradaArchivo {
+    margin-top: 10px;
+}
+
+.seccionDatos,
+.seccionMetadatos {
+    background-color: #f9f9f9;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.subtituloPerfil {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #3498db;
+}
+
+.grupoFormulario {
+    margin-bottom: 16px;
+}
+
+.etiquetaCampo {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.campoDatos,
+.campoDesactivado,
+.campoTextarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-bottom: 5px;
+    background-color: #fff;
+}
+
+.campoTextarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.campoDesactivado {
+    background-color: #f5f5f5;
+    color: #888;
+    cursor: not-allowed;
+}
+
+.botonPrimario {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+    font-weight: bold;
+    width: 200px;
+    align-self: center;
+}
+
+.botonPrimario:hover {
+    background-color: #388E3C;
+}
+
+.botonCerrarSesion {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
     width: 100%;
 }
 
-.grupo-foto {
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 10px;
-    gap: 5px
+.botonCerrarSesion:hover {
+    background-color: #c0392b;
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+    .formularioPerfil {
+        padding: 20px;
+    }
 
+    .seccionDatos,
+    .seccionMetadatos {
+        padding: 15px;
+    }
 
-.botonesForm {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-    gap: 10px;
-}
-
-.botonesForm :hover {
-    cursor: pointer;
-}
-
-.header {
-    text-align: center;
+    .botonPrimario {
+        width: 100%;
+    }
 }
 </style>

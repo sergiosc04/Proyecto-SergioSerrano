@@ -1,101 +1,80 @@
 <script setup>
 import { ref } from 'vue'
 import { supabase } from '../supabase'
+import { useSessionStore } from '../stores/session'
 
 const cargando = ref(false);
 const email = ref('');
 const password = ref('');
+const sessionStore = useSessionStore();
 
-const manejarRegistro = async () => {
+const manejarLogin = async () => {
     try {
-        cargando.value = true;
+        cargando.value = true
 
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signInWithPassword({
             email: email.value,
             password: password.value,
-        });
+        })
 
         if (error) throw error;
 
-        const user = data.user;
-        const idauth = user?.id;
-        if (!idauth) throw new Error('No se pudo obtener el idauth del usuario');
-
-        const { data: coleccion, error: errorColeccion } = await supabase
-            .from('coleccion')
-            .insert({})
-            .select('idcoleccion')
-            .single();
-
-        if (errorColeccion) throw errorColeccion;
-
-        const idcoleccion = coleccion.idcoleccion;
-
-        const { data: usuario, error: errorUsuario } = await supabase
-            .from('usuarios')
-            .insert({ idauth, idcoleccion })
-            .select('idusuario')
-            .single();
-
-        if (errorUsuario) throw errorUsuario;
-
-        const idusuario = usuario.idusuario;
-
-        const { error: errorActualizarColeccion } = await supabase
-            .from('coleccion')
-            .update({ idusuario })
-            .eq('idcoleccion', idcoleccion);
-
-        if (errorActualizarColeccion) throw errorActualizarColeccion;
-
-        alert('¡Registrado correctamente! Comprueba tu correo electrónico para verificar la cuenta.');
-
+        if (data?.session) {
+            // Después del login, se guarda la sesión en el store
+            sessionStore.setSession(data.session)
+            alert("Sesión iniciada correctamente.");
+            router.push('/cuenta');
+        } else {
+            alert("Error al recuperar la sesión");
+        }
     } catch (error) {
-        if (error instanceof Error) alert(error.message);
+        if (error instanceof Error) {
+            alert(error.message)
+        }
     } finally {
         cargando.value = false;
     }
 }
 
-const emit = defineEmits(['cambiarALogin']);
-
-const cambiarALogin = () => {
-    emit('cambiarALogin');
+const cambiarARegistro = () => {
+    router.push('/registro');
 }
 </script>
 
 <template>
-    <div class="contenedorRegistro">
+    <div class="contenedorInicioSesion">
         <div class="barraLateral"></div>
-        <div class="contenidoRegistro">
-            <div class="contenedorFormularioRegistro">
+        <div class="contenidoInicioSesion">
+            <div class="contenedorFormularioInicioSesion">
                 <div class="cabeceraFormulario">
-                    <h2 class="tituloRegistro">Crear cuenta</h2>
-                    <p class="subtituloRegistro">Introduce tus datos</p>
+                    <h2 class="tituloInicioSesion">Bienvenido</h2>
+                    <p class="subtituloInicioSesion">Ingresa a tu cuenta</p>
                 </div>
 
-                <div v-if="!cargando" class="formularioRegistro">
+                <div v-if="!cargando" class="formularioInicioSesion">
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Correo electrónico</label>
                         <div class="contenedorInput">
                             <span class="iconoInput">✉️</span>
                             <input required type="email" placeholder="ejemplo@correo.com" v-model="email"
-                                class="entradaRegistro" />
+                                class="entradaInicioSesion" />
                         </div>
                     </div>
-
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Contraseña</label>
                         <div class="contenedorInput">
                             <span class="iconoInput">🔒</span>
-                            <input required type="password" placeholder="Crea una contraseña" v-model="password"
-                                class="entradaRegistro" />
+                            <input required type="password" placeholder="Ingresa tu contraseña" v-model="password"
+                                class="entradaInicioSesion" />
+                        </div>
+                        <div class="olvidoPassword">
+                            <a href="#" class="enlaceOlvido">¿Olvidaste tu contraseña?</a>
                         </div>
                     </div>
 
-                    <div class="accionesRegistro">
-                        <button type="button" class="botonRegistro" @click="manejarRegistro">
-                            <span class="textoBoton">Registrarse</span>
+                    <div class="accionesInicioSesion">
+                        <button type="button" class="botonInicioSesion" @click="manejarLogin">
+                            <span class="textoBoton">Iniciar Sesión</span>
                             <span class="iconoBoton">→</span>
                         </button>
 
@@ -105,18 +84,17 @@ const cambiarALogin = () => {
                             <span class="lineaSeparador"></span>
                         </div>
 
-                        <div class="enlaceLogin">
-                            <span>¿Ya tienes cuenta?</span>
-                            <button type="button" class="botonLogin" @click="cambiarALogin">
-                                Inicia sesión
+                        <div class="enlaceRegistro">
+                            <span>¿No tienes cuenta?</span>
+                            <button type="button" class="botonRegistro" @click="cambiarARegistro()">
+                                Regístrate.
                             </button>
                         </div>
                     </div>
                 </div>
-
                 <div v-else class="cargando">
                     <div class="spinnerCarga"></div>
-                    <p>Registrando usuario...</p>
+                    <p>Iniciando sesión...</p>
                 </div>
             </div>
         </div>
@@ -124,7 +102,7 @@ const cambiarALogin = () => {
 </template>
 
 <style scoped>
-.contenedorRegistro {
+.contenedorInicioSesion {
     display: flex;
     height: 100vh;
     width: 100%;
@@ -136,9 +114,11 @@ const cambiarALogin = () => {
     flex: 1;
     background-image: url('../assets/img/fondos/barraregistro.gif');
     max-width: 33%;
+    width: 100%;
     background-size: cover;
     background-position: center;
     position: relative;
+    overflow: hidden;
 }
 
 .barraLateral::after {
@@ -151,7 +131,7 @@ const cambiarALogin = () => {
     background: linear-gradient(135deg, rgba(81, 45, 168, 0.3), rgba(41, 53, 125, 0.4));
 }
 
-.contenidoRegistro {
+.contenidoInicioSesion {
     flex: 1;
     display: flex;
     justify-content: center;
@@ -160,7 +140,7 @@ const cambiarALogin = () => {
     background-color: #1a1c2e;
 }
 
-.contenedorFormularioRegistro {
+.contenedorFormularioInicioSesion {
     width: 100%;
     max-width: 400px;
     background-color: #1f2136;
@@ -171,7 +151,7 @@ const cambiarALogin = () => {
     position: relative;
 }
 
-.contenedorFormularioRegistro::before {
+.contenedorFormularioInicioSesion::before {
     content: '';
     position: absolute;
     top: -2px;
@@ -188,19 +168,20 @@ const cambiarALogin = () => {
     text-align: center;
 }
 
-.tituloRegistro {
+.tituloInicioSesion {
+    margin: 0;
     color: #ffffff;
     font-size: 26px;
     font-weight: 600;
 }
 
-.subtituloRegistro {
+.subtituloInicioSesion {
     color: #a4a8e0;
     margin-top: 6px;
     font-size: 15px;
 }
 
-.formularioRegistro {
+.formularioInicioSesion {
     display: flex;
     flex-direction: column;
 }
@@ -230,7 +211,7 @@ const cambiarALogin = () => {
     font-size: 16px;
 }
 
-.entradaRegistro {
+.entradaInicioSesion {
     width: 100%;
     padding: 12px 12px 12px 40px;
     border: 1px solid #333654;
@@ -241,23 +222,40 @@ const cambiarALogin = () => {
     color: #ffffff;
 }
 
-.entradaRegistro::placeholder {
+.entradaInicioSesion::placeholder {
     color: #6a6f9c;
 }
 
-.entradaRegistro:focus {
+.entradaInicioSesion:focus {
     outline: none;
     border-color: #00d9ff;
 }
 
-.accionesRegistro {
+.olvidoPassword {
+    text-align: right;
+    margin-top: 6px;
+}
+
+.enlaceOlvido {
+    color: #00d9ff;
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.enlaceOlvido:hover {
+    color: #d000ff;
+    text-decoration: underline;
+}
+
+.accionesInicioSesion {
     display: flex;
     flex-direction: column;
     gap: 16px;
     margin-top: 8px;
 }
 
-.botonRegistro {
+.botonInicioSesion {
     width: 100%;
     padding: 12px;
     background: linear-gradient(90deg, #d000ff, #00d9ff);
@@ -274,7 +272,7 @@ const cambiarALogin = () => {
     gap: 10px;
 }
 
-.botonRegistro:hover {
+.botonInicioSesion:hover {
     opacity: 0.9;
 }
 
@@ -305,7 +303,7 @@ const cambiarALogin = () => {
     font-size: 14px;
 }
 
-.enlaceLogin {
+.enlaceRegistro {
     text-align: center;
     display: flex;
     justify-content: center;
@@ -315,17 +313,19 @@ const cambiarALogin = () => {
     color: #9d9fc3;
 }
 
-.botonLogin {
+.botonRegistro {
     background: none;
     border: none;
     color: #00d9ff;
     font-weight: 600;
+    text-decoration: none;
     cursor: pointer;
+    padding: 0;
     font-size: 14px;
     transition: color 0.2s ease;
 }
 
-.botonLogin:hover {
+.botonRegistro:hover {
     color: #d000ff;
 }
 

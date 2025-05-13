@@ -33,6 +33,7 @@ const manejarCrearColeccion = async () => {
 onMounted(async () => {
   await getIdAuth();
 });
+
 </script>
 <template>
 
@@ -109,7 +110,6 @@ onMounted(async () => {
 
 
 .containerBotones button {
-  /* Hacer que cada botón ocupe el mismo espacio */
   flex: 1;
 }
 

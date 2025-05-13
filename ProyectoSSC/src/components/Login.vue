@@ -47,7 +47,7 @@ const cambiarARegistro = () => {
     <div class="contenedorInicioSesion">
         <div class="barraLateral"></div>
         <div class="contenidoInicioSesion">
-            <div class="contenedorFormularioInicioSesion">
+            <div class="contenedorFormularioInicioSesion">º
                 <div class="cabeceraFormulario">
                     <h2 class="tituloInicioSesion">Bienvenido</h2>
                     <p class="subtituloInicioSesion">Ingresa a tu cuenta</p>
@@ -119,8 +119,6 @@ const cambiarARegistro = () => {
     width: 100%;
     background-size: cover;
     background-position: center;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
     position: relative;
     overflow: hidden;
 }

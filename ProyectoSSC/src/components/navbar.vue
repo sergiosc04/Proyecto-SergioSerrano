@@ -110,14 +110,17 @@ onMounted(async () => {
 .navbar--logo img {
     height: 60px;
     transition: transform 0.2s ease-in-out;
+
 }
 
+
+/* Animación del logo */
 .navbar--logo img:hover {
     transform: scale(1.05);
     animation: cambioHue 2s linear infinite;
 }
 
-/* Animación del cambio constante de hue */
+
 @keyframes cambioHue {
     0% {
         filter: hue-rotate(0deg);
