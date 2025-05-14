@@ -1,128 +1,112 @@
-<script>
+<script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+const props = defineProps({
+    juego: {
+        type: Object,
+        required: true,
+    }
+});
 
-export default {
-    name: "tarjetaJuego",
-    props: {
-        juego: {
-            type: Object,
-            required: true,
-        },
-    },
-    setup(props) {
-        const router = useRouter();
+const router = useRouter();
+const videoUrl = ref(null);
+const hovering = ref(false);
+const tarjetaRef = ref(null);
+const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
 
-        // Referencia para almacenar la URL del video
-        const videoUrl = ref(null);
+const obtenerVideos = async () => {
+    try {
+        const endpoint = `https://api.rawg.io/api/games/${props.juego.id}/movies?key=${claveAPI}`;
+        const respuesta = await axios.get(endpoint);
+        const resultados = respuesta.data.results;
 
-        // Referencia para detectar si el ratón está encima de la tarjeta
-        const hovering = ref(false);
-
-        // Referencia para la tarjeta (se usará para el lazy load)
-        const tarjetaRef = ref(null);
-
-        // Importamos la clave del .env
-        const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
-
-        // Función para obtener videos del juego desde la API
-        const obtenerVideos = async () => {
-            try {
-                const endpoint = `https://api.rawg.io/api/games/${props.juego.id}/movies?key=${claveAPI}`;
-                const respuesta = await axios.get(endpoint);
-                const resultados = respuesta.data.results;
-
-                // Si hay un video disponible, se guarda la URL del video 480p
-                if (resultados.length > 0 && resultados[0].data && resultados[0].data['480']) {
-                    videoUrl.value = resultados[0].data['480'];
-                }
-            } catch (error) {
-                console.error('Error al obtener el video:', error);
-            }
-        };
-
-        const juegoParaColeccion = () => {
-            const idGuardar = props.juego.id;
-            router.push({ name: 'coleccion', query: { idRecibido: idGuardar } });
-        };
-
-        // Función para cargar la tarjeta cuando entra en el viewport
-        const cargarTarjeta = () => {
-            obtenerVideos();
-        };
-
-        // Crear el IntersectionObserver
-        const observer = new IntersectionObserver((entradas) => {
-            entradas.forEach(entrada => {
-                if (entrada.isIntersecting) {
-                    cargarTarjeta();  // Cargar el video y otros datos cuando entra en el viewport
-                    observer.unobserve(entrada.target);  // Dejar de observar la tarjeta después de cargarla
-                }
-            });
-        });
-
-        // Observar la tarjeta cuando se monte
-        onMounted(() => {
-            if (tarjetaRef.value) {
-                observer.observe(tarjetaRef.value);
-            }
-        });
-
-        // Limpiar el observer cuando el componente se destruya
-        onBeforeUnmount(() => {
-            if (tarjetaRef.value) {
-                observer.unobserve(tarjetaRef.value);
-            }
-        });
-
-        return {
-            videoUrl,
-            hovering,
-            juegoParaColeccion,
-            tarjetaRef,
-        };
+        if (resultados.length > 0 && resultados[0].data && resultados[0].data['480']) {
+            videoUrl.value = resultados[0].data['480'];
+        }
+    } catch (error) {
+        console.error('Error al obtener el video:', error);
     }
 };
+
+const juegoParaColeccion = () => {
+    const idGuardar = props.juego.id;
+    router.push({ name: 'coleccion', query: { idRecibido: idGuardar } });
+};
+
+const cargarTarjeta = () => {
+    obtenerVideos();
+};
+
+const observer = new IntersectionObserver((entradas) => {
+    entradas.forEach(entrada => {
+        if (entrada.isIntersecting) {
+            cargarTarjeta();
+            observer.unobserve(entrada.target);
+        }
+    });
+});
+
+onMounted(() => {
+    if (tarjetaRef.value) {
+        observer.observe(tarjetaRef.value);
+    }
+});
+
+onBeforeUnmount(() => {
+    if (tarjetaRef.value) {
+        observer.unobserve(tarjetaRef.value);
+    }
+});
 </script>
 
 <template>
-
     <div ref="tarjetaRef" class="tarjetaJuego" :class="{ 'con-video': videoUrl }" @mouseenter="hovering = true"
         @mouseleave="hovering = false">
 
         <router-link :to="`/juego/${juego.slug}`">
-
             <div class="contenedor-img">
                 <img v-if="!hovering || !videoUrl" :src="juego.background_image" alt="Imagen del juego"
                     class="juego-img" loading="lazy" />
                 <video v-if="hovering && videoUrl" :src="videoUrl" class="video-preview" autoplay muted loop playsinline
                     preload="none"></video>
+                <div class="rating-badge" v-if="juego.rating">
+                    {{ juego.rating }} <span class="estrella">★</span>
+                </div>
                 <span v-if="videoUrl && !hovering" class="icono-video"></span>
             </div>
 
             <div class="tarjeta--contenido">
                 <h2>{{ juego.name }}</h2>
-                <ul>
-                    <li><strong>ID:</strong> {{ juego.id }}</li>
-                    <li><strong>Fecha de salida:</strong> {{ juego.released }}</li>
-                    <li><strong>Calificación:</strong> {{ juego.rating }} / 5 ★</li>
-                </ul>
+                <div class="juego-info">
+                    <div class="info-item">
+                        <span class="info-label">ID:</span>
+                        <span class="info-value">{{ juego.id }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Lanzamiento:</span>
+                        <span class="info-value">{{ juego.released }}</span>
+                    </div>
+                </div>
             </div>
         </router-link>
+
         <div class="accionesJuegos">
-            <router-link :to="`/juego/${juego.slug}`"><button class="boton-accion">Ver juego</button></router-link>
-
-
-            <button @click="juegoParaColeccion()" class="boton-accion">Añadir a colección</button>
+            <router-link :to="`/juego/${juego.slug}`">
+                <button class="boton-accion boton-ver">
+                    <span class="boton-texto">Ver más</span>
+                </button>
+            </router-link>
+            <button @click="juegoParaColeccion()" class="boton-accion boton-coleccion">
+                <span class="boton-texto">Añadir a colección</span>
+            </button>
         </div>
     </div>
 </template>
 
-
 <style scoped>
 a {
-    color: black;
+    color: inherit;
     text-decoration: none;
 }
 
@@ -130,22 +114,27 @@ a {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: #f0f0f8;
-    border: 1px solid gray;
-    border-radius: 10px;
+    background-color: #131520;
+    color: #e9e9ec;
+    border-radius: 16px;
     width: 20vw;
     min-width: 250px;
     max-width: 300px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    transition: transform 0.3s ease;
-    /* Transición suave al hacer hover */
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(79, 70, 229, 0.15);
+}
+
+.tarjetaJuego:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(79, 70, 229, 0.2);
 }
 
 .contenedor-img {
     position: relative;
     width: 100%;
     height: 180px;
+    /* Altura fija para la imagen */
     overflow: hidden;
 }
 
@@ -154,86 +143,154 @@ a {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Asegura que la imagen/video se ajuste correctamente */
+    transition: transform 0.5s ease;
 }
 
-/* Estilos para el video */
+.tarjetaJuego:hover .juego-img {
+    transform: scale(1.05);
+}
+
 .video-preview {
     position: absolute;
     top: 0;
     left: 0;
     z-index: 1;
-    /* Asegura que el video se muestre encima de la imagen */
 }
 
-/* Estilos para el icono de video */
 .icono-video {
     position: absolute;
     bottom: 12px;
-    left: 12px;
-    width: 25px;
-    height: 25px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
     background-image: url('../assets/img/botones/play.png');
-
-    /* Aquí se debe poner la URL del icono */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     z-index: 2;
-    /* Asegura que el icono se muestre encima del video */
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.rating-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(79, 70, 229, 0.9);
+    color: white;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.estrella {
+    color: #FFD700;
+    margin-left: 2px;
 }
 
 .tarjeta--contenido {
-    padding: 1rem;
-    flex-grow: 1;
+    padding: 1.2rem;
+    flex: 1;
+    /* Permite que el contenido ocupe el espacio disponible */
+    background: linear-gradient(180deg, #181b29 0%, #131520 100%);
+    display: flex;
+    flex-direction: column;
 }
 
 .tarjetaJuego h2 {
-    text-align: center;
     font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    color: #2d2d44;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    color: #ffffff;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
 }
 
-.tarjetaJuego ul {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 1rem 0;
+.juego-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
     font-size: 0.9rem;
-    color: #555;
 }
 
-.tarjetaJuego li {
-    margin-bottom: 0.4rem;
+.info-label {
+    color: #a1a1b5;
+    font-weight: 500;
 }
 
-.tarjetaJuego:hover {
-    background-color: #f9f9fc;
+.info-value {
+    color: #e9e9ec;
+    font-weight: 400;
 }
 
 .accionesJuegos {
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 0.8rem;
-    border-top: 1px solid #ddd;
-    background-color: #f0f0f8;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 1rem;
+    background-color: #0f111a;
 }
 
 .boton-accion {
-    background-color: #2d2d44;
-    color: #fff;
+    flex: 1;
     border: none;
-    padding: 0.5rem 0.8rem;
-    border-radius: 6px;
+    border-radius: 8px;
+    padding: 0.7rem 0;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.boton-accion:hover {
-    background-color: #4f4f6e;
-    transform: translateY(-3px);
+.boton-ver {
+    background-color: #2d3142;
+    color: #e9e9ec;
+    padding: 0.7rem 1.5rem;
+    /* Añadido padding horizontal */
+}
 
+.boton-ver:hover {
+    background-color: #3d4259;
+}
+
+.boton-coleccion {
+    background-color: #5d5fef;
+    color: white;
+}
+
+.boton-coleccion:hover {
+    background-color: #4b4aca;
+}
+
+.boton-texto {
+    display: inline-block;
+    transform: translateY(0);
+    transition: transform 0.2s ease;
+}
+
+.boton-accion:hover .boton-texto {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .tarjetaJuego {
+        width: 100%;
+        max-width: none;
+    }
+
+    .accionesJuegos {
+        flex-direction: column;
+    }
 }
 </style>

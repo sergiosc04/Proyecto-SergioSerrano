@@ -9,7 +9,6 @@ const { nombreUsuario, obtenerUsername } = useObtenerNombreUsuario();
 
 
 onMounted(async () => {
-    console.log("Navbar");
     await sessionStore.recuperarSesion();
     await obtenerUsername();
 });
@@ -37,9 +36,10 @@ onMounted(async () => {
             <!-- datos de la sesión -->
 
             <div class="navbar--sesion">
-                <span v-if="nombreUsuario" class="navbar--sesion_nombre">
+                <span class="navbar--sesion_nombre">
                     <RouterLink class="navbar--user" to="/cuenta/">
-                        {{ nombreUsuario }}
+
+                        {{ nombreUsuario || "Iniciar sesión" }}
                     </RouterLink>
                 </span>
 
@@ -86,13 +86,11 @@ onMounted(async () => {
 }
 
 .navbar--container {
-    background: linear-gradient(to right, #1f1f2e, #2d2d44);
+    background: linear-gradient(to right, #101d4f, #730979);
     padding: 1rem 2rem;
     box-shadow: 0 2px 10px rgba(116, 9, 255, 0.2);
     border-radius: 0;
-    /* Eliminamos el border-radius */
     margin: 0;
-    /* Eliminamos los márgenes */
     color: #fff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -102,24 +100,19 @@ onMounted(async () => {
     align-items: center;
     justify-content: space-between;
     max-width: 1400px;
-    /* Opcional: para mantener el contenido centrado en pantallas muy grandes */
     margin: 0 auto;
-    /* Opcional: para centrar el contenido */
 }
 
 .navbar--logo img {
     height: 60px;
     transition: transform 0.2s ease-in-out;
-
 }
-
 
 /* Animación del logo */
 .navbar--logo img:hover {
     transform: scale(1.05);
     animation: cambioHue 2s linear infinite;
 }
-
 
 @keyframes cambioHue {
     0% {

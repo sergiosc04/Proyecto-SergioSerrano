@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useSessionStore } from './stores/session';
-import NavBar from './components/navbar.vue';
+import navbar from './components/navbar.vue';
 
 const sessionStore = useSessionStore();
 
@@ -12,15 +12,13 @@ onMounted(async () => {
 
 <template>
     <span class="navbar--container">
-        <NavBar />
+        <navbar />
     </span>
 
     <span>
         <RouterView />
     </span>
-
-
-
+    
 </template>
 
 <style>

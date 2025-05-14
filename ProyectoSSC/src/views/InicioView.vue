@@ -36,100 +36,100 @@ onMounted(async () => {
 
 <template>
   <main>
+    <!-- Estado de carga inicial -->
     <div v-if="cargando" class="loading-container">
       <SpinnerCarga />
-      <br><strong>Cargando inicio...</strong>
+      <br>
+      <strong>Cargando inicio...</strong>
     </div>
 
+    <!-- Contenido principal cuando ya cargó -->
     <div v-else>
-      <!-- Banner que muestra un juego aleatorio destacado -->
-      <BannerJuego v-if="juegos && juegos.length > 0" :juegos="juegos" />
+      <!-- Sección del Banner destacado -->
+      <BannerJuego v-if="juegos?.length" :juegos="juegos" />
 
+      <!-- Contenedor principal de juegos -->
       <div class="contenedorJuegos">
-
-        <!-- Listado de juegos cuando no está cargando -->
+        <!-- Título condicional según autenticación -->
         <div class="titulos">
+          <div v-if="sessionStore.session" class="titulo">
+            ¡Bienvenido de vuelta, <strong>{{ nombreUsuario || "usuario" }}!</strong>
+            <p class="subtitulo">Aquí tienes una selección aleatoria de juegos para ti:</p>
+          </div>
 
-          <span v-if="sessionStore.session">
-            <span class="titulo" v-if="nombreUsuario">
-              ¡Bienvenido de vuelta, <strong> {{ nombreUsuario || "usuario" }}!</strong>
+          <div v-else>
+            <div class="titulo">¡Bienvenido a <strong>PixelRift!</strong></div>
 
-              <p class="subtitulo">Aquí tienes una selección aleatoria de juegos para ti:</p>
-            </span>
-          </span>
+            <div class="barraDegradado"></div>
 
-          <span v-else class="">
-            <div class="titulo">¡Bienvenido a <strong>PixelRift!</strong></div><br>
-
-            <router-link to="/cuenta/" class="subtitulo" align="center">Regístrate o Inicia Sesión</router-link> para
-            acceder a tu cuenta y guardar tus juegos favoritos.
+            <router-link to="/cuenta/" class="subtitulo" align="center">
+              Regístrate o Inicia Sesión
+            </router-link>
+            para acceder a tu cuenta y guardar tus juegos favoritos.
 
             <p>Mientras tanto, echa un vistazo a nuestro catálogo:</p>
-          </span>
+          </div>
         </div>
 
-        <!-- Listado de 10 juegos aleatorios cada vez que carga la pagina -->
-
-
-        <p v-if="cargando">
+        <!-- Listado de juegos -->
+        <div v-if="cargando" class="carga-juegos">
           <SpinnerCarga />
-          <br><strong>Cargando juegos...</strong>
           <br>
-        </p>
+          <strong>Cargando juegos...</strong>
+        </div>
 
         <div v-else class="listadoJuegos">
           <tarjetaJuego v-for="juego in juegos.slice(0, 10)" :key="juego.id" :juego="juego" />
         </div>
-
-        <br>
-        <br>
-
-
-
       </div>
 
+      <!-- Separador visual -->
       <br>
-      <hr>
-      <br>
+      <hr><br>
 
       <!-- Sección de colecciones -->
       <div class="coleccionesContainer">
-        <div class="titulo">Tus <strong>Colecciones</strong></div>
+        <div class="titulo">
+          Tus <strong>Colecciones</strong>
+        </div>
 
-
-
-        <!-- Muestra de colecciones del usuario con menos detalles para optimizar la carga inicial -->
-
+        <!-- Contenido condicional de colecciones -->
         <div v-if="sessionStore.session" class="colecciones-preview">
           <router-link to="/coleccion/" align="center" class="botonVerColecciones">
             <button class="botonPrimario">Ver todas las colecciones</button>
           </router-link>
+
+          <!-- Estado de carga de colecciones -->
           <div v-if="loadingColecciones">
             <SpinnerCarga />
             <p>Cargando colecciones...</p>
           </div>
 
-          <div v-else-if="colecciones && colecciones.length > 0" class="lista-colecciones">
+          <!-- Listado de colecciones -->
+          <div v-else-if="colecciones?.length" class="lista-colecciones">
             <div v-for="coleccion in colecciones" :key="coleccion.idcoleccion" class="coleccion-item">
               <h3>{{ coleccion.nombreColeccion }}</h3>
-
-              <h5 v-if="coleccion.datosentrada.juegos.length"> Esta colección tiene {{
-                coleccion.datosentrada.juegos.length
-              }} juegos. </h5>
-
-              <h5 v-else> Esta colección no tiene juegos aún.</h5>
-
-              <router-link to="/coleccion"><button class="botonSecundario">Ver colección</button></router-link>
-
+              <h5 v-if="coleccion.datosentrada.juegos.length">
+                Esta colección tiene {{ coleccion.datosentrada.juegos.length }} juegos.
+              </h5>
+              <h5 v-else>
+                Esta colección no tiene juegos aún.
+              </h5>
+              <router-link to="/coleccion">
+                <button class="botonSecundario">Ver colección</button>
+              </router-link>
             </div>
-
           </div>
-
         </div>
 
+        <!-- Mensaje para usuarios no autenticados -->
         <div v-else class="sinColecciones">
           <p>Inicia sesión para ver y crear colecciones.</p>
-          <router-link to="/cuenta/"><button class="botonPrimario">Iniciar sesión</button></router-link>
+          <router-link to="/cuenta/">
+            <button class="botonPrimario">Iniciar sesión</button>
+          </router-link>
+
+          <br><br><br><br>
         </div>
       </div>
     </div>
@@ -137,6 +137,13 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.barraDegradado {
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(45deg, #d000ff, #00d9ff);
+}
+
+
 .sinColecciones {
   text-align: center;
   padding: 10px;

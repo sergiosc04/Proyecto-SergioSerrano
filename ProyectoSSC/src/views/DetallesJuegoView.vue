@@ -14,6 +14,31 @@ const indiceSlider = ref(0);
 const cargando = ref(true);
 const route = useRoute();
 
+// Importar las imágenes
+import steamIcon from '../assets/img/tiendas/steam.png';
+import xboxIcon from '../assets/img/tiendas/xbox.png';
+import playstationIcon from '../assets/img/tiendas/playstation.png';
+import appleIcon from '../assets/img/tiendas/apple.png';
+import gogIcon from '../assets/img/tiendas/gog.png';
+import nintendoIcon from '../assets/img/tiendas/nintendo.png';
+import xbox360Icon from '../assets/img/tiendas/xbox360.png';
+import googlePlayIcon from '../assets/img/tiendas/google-play.png';
+import itchIcon from '../assets/img/tiendas/itch-io.png';
+import epicIcon from '../assets/img/tiendas/epic-games.png';
+
+const tiendaIconos = {
+  1: steamIcon,
+  2: xboxIcon,
+  3: playstationIcon,
+  4: appleIcon,
+  5: gogIcon,
+  6: nintendoIcon,
+  7: xbox360Icon,
+  8: googlePlayIcon,
+  9: itchIcon,
+  11: epicIcon
+};
+
 // Importamos la clave del .env
 const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
 
@@ -81,6 +106,12 @@ function obtenerNombreTienda(storeId) {
   return tienda ? tienda.name : "No disponible";
 }
 
+const juegoParaColeccion = () => {
+  const idGuardar = props.juego.id;
+  router.push({ name: 'coleccion', query: { idRecibido: idGuardar } });
+};
+
+
 // Obtener datos cuando el componente se monta
 onMounted(() => {
   getDetalleJuegos();
@@ -88,6 +119,7 @@ onMounted(() => {
   getTiendas();
   getDetallesTiendas();
 });
+
 </script>
 
 <template>
@@ -103,7 +135,7 @@ onMounted(() => {
     <header class="cabeceraJuego">
       <h1 class="tituloJuego">{{ juego.name }}</h1>
       <p class="subtituloJuego">{{ juego.released || "Fecha no disponible" }}</p>
-      <button class="botonControl" @click="añadirAColeccion">Añadir a colección</button>
+      <button class="botonControl" @click="juegoParaColeccion()">Añadir a colección</button>
     </header>
 
     <div class="contenidoFlex">
@@ -119,7 +151,6 @@ onMounted(() => {
             <button @click="capSiguiente" class="botonControl">⇒</button>
           </div>
         </div>
-
 
         <!-- Datos clave -->
         <div class="tarjetaInfo">
@@ -154,13 +185,51 @@ onMounted(() => {
         <div class="tarjetaInfo" v-if="tiendas.length > 0">
           <h2 class="tituloSeccion">Dónde comprar</h2>
           <ul class="listaEnlaces">
+
             <li v-for="(enlace, index) in tiendas" :key="index" class="itemEnlace">
               <a :href="enlace.url" target="_blank" class="botonTienda">
+                <img :src="tiendaIconos[enlace.store_id]" :alt="obtenerNombreTienda(enlace.store_id)"
+                  class="iconoTienda" />
                 {{ obtenerNombreTienda(enlace.store_id) }}
               </a>
+
             </li>
           </ul>
         </div>
+
+        <section class="seccionInfo">
+          <h2 class="tituloSeccion">Datos técnicos</h2>
+
+          <div class="gridInfoTecnica">
+
+            <div class="itemInfoTecnica">
+              <span class="etiquetaInfoTecnica">ID</span>
+              <span class="valorInfoTecnica">{{ juego.id || "No disponible" }}</span>
+            </div>
+
+            <div class="itemInfoTecnica">
+              <span class="etiquetaInfoTecnica">Slug</span>
+              <span class="valorInfoTecnica">{{ juego.slug || "No disponible" }}</span>
+            </div>
+
+            <div class="itemInfoTecnica">
+              <span class="etiquetaInfoTecnica">Nombre original</span>
+              <span class="valorInfoTecnica">{{ juego.name_original || "No disponible" }}</span>
+            </div>
+
+            <div class="itemInfoTecnica">
+              <span class="etiquetaInfoTecnica">Lanzamiento</span>
+              <span class="valorInfoTecnica">{{ juego.released || "No disponible" }}</span>
+            </div>
+
+            <div class="itemInfoTecnica">
+              <span class="etiquetaInfoTecnica">Última actualización</span>
+              <span class="valorInfoTecnica">{{ juego.updated || "No disponible" }}</span>
+            </div>
+
+          </div>
+
+        </section>
       </aside>
 
       <!-- Panel derecho: Detalles e información -->
@@ -189,8 +258,10 @@ onMounted(() => {
           <!-- Desarrolladores y editores -->
           <section class="seccionInfo">
             <h2 class="tituloSeccion">Desarrolladores y editores</h2>
+
             <div class="grupoInfo">
               <h3 class="subtituloInfo">Desarrolladores:</h3>
+
               <div class="listaTags">
                 <span v-for="(dev, index) in juego.developers" :key="index" class="tag">
                   {{ dev.name }}
@@ -199,6 +270,7 @@ onMounted(() => {
             </div>
             <div class="grupoInfo">
               <h3 class="subtituloInfo">Editores:</h3>
+
               <div class="listaTags">
                 <span v-for="(pub, index) in juego.publishers" :key="index" class="tag">
                   {{ pub.name }}
@@ -215,6 +287,7 @@ onMounted(() => {
           <!-- Enlaces varios -->
           <section class="seccionInfo">
             <h2 class="tituloSeccion">Enlaces útiles</h2>
+
             <ul class="listaEnlaces">
               <li v-if="juego.website" class="itemEnlace">
                 <a :href="juego.website" target="_blank" class="enlaceExterno">Sitio web oficial</a>
@@ -231,6 +304,7 @@ onMounted(() => {
           <!-- Estadísticas de jugadores -->
           <section class="seccionInfo">
             <h2 class="tituloSeccion">Estadísticas de jugadores</h2>
+
             <ul class="listaEstadisticas">
               <li class="itemEstadistica">
                 <span class="valorEstadistica">{{ juego.added || "0" }}</span>
@@ -262,37 +336,7 @@ onMounted(() => {
         </section>
 
         <!-- Detalles técnicos -->
-        <section class="seccionInfo">
-          <h2 class="tituloSeccion">Datos técnicos</h2>
 
-          <div class="gridInfoTecnica">
-
-            <div class="itemInfoTecnica">
-              <span class="etiquetaInfoTecnica">ID</span>
-              <span class="valorInfoTecnica">{{ juego.id || "No disponible" }}</span>
-            </div>
-
-            <div class="itemInfoTecnica">
-              <span class="etiquetaInfoTecnica">Slug</span>
-              <span class="valorInfoTecnica">{{ juego.slug || "No disponible" }}</span>
-            </div>
-
-            <div class="itemInfoTecnica">
-              <span class="etiquetaInfoTecnica">Nombre original</span>
-              <span class="valorInfoTecnica">{{ juego.name_original || "No disponible" }}</span>
-            </div>
-
-            <div class="itemInfoTecnica">
-              <span class="etiquetaInfoTecnica">Lanzamiento</span>
-              <span class="valorInfoTecnica">{{ juego.released || "No disponible" }}</span>
-            </div>
-
-            <div class="itemInfoTecnica">
-              <span class="etiquetaInfoTecnica">Última actualización</span>
-              <span class="valorInfoTecnica">{{ juego.updated || "No disponible" }}</span>
-            </div>
-          </div>
-        </section>
       </main>
     </div>
   </div>
@@ -307,6 +351,15 @@ onMounted(() => {
 </template>
 
 <style scoped>
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #1a1c2e;
+  min-height: 100vh;
+  width: 100%;
+}
+
 /* Estilos principales */
 .contenedorPrincipal {
   min-height: 100vh;
@@ -362,7 +415,7 @@ onMounted(() => {
 /* Panel izquierdo (capturas y datos rápidos) */
 .panelIzquierdo {
   flex: 1;
-  max-width: 500px;
+  max-width: 440px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -452,13 +505,15 @@ onMounted(() => {
 }
 
 .botonTienda {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   background: linear-gradient(90deg, #2c2e48, #252744);
   color: #00d9ff;
   text-decoration: none;
   padding: 0.75rem;
   border-radius: 6px;
-  text-align: center;
+  text-align: left;
   border: 1px solid #333654;
   transition: all 0.2s;
 }
@@ -469,8 +524,15 @@ onMounted(() => {
   border-color: #00d9ff;
 }
 
+.iconoTienda {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
 /* Panel derecho (información detallada) */
 .panelDerecho {
+  background-color: 1a1c2e;
   flex: 2;
   display: flex;
   flex-direction: column;

@@ -1,21 +1,101 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
+/* Reset de base y estilos globales */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+/* Paleta de colores */
 :root {
+    /* Colores base (existentes) */
     --color-fondo: #1a1c2e;
     --color-primario: #1f2136;
     --color-secundario: #252744;
     --color-borde: #333654;
     --color-texto: #ffffff;
     --color-texto-secundario: #a4a8e0;
+
+    /* Gradientes (existentes) */
     --gradiente-primario: linear-gradient(90deg, #d000ff, #00d9ff);
     --gradiente-secundario: linear-gradient(90deg, #1f2136, #252744, #1f2136);
+
+    /* Nuevos colores de fondo (variaciones de claridad) */
+    --color-fondo-claro: #20243a;
+    /* Fondo un poco más claro para crear capas */
+    --color-fondo-medio: #282c4d;
+    /* Fondo intermedio para paneles destacados */
+    --color-fondo-hover: #2d325a;
+    /* Para estados hover en elementos de fondo */
+
+    /* Nuevos colores para acentos y estados */
+    --color-acento-primario: #d000ff;
+    /* Magenta para elementos principales */
+    --color-acento-secundario: #00d9ff;
+    /* Cian para elementos secundarios */
+    --color-acento-terciario: #8a5dff;
+    /* Púrpura para variaciones de acento */
+    --color-acento-suave: #4a3b99;
+    /* Púrpura suave para elementos sutiles */
+
+    /* Nuevos colores de texto para diferentes niveles de jerarquía */
+    --color-texto-terciario: #8286b9;
+    /* Para texto menos importante */
+    --color-texto-disabled: #5b5f89;
+    /* Para texto desactivado */
+    --color-texto-hover: #c7cbff;
+    /* Para texto en hover */
+
+    /* Nuevos colores para estados (éxito, error, advertencia, info) */
+    --color-exito: #42e8b7;
+    /* Verde-azulado para mensajes de éxito */
+    --color-error: #ff5f7a;
+    /* Rojo-rosa para errores */
+    --color-advertencia: #ffcc66;
+    /* Amarillo para advertencias */
+    --color-info: #66a6ff;
+    /* Azul claro para información */
+
+    /* Nuevos gradientes */
+    --gradiente-terciario: linear-gradient(90deg, #3b2b80, #4a3b99);
+    --gradiente-oscuro: linear-gradient(90deg, #161827, #1a1c2e);
+    --gradiente-claro: linear-gradient(90deg, #282c4d, #333654);
+    --gradiente-acento: linear-gradient(135deg, #d000ff, #8a5dff, #00d9ff);
 }
 
+/* Ejemplos de uso:
+
+Fondos en capas:
+.capa-base { background-color: var(--color-fondo); }
+.capa-elevada { background-color: var(--color-fondo-claro); }
+.capa-destacada { background-color: var(--color-fondo-medio); }
+
+Elementos de acento:
+.boton-importante { background: var(--gradiente-primario); }
+.boton-secundario { background-color: var(--color-acento-suave); }
+.indicador { color: var(--color-acento-terciario); }
+
+Mensajes de estado:
+.mensaje-exito { color: var(--color-exito); border-color: var(--color-exito); }
+.mensaje-error { color: var(--color-error); border-color: var(--color-error); }
+
+Elementos con sombras:
+.tarjeta-destacada { box-shadow: var(--sombra-media); }
+.modal { box-shadow: var(--sombra-fuerte); }
+.boton-flotante { box-shadow: var(--sombra-acento); }
+*/
+
 * {
+    box-sizing: border-box;
     font-family: "Open Sans", sans-serif;
     font-style: normal;
-    font-variation-settings:
-        "wdth" 100;
+    font-variation-settings: "wdth" 100;
 }
 
 /* Estilos de títulos */
@@ -31,11 +111,13 @@
 .titulo2 {
     text-align: center;
     font-size: 1.5rem;
+    color: var(--color-texto);
 }
 
-.titulo2 {
+h3 {
     text-align: center;
     font-size: 1.25rem;
+    color: var(--color-texto);
 }
 
 .subtitulo {
@@ -50,6 +132,7 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
+    background-color: var(--color-fondo);
 }
 
 .tarjeta {
@@ -61,7 +144,7 @@
 }
 
 /* Estilos de botones */
-.botonPrimario {
+.botonPrimarioDegradado {
     background: var(--gradiente-primario);
     color: var(--color-texto);
     border: none;
@@ -70,6 +153,29 @@
     font-size: 1rem;
     cursor: pointer;
     transition: opacity 0.2s, transform 0.2s;
+}
+
+.botonPrimarioDegradado:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.botonPrimarioDegradado:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.botonPrimario {
+    padding: 0.5rem 1.5rem;
+    background-color: rgb(52, 45, 143);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    align-self: flex-start;
+    margin-bottom: 20px;
 }
 
 .botonPrimario:hover {
@@ -120,8 +226,7 @@
     transform: translateY(-2px);
 }
 
-/* estilos varios */
-
+/* Estilos varios */
 .contenedorJuegos {
     display: flex;
     flex-direction: column;
@@ -137,4 +242,21 @@
     justify-content: center;
     gap: 20px;
     margin-top: 20px;
+}
+
+/* Estilos específicos para la navegación */
+nav {
+    background-color: var(--color-primario);
+    width: 100%;
+}
+
+/* Estilos para links */
+a {
+    color: #00d9ff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #d000ff;
 }
