@@ -54,13 +54,16 @@ onMounted(async () => {
         <div class="titulos">
           <div v-if="sessionStore.session" class="titulo">
             ¡Bienvenido de vuelta, <strong>{{ nombreUsuario || "usuario" }}!</strong>
+
+            <div class="barraDegradado" />
+
             <p class="subtitulo">Aquí tienes una selección aleatoria de juegos para ti:</p>
           </div>
 
           <div v-else>
             <div class="titulo">¡Bienvenido a <strong>PixelRift!</strong></div>
 
-            <div class="barraDegradado"></div>
+            <div class="barraDegradado" />
 
             <router-link to="/cuenta/" class="subtitulo" align="center">
               Regístrate o Inicia Sesión
@@ -141,8 +144,9 @@ onMounted(async () => {
   height: 3px;
   width: 100%;
   background: linear-gradient(45deg, #d000ff, #00d9ff);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
-
 
 .sinColecciones {
   text-align: center;

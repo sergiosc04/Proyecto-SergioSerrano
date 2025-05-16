@@ -93,8 +93,6 @@ onMounted(() => {
       </div>
     </div>
 
-
-
     <div class="contenedorJuegos">
       <h3 v-if="idBuscar">
         Resultados de la búsqueda "{{ idBuscar }}":
@@ -111,8 +109,8 @@ onMounted(() => {
         <spinnerCarga />
         <p> <strong>Cargando catálogo...</strong></p>
       </div>
-
     </div>
+
   </main>
 
 </template>

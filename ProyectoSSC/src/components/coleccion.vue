@@ -426,7 +426,6 @@ onMounted(async () => {
     border-radius: 8px;
     text-align: center;
     position: relative;
-    /* Añadir esta línea */
 }
 
 .botonPrincipal:hover {
@@ -450,8 +449,6 @@ onMounted(async () => {
     background-color: #3f5972;
     cursor: not-allowed;
 }
-
-
 
 .botonEliminar {
     position: absolute;

@@ -237,10 +237,7 @@ onMounted(() => {
         <!-- Descripción -->
         <section class="seccionInfo">
           <h2 class="tituloSeccion">Descripción</h2>
-          <details>
-            <summary class="botonDesplegar">Ver descripción completa</summary>
-            <div v-html="juego.description" class="contenidoDescripcion"></div>
-          </details>
+          <div v-html="juego.description" class="contenidoDescripcion"></div>
         </section>
 
         <!-- Información general -->

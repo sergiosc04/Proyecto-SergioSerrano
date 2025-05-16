@@ -60,7 +60,6 @@ const getDatos = async () => {
         return;
     }
 
-    //Corregir, mostrar en el template
     console.log("Usuario encontrado: ");
     console.log(usuario);
 
@@ -159,137 +158,212 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="perfilUsuario">
-        <h1 v-if="username" class="tituloPerfilCentrado">Perfil de {{ username }}</h1>
+    <div class="contenedorPrincipal">
+        <!-- Cabecera del perfil similar a la cabecera del juego -->
+        <header class="cabeceraJuego">
+            <h1 class="tituloJuego" v-if="username">Perfil de {{ username }}</h1>
+            <h1 class="tituloJuego" v-else>Perfil de Usuario</h1>
+            <p class="subtituloJuego">Gestiona tu cuenta y personaliza tu perfil</p>
+        </header>
 
-        <div class="contenedorPrincipal">
-            <div v-if="sessionStore.session" class="tarjetaPerfil">
-                <form class="formularioPerfil">
-                    <!-- Sección de Avatar -->
+        <div class="contenidoFlex" v-if="sessionStore.session">
+            <!-- Panel izquierdo para avatar -->
+            <aside class="panelIzquierdo">
+                <div class="tarjetaInfo">
+                    <h2 class="tituloSeccion">Avatar</h2>
                     <div class="seccionAvatar">
                         <div class="contenedorAvatar">
                             <div class="imagenAvatar" v-if="sessionStore.avatarUrl">
                                 <img :src="sessionStore.avatarUrl" alt="Avatar" class="avatar" />
                             </div>
-                            <div class="selectorAvatar">
-                                <label for="cambioAvatar" class="etiquetaArchivo">Actualizar Avatar</label>
-                                <input id="cambioAvatar" type="file" accept="image/*" @change="subirAvatar"
-                                    class="entradaArchivo" />
+                            <div class="imagenAvatar" v-else>
+                                <div class="placeholderAvatar">
+                                    <span>Sin avatar</span>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="selectorAvatar">
+                        <label for="cambioAvatar" class="botonControl">Actualizar Avatar</label>
+                        <input id="cambioAvatar" type="file" accept="image/*" @change="subirAvatar"
+                            class="entradaArchivo" />
+                    </div>
+                </div>
 
-                    <!-- Datos Personales -->
-                    <div class="seccionDatos">
-                        <h2 class="subtituloPerfil">Datos de la cuenta</h2>
+                <!-- Datos de la cuenta y estadísticas -->
+                <div class="tarjetaInfo">
+                    <h2 class="tituloSeccion">Datos de cuenta</h2>
+                    <ul class="listaEstadisticas">
+                        <li class="itemEstadistica">
+                            <span class="valorEstadistica">{{ sessionStore.user?.email }}</span>
+                            <span class="etiquetaEstadistica">Email</span>
+                        </li>
+                        <li class="itemEstadistica">
+                            <span class="valorEstadistica">{{ sessionStore.session?.user?.role || 'Usuario' }}</span>
+                            <span class="etiquetaEstadistica">Rol</span>
+                        </li>
+                        <li class="itemEstadistica">
+                            <span class="valorEstadistica">{{ sessionStore.session?.user?.last_sign_in_at ? new
+                                Date(sessionStore.session.user.last_sign_in_at).toLocaleDateString() : 'Nunca' }}</span>
+                            <span class="etiquetaEstadistica">Último acceso</span>
+                        </li>
+                    </ul>
+                </div>
 
-                        <div class="grupoFormulario">
-                            <label for="username" class="etiquetaCampo">Nombre de Usuario:</label>
-                            <input id="username" type="text" v-model="usernameEditado" class="campoDatos" />
-                        </div>
+                <!-- Botón de cerrar sesión -->
+                <div class="tarjetaInfo">
+                    <button type="button" @click="cerrarSesion()" class="botonCerrarSesion">Cerrar Sesión</button>
+                </div>
+            </aside>
 
-                        <div class="grupoFormulario">
-                            <label for="biografia" class="etiquetaCampo">Biografía:</label>
-                            <textarea id="biografia" v-model="biografiaEditada" class="campoTextarea"
-                                rows="3"></textarea>
-                        </div>
+            <!-- Panel derecho para formulario y datos -->
+            <main class="panelDerecho">
+                <!-- Datos personales -->
+                <section class="seccionInfo">
+                    <h2 class="tituloSeccion">Datos personales</h2>
 
-                        <div class="grupoFormulario">
-                            <label for="idiomas" class="etiquetaCampo">Idiomas:</label>
-                            <input id="idiomas" type="text" v-model="idiomaEditado" class="campoDatos" />
-                        </div>
-
-                        <button type="button" @click="actualizarDatos()" class="botonPrimario">Guardar cambios</button>
+                    <div class="grupoFormulario">
+                        <label for="username" class="etiquetaCampo">Nombre de Usuario:</label>
+                        <input id="username" type="text" v-model="usernameEditado" class="campoDatos" />
                     </div>
 
-                    <!-- Email y Datos de Cuenta -->
-                    <div class="seccionMetadatos">
-                        <h2 class="subtituloPerfil">Metadatos de la cuenta</h2>
+                    <div class="grupoFormulario">
+                        <label for="biografia" class="etiquetaCampo">Biografía:</label>
+                        <textarea id="biografia" v-model="biografiaEditada" class="campoTextarea" rows="3"></textarea>
+                    </div>
 
-                        <div class="grupoFormulario">
-                            <label for="email" class="etiquetaCampo">Correo Electrónico:</label>
-                            <input id="email" type="email" v-model="sessionStore.user.email" disabled
-                                class="campoDesactivado" />
+                    <div class="grupoFormulario">
+                        <label for="idiomas" class="etiquetaCampo">Idiomas:</label>
+                        <input id="idiomas" type="text" v-model="idiomaEditado" class="campoDatos" />
+                    </div>
+
+                    <button type="button" @click="actualizarDatos()" class="botonControl">Guardar cambios</button>
+                </section>
+
+                <!-- Metadatos técnicos -->
+                <section class="seccionInfo">
+                    <h2 class="tituloSeccion">Metadatos de la cuenta</h2>
+
+                    <div class="gridInfoTecnica">
+                        <div class="itemInfoTecnica">
+                            <span class="etiquetaInfoTecnica">UID del Usuario</span>
+                            <span class="valorInfoTecnica">{{ sessionStore.session?.user?.id || 'No disponible'
+                            }}</span>
                         </div>
 
-                        <div class="grupoFormulario">
-                            <label for="uid" class="etiquetaCampo">UID del Usuario:</label>
-                            <input id="uid" type="text" v-model="sessionStore.session.user.id" disabled
-                                class="campoDesactivado" />
+                        <div class="itemInfoTecnica">
+                            <span class="etiquetaInfoTecnica">Fecha de registro</span>
+                            <span class="valorInfoTecnica">{{ sessionStore.session?.user?.created_at ? new
+                                Date(sessionStore.session.user.created_at).toLocaleString() : 'No disponible' }}</span>
                         </div>
 
-                        <div class="grupoFormulario">
-                            <label for="lastSignIn" class="etiquetaCampo">Último Acceso:</label>
-                            <input id="lastSignIn" type="text" :value="sessionStore.session.user.last_sign_in_at
-                                ? new Date(sessionStore.session.user.last_sign_in_at).toLocaleString()
-                                : 'Nunca'" disabled class="campoDesactivado" />
+                        <div class="itemInfoTecnica">
+                            <span class="etiquetaInfoTecnica">Nivel acceso BBDD</span>
+                            <span class="valorInfoTecnica">{{ sessionStore.session?.user?.role || 'No disponible'
+                            }}</span>
                         </div>
 
-                        <div class="grupoFormulario">
-                            <label for="role" class="etiquetaCampo">Nivel acceso BBDD:</label>
-                            <input id="role" type="text" v-model="sessionStore.session.user.role" disabled
-                                class="campoDesactivado" />
-                        </div>
-
-                        <div class="grupoFormulario">
-                            <label for="avatarUrl" class="etiquetaCampo">Enlace Avatar:</label>
-                            <input id="avatarUrl" type="text" v-model="sessionStore.avatarUrl" disabled
-                                class="campoDesactivado" />
-                        </div>
-
-                        <div class="grupoFormulario">
-                            <button type="button" @click="cerrarSesion()" class="botonCerrarSesion">Cerrar
-                                Sesión</button>
+                        <div class="itemInfoTecnica">
+                            <span class="etiquetaInfoTecnica">Enlace Avatar</span>
+                            <span class="valorInfoTecnica">{{ sessionStore.avatarUrl || 'No disponible' }}</span>
                         </div>
                     </div>
-                </form>
+                </section>
+            </main>
+        </div>
+
+        <!-- Mensaje de error si no hay sesión -->
+        <div v-else class="contenedorError">
+            <div class="mensajeError">
+                <h2>No has iniciado sesión</h2>
+                <p>Por favor, inicia sesión para ver tu perfil</p>
             </div>
-
         </div>
     </div>
-
 </template>
 
-
 <style scoped>
-.perfilUsuario {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.tituloPerfilCentrado {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 30px;
-    font-size: 2rem;
-}
-
-.contenedorPrincipal {
-    display: flex;
-    justify-content: center;
-}
-
-.tarjetaPerfil {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #1a1c2e;
+    min-height: 100vh;
     width: 100%;
-    overflow: hidden;
 }
 
-.formularioPerfil {
-    padding: 30px;
+/* Estilos principales */
+.contenedorPrincipal {
+    min-height: 100vh;
+    width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1c2e;
+    padding: 2rem;
+}
+
+.cabeceraJuego {
+    text-align: center;
+    margin: 0 auto 2rem auto;
+    max-width: 1400px;
+    background: linear-gradient(90deg, #1f2136, #252744, #1f2136);
+    padding: 1.5rem;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #333654;
+}
+
+.cabeceraJuego::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(45deg, #d000ff, #00d9ff);
+}
+
+.tituloJuego {
+    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 0 15px rgba(208, 0, 255, 0.3);
+}
+
+.subtituloJuego {
+    color: #a4a8e0;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+}
+
+.contenidoFlex {
+    display: flex;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Panel izquierdo (avatar y datos rápidos) */
+.panelIzquierdo {
+    flex: 1;
+    max-width: 440px;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 1.5rem;
+}
+
+.tarjetaInfo {
+    background-color: #1f2136;
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid #333654;
 }
 
 .seccionAvatar {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
+    margin: 1rem 0;
 }
 
 .contenedorAvatar {
@@ -304,10 +378,21 @@ onMounted(async () => {
     overflow: hidden;
     width: 150px;
     height: 150px;
-    border: 3px solid #e0e0e0;
+    border: 3px solid #333654;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.placeholderAvatar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #252744, #1f2136);
+    color: #a4a8e0;
 }
 
 .avatar {
@@ -318,128 +403,221 @@ onMounted(async () => {
 
 .selectorAvatar {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.etiquetaArchivo {
-    background-color: #3498db;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-size: 0.9rem;
-}
-
-.etiquetaArchivo:hover {
-    background-color: #2980b9;
+    justify-content: center;
+    margin-top: 1rem;
 }
 
 .entradaArchivo {
-    margin-top: 10px;
+    display: none;
 }
 
-.seccionDatos,
-.seccionMetadatos {
-    background-color: #f9f9f9;
-    padding: 25px;
+.botonControl {
+    background: linear-gradient(90deg, #d000ff, #00d9ff);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    font-size: 0.9rem;
+    text-align: center;
+    display: inline-block;
+}
+
+.botonControl:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.listaEstadisticas {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+    padding: 0;
+    list-style: none;
+    margin: 0.5rem 0 0;
+}
+
+.itemEstadistica {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #1a1c2e;
+    padding: 0.75rem;
     border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #333654;
 }
 
-.subtituloPerfil {
-    font-size: 1.3rem;
-    color: #333;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #3498db;
+.valorEstadistica {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    word-break: break-word;
+}
+
+.etiquetaEstadistica {
+    color: #a4a8e0;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.botonCerrarSesion {
+    background: linear-gradient(90deg, #ff3d64, #ff5e54);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    font-size: 1rem;
+    width: 100%;
+    font-weight: 500;
+}
+
+.botonCerrarSesion:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+/* Panel derecho (información detallada) */
+.panelDerecho {
+    background-color: 1a1c2e;
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.seccionInfo {
+    background-color: #1f2136;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #333654;
+}
+
+.tituloSeccion {
+    color: #ffffff;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #333654;
+    position: relative;
+}
+
+.tituloSeccion::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: linear-gradient(to right, #d000ff, #00d9ff);
 }
 
 .grupoFormulario {
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
 }
 
 .etiquetaCampo {
     display: block;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #555;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #a4a8e0;
     font-size: 0.95rem;
 }
 
 .campoDatos,
-.campoDesactivado,
 .campoTextarea {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
+    padding: 12px;
+    border: 1px solid #333654;
     border-radius: 6px;
     font-size: 1rem;
+    background-color: #1a1c2e;
+    color: #ffffff;
     margin-bottom: 5px;
-    background-color: #fff;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.campoDatos:focus,
+.campoTextarea:focus {
+    outline: none;
+    border-color: #00d9ff;
+    box-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
 }
 
 .campoTextarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 100px;
 }
 
-.campoDesactivado {
-    background-color: #f5f5f5;
-    color: #888;
-    cursor: not-allowed;
+.gridInfoTecnica {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
 }
 
-.botonPrimario {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 12px 24px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 10px;
-    font-weight: bold;
-    width: 200px;
-    align-self: center;
+.itemInfoTecnica {
+    display: flex;
+    flex-direction: column;
+    background: #1a1c2e;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #333654;
 }
 
-.botonPrimario:hover {
-    background-color: #388E3C;
+.etiquetaInfoTecnica {
+    color: #a4a8e0;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
 }
 
-.botonCerrarSesion {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 12px 24px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 10px;
-    width: 100%;
+.valorInfoTecnica {
+    color: #ffffff;
+    word-break: break-word;
 }
 
-.botonCerrarSesion:hover {
-    background-color: #c0392b;
+/* Pantallas de carga y error */
+.contenedorError {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+}
+
+.mensajeError {
+    background-color: #291e23;
+    border: 1px solid #ff5555;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    color: #ff5555;
+    max-width: 500px;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-    .formularioPerfil {
-        padding: 20px;
+@media (max-width: 1100px) {
+    .contenidoFlex {
+        flex-direction: column;
     }
 
-    .seccionDatos,
-    .seccionMetadatos {
-        padding: 15px;
+    .panelIzquierdo {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .contenedorPrincipal {
+        padding: 1rem;
     }
 
-    .botonPrimario {
-        width: 100%;
+    .tituloJuego {
+        font-size: 1.75rem;
+    }
+
+    .gridInfoTecnica {
+        grid-template-columns: 1fr;
     }
 }
 </style>
