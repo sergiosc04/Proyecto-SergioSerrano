@@ -83,14 +83,14 @@ const subirAvatar = async (evento) => {
         error.value = "No se ha seleccionado ningún archivo.";
         return;
     }
-
+6
     const nombreArchivo = `${idAuth.value}_${archivo.name}`;
     const rutaArchivo = nombreArchivo;
 
     const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(rutaArchivo, archivo, {
-            upsert: true
+            upsert: true 
         });
 
     if (uploadError) {

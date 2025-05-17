@@ -69,27 +69,6 @@ body {
     --gradiente-acento: linear-gradient(135deg, #d000ff, #8a5dff, #00d9ff);
 }
 
-/* Ejemplos de uso:
-
-Fondos en capas:
-.capa-base { background-color: var(--color-fondo); }
-.capa-elevada { background-color: var(--color-fondo-claro); }
-.capa-destacada { background-color: var(--color-fondo-medio); }
-
-Elementos de acento:
-.boton-importante { background: var(--gradiente-primario); }
-.boton-secundario { background-color: var(--color-acento-suave); }
-.indicador { color: var(--color-acento-terciario); }
-
-Mensajes de estado:
-.mensaje-exito { color: var(--color-exito); border-color: var(--color-exito); }
-.mensaje-error { color: var(--color-error); border-color: var(--color-error); }
-
-Elementos con sombras:
-.tarjeta-destacada { box-shadow: var(--sombra-media); }
-.modal { box-shadow: var(--sombra-fuerte); }
-.boton-flotante { box-shadow: var(--sombra-acento); }
-*/
 
 * {
     box-sizing: border-box;

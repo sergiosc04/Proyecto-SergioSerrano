@@ -598,6 +598,7 @@ body {
   font-size: 1rem;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  text-align: left;
 }
 
 .listaTags {
