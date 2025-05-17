@@ -126,8 +126,9 @@ a {
 }
 
 .tarjetaJuego:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(79, 70, 229, 0.2);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .contenedor-img {

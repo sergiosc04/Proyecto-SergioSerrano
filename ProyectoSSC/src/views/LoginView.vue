@@ -2,6 +2,11 @@
 import { ref } from 'vue'
 import { supabase } from '../supabase'
 import { useSessionStore } from '../stores/session'
+import { useRouter } from 'vue-router'
+
+import mail from '../assets/img/login/mail.png'
+import candado from '../assets/img/login/candado.png'
+const router = useRouter();
 
 const cargando = ref(false);
 const email = ref('');
@@ -55,7 +60,7 @@ const cambiarARegistro = () => {
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Correo electrónico</label>
                         <div class="contenedorInput">
-                            <span class="iconoInput">✉️</span>
+                            <img :src="mail" alt="Email" class="iconoInput"/>
                             <input required type="email" placeholder="ejemplo@correo.com" v-model="email"
                                 class="entradaInicioSesion" />
                         </div>
@@ -63,19 +68,15 @@ const cambiarARegistro = () => {
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Contraseña</label>
                         <div class="contenedorInput">
-                            <span class="iconoInput">🔒</span>
+                            <img :src="candado" alt="Password" class="iconoInput"/>
                             <input required type="password" placeholder="Ingresa tu contraseña" v-model="password"
                                 class="entradaInicioSesion" />
-                        </div>
-                        <div class="olvidoPassword">
-                            <a href="#" class="enlaceOlvido">¿Olvidaste tu contraseña?</a>
                         </div>
                     </div>
 
                     <div class="accionesInicioSesion">
                         <button type="button" class="botonInicioSesion" @click="manejarLogin">
                             <span class="textoBoton">Iniciar Sesión</span>
-                            <span class="iconoBoton">→</span>
                         </button>
 
                         <div class="separadorOr">
@@ -102,6 +103,15 @@ const cambiarARegistro = () => {
 </template>
 
 <style scoped>
+.iconoInput {
+    position: absolute;
+    left: 12px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+}
+
+
 .contenedorInicioSesion {
     display: flex;
     height: 100vh;
@@ -112,7 +122,7 @@ const cambiarARegistro = () => {
 
 .barraLateral {
     flex: 1;
-    background-image: url('../assets/img/fondos/barraregistro.gif');
+    background-image: url('../assets/img/login/barraregistro.gif');
     max-width: 33%;
     width: 100%;
     background-size: cover;
@@ -231,10 +241,6 @@ const cambiarARegistro = () => {
     border-color: #00d9ff;
 }
 
-.olvidoPassword {
-    text-align: right;
-    margin-top: 6px;
-}
 
 .enlaceOlvido {
     color: #00d9ff;

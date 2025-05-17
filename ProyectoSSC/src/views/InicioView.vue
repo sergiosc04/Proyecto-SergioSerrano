@@ -94,11 +94,11 @@ onMounted(async () => {
         <div class="titulo">
           Tus <strong>Colecciones</strong>
 
-          <div class="barraDegradado2" />
+          <div class="barraDegradado" />
         </div>
 
-        <div class="subtitulo">
- <p>Tienes <strong>{{ colecciones.length }} </strong> colecciones.</p>
+        <div class="subtitulo" v-if="colecciones.length">
+          <p>Tienes <strong>{{ colecciones.length }} </strong> colecciones.</p>
         </div>
 
         <!-- Contenido condicional de colecciones -->
@@ -127,7 +127,7 @@ onMounted(async () => {
             </div>
           </div>
            <router-link to="/coleccion/" align="center" class="botonVerTodo">
-            <button class="botonPrimario">Ver todas las colecciones</button>
+            <button class="botonPrimario3">Ver todas las colecciones</button>
           </router-link>
         </div>
 
@@ -135,12 +135,8 @@ onMounted(async () => {
         <div v-else class="sinColecciones">
           <p>Inicia sesión para ver y crear colecciones.</p>
           <router-link to="/cuenta/">
-            <button class="botonPrimario">Iniciar sesión</button>
+            <button class="botonPrimario3">Iniciar sesión</button>
           </router-link>
-
-         
-
-          <br><br><br><br>
         </div>
       </div>
     </div>
@@ -148,35 +144,103 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.barraDegradado {
-  height: 3px;
-  width: 100%;
-  background: linear-gradient(45deg, #d000ff, #00d9ff);
-  margin-top: 1rem;
+.iconoInput {
+    position: absolute;
+    left: 12px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+}
+
+.barraDegradado{
+  height: 4px;
+  background: var(--gradiente-acento);
+  margin: 1.5rem 0;
+  border-radius: 2px;
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.2);
+}
+ .barraDegradadoCorta {
+  height: 4px;
+  width:70%;
+  background: var(--gradiente-acento);
+  margin: 1.5rem 0;
+  justify-self: center;
+  border-radius: 2px;
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.2);
+}
+
+.titulo {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 1rem;
 }
-.barraDegradadoCorta {
-  height: 3px;
-  width: 100%;
-  background: linear-gradient(45deg, #d000ff, #00d9ff);
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+
+.contenedorJuegos {
+  background: rgba(30, 32, 50, 0.95);
+  border-radius: 24px;
+  padding: 2.5rem;
+  margin: 3rem auto;
+  max-width: 1400px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.contenedorColecciones {
+  background: #1e2032;
+  border-radius: 24px;
+  padding: 3rem;
+  margin: 3rem auto;
+  max-width: 1400px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.elementoColeccion {
+  background: #141623;
+  border-radius: 20px;
+  padding: 1.8rem;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sinColecciones {
+  background: #1e2032;
+  border-radius: 20px;
+  padding: 3rem;
   text-align: center;
-  padding: 2rem;
-  background: #252744;
-  border-radius: 12px;
-  color: #a4a8e0;
-  border: 1px solid #333654;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
-.botonVerTodo {
+.botonPrimario3 {
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.botonPrimario3:hover {
+  background: #4f46e5;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.contenedorCarga {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 30px;
+  min-height: 100vh;
 }
 
 .titulos {
@@ -185,26 +249,6 @@ onMounted(async () => {
   align-items: center;
   flex-direction: column;
   margin-top: 2rem;
-}
-
-.contenedorColecciones {
-  background-color: #1f2136;
-  border-radius: 12px;
-  padding: 2rem;
-  margin: 2rem 13%;
-  border: 1px solid #333654;
-}
-
-.vistaPrevia {
-  margin-top: 1.5rem;
-}
-
-.preguntas {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  margin-bottom: 1rem;
 }
 
 .listaColecciones {
@@ -216,73 +260,18 @@ onMounted(async () => {
 }
 
 .elementoColeccion {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: #131520;
-  color: #e9e9ec;
-  border-radius: 16px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(79, 70, 229, 0.15);
-  padding: 1.2rem;
+  background: linear-gradient(145deg, #141623, #1a1c2d);
+  border-radius: 20px;
+  padding: 1.8rem;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .elementoColeccion:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(79, 70, 229, 0.2);
-}
-
-.elementoColeccion h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 0.8rem;
-  color: #ffffff;
-  line-height: 1.3;
-  letter-spacing: 0.02em;
-  padding: 0.5rem;
-}
-
-.elementoColeccion h5 {
-  color: #a1a1b5;
-  font-weight: 500;
-  margin: 0.5rem 0 1rem 0;
-  font-size: 0.9rem;
-  padding: 0.5rem;
-}
-
-.botonPrimario {
-  background-color: #5d5fef;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.2s;
-  font-weight: 500;
-}
-
-.botonPrimario:hover {
-  opacity: 0.9;
-  transform: scale(1.05);
-}
-
-.botonSecundario {
-  background-color: #5d5fef;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.7rem 0;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-  width: 100%;
-}
-
-.botonSecundario:hover {
-  background-color: #4b4aca;
-  transform: translateY(-2px);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 @media (max-width: 768px) {
@@ -294,13 +283,5 @@ onMounted(async () => {
   .listaColecciones {
     grid-template-columns: 1fr;
   }
-}
-
-.contenedorCarga {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
 }
 </style>

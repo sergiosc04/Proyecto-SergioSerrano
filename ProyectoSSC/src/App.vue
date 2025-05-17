@@ -1,7 +1,9 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useSessionStore } from './stores/session';
+
 import navbar from './components/navbar.vue';
+import piePagina from './components/footer.vue';
 
 const sessionStore = useSessionStore();
 
@@ -17,6 +19,10 @@ onMounted(async () => {
 
     <span>
         <RouterView />
+    </span>
+
+    <span>
+        <piePagina />
     </span>
     
 </template>

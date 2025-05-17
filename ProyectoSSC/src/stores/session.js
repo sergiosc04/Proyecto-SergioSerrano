@@ -23,7 +23,7 @@ export const useSessionStore = defineStore('session', {
         logout() {
             this.session = null;
             this.user = null;
-            this.avatarUrl = null;  // Limpiamos también el avatar
+            this.avatarUrl = null;
         },
 
         // Nuevo método para recuperar la sesión
@@ -38,8 +38,10 @@ export const useSessionStore = defineStore('session', {
 
                 if (data?.session) {
                     this.setSession(data.session);
+
                     // Recuperar el avatar después de establecer la sesión
                     await this.recuperarAvatar();
+                    
                     console.log('Sesión y avatar recuperados correctamente');
                     return true;
                 } else {

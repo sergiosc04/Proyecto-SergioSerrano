@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import { supabase } from '../supabase'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
+
+import mail from '../assets/img/login/mail.png'
+import candado from '../assets/img/login/candado.png'
 
 const cargando = ref(false);
 const email = ref('');
@@ -79,7 +82,7 @@ const cambiarALogin = () => {
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Correo electrónico</label>
                         <div class="contenedorInput">
-                            <span class="iconoInput">✉️</span>
+                            <img :src="mail" alt="Email" class="iconoInput"/>
                             <input required type="email" placeholder="ejemplo@correo.com" v-model="email"
                                 class="entradaInicioSesion" />
                         </div>
@@ -87,7 +90,7 @@ const cambiarALogin = () => {
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Contraseña</label>
                         <div class="contenedorInput">
-                            <span class="iconoInput">🔒</span>
+                            <img :src="candado" alt="Password" class="iconoInput"/>
                             <input required type="password" placeholder="Ingresa tu contraseña" v-model="password"
                                 class="entradaInicioSesion" />
                         </div>
@@ -96,7 +99,6 @@ const cambiarALogin = () => {
                     <div class="accionesInicioSesion">
                         <button type="button" class="botonInicioSesion" @click="manejarRegistro()">
                             <span class="textoBoton">Registrarse</span>
-                            <span class="iconoBoton">→</span>
                         </button>
 
                         <div class="separadorOr">
@@ -133,7 +135,7 @@ const cambiarALogin = () => {
 
 .barraLateral {
     flex: 1;
-    background-image: url('../assets/img/fondos/barraregistro.gif');
+    background-image: url('../assets/img/login/barraregistro.gif');
     max-width: 33%;
     width: 100%;
     background-size: cover;
@@ -228,8 +230,9 @@ const cambiarALogin = () => {
 .iconoInput {
     position: absolute;
     left: 12px;
-    color: #8a8ebd;
-    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
 }
 
 .entradaInicioSesion {
