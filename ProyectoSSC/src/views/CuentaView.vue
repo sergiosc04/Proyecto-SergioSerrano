@@ -169,16 +169,19 @@ onMounted(async () => {
             <!-- Panel izquierdo para avatar -->
             <aside class="panelIzquierdo">
                 <div class="tarjetaInfo">
+
                     <h2 class="tituloSeccion">Avatar</h2>
                     <div class="seccionAvatar">
                         <div class="contenedorAvatar">
                             <div class="imagenAvatar" v-if="sessionStore.avatarUrl">
                                 <img :src="sessionStore.avatarUrl" alt="Avatar" class="avatar" />
                             </div>
+
                             <div class="imagenAvatar" v-else>
                                 <div class="placeholderAvatar">
                                     <span>Sin avatar</span>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -190,24 +193,30 @@ onMounted(async () => {
                 </div>
 
                 <!-- Datos de la cuenta y estadísticas -->
-                <div class="tarjetaInfo">
-                    <h2 class="tituloSeccion">Datos de cuenta</h2>
-                    <ul class="listaEstadisticas">
-                        <li class="itemEstadistica">
-                            <span class="valorEstadistica">{{ sessionStore.user?.email }}</span>
-                            <span class="etiquetaEstadistica">Email</span>
-                        </li>
-                        <li class="itemEstadistica">
-                            <span class="valorEstadistica">{{ sessionStore.session?.user?.role || 'Usuario' }}</span>
-                            <span class="etiquetaEstadistica">Rol</span>
-                        </li>
-                        <li class="itemEstadistica">
-                            <span class="valorEstadistica">{{ sessionStore.session?.user?.last_sign_in_at ? new
-                                Date(sessionStore.session.user.last_sign_in_at).toLocaleDateString() : 'Nunca' }}</span>
-                            <span class="etiquetaEstadistica">Último acceso</span>
-                        </li>
-                    </ul>
-                </div>
+                                 <!-- Metadatos técnicos -->
+                <section class="seccionInfo">
+                    <h2 class="tituloSeccion">Metadatos de la cuenta</h2>
+
+                    <div class="gridInfoTecnica">
+                        <div class="itemInfoTecnica">
+                            <span class="etiquetaInfoTecnica">UID del Usuario</span>
+                            <span class="valorInfoTecnica">{{ sessionStore.session?.user?.id || 'No disponible'
+                            }}</span>
+                        </div>
+
+                        <div class="itemInfoTecnica">
+                            <span class="etiquetaInfoTecnica">Nivel acceso BBDD</span>
+                            <span class="valorInfoTecnica">{{ sessionStore.session?.user?.role || 'No disponible'
+                            }}</span>
+                        </div>
+
+                        <div class="itemInfoTecnica">
+                            <span class="etiquetaInfoTecnica">Enlace Avatar</span>
+                            <span class="valorInfoTecnica">{{ sessionStore.avatarUrl || 'No disponible' }}</span>
+                        </div>
+                    </div>
+                </section>
+
 
                 <!-- Botón de cerrar sesión -->
                 <div class="tarjetaInfo">
@@ -239,34 +248,34 @@ onMounted(async () => {
                     <button type="button" @click="actualizarDatos()" class="botonPrimario">Guardar cambios</button>
                 </section>
 
-                <!-- Metadatos técnicos -->
-                <section class="seccionInfo">
-                    <h2 class="tituloSeccion">Metadatos de la cuenta</h2>
 
-                    <div class="gridInfoTecnica">
-                        <div class="itemInfoTecnica">
-                            <span class="etiquetaInfoTecnica">UID del Usuario</span>
-                            <span class="valorInfoTecnica">{{ sessionStore.session?.user?.id || 'No disponible'
-                            }}</span>
-                        </div>
+                <section class="tarjetaInfo">
+                    <h2 class="tituloSeccion">Datos de cuenta</h2>
 
-                        <div class="itemInfoTecnica">
-                            <span class="etiquetaInfoTecnica">Fecha de registro</span>
-                            <span class="valorInfoTecnica">{{ sessionStore.session?.user?.created_at ? new
+                    <ul class="listaEstadisticas">
+                        <li class="itemEstadistica">
+                            <span class="etiquetaEstadistica">Email</span>
+                            <span class="valorEstadistica">{{ sessionStore.user?.email }}</span>
+                            
+                        </li>
+
+                        <li class="itemEstadistica">
+                            <span class="etiquetaEstadistica">Rol</span>
+                            <span class="valorEstadistica">{{ sessionStore.session?.user?.role || 'Usuario' }}</span>
+                        </li>
+
+                        <li class="itemEstadistica">
+                            <span class="etiquetaEstadistica">Fecha de registro</span>
+                            <span class="valorEstadistica">{{ sessionStore.session?.user?.created_at ? new
                                 Date(sessionStore.session.user.created_at).toLocaleString() : 'No disponible' }}</span>
-                        </div>
+                        </li>
 
-                        <div class="itemInfoTecnica">
-                            <span class="etiquetaInfoTecnica">Nivel acceso BBDD</span>
-                            <span class="valorInfoTecnica">{{ sessionStore.session?.user?.role || 'No disponible'
-                            }}</span>
-                        </div>
-
-                        <div class="itemInfoTecnica">
-                            <span class="etiquetaInfoTecnica">Enlace Avatar</span>
-                            <span class="valorInfoTecnica">{{ sessionStore.avatarUrl || 'No disponible' }}</span>
-                        </div>
-                    </div>
+                        <li class="itemEstadistica">
+                            <span class="etiquetaEstadistica">Último acceso</span>
+                            <span class="valorEstadistica">{{ sessionStore.session?.user?.last_sign_in_at ? new
+                                Date(sessionStore.session.user.last_sign_in_at).toLocaleDateString() : 'Nunca' }}</span>
+                        </li>
+                    </ul>
                 </section>
             </main>
         </div>
@@ -440,7 +449,7 @@ body {
 .itemEstadistica {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; 
     background: #1a1c2e;
     padding: 0.75rem;
     border-radius: 8px;
@@ -451,14 +460,16 @@ body {
     font-size: 1rem;
     font-weight: bold;
     color: #ffffff;
-    text-align: center;
+    text-align: left;
     word-break: break-word;
 }
 
 .etiquetaEstadistica {
     color: #a4a8e0;
     font-size: 0.8rem;
-    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    text-align: left; 
+    width: 100%; /* Añadido para asegurar que ocupa todo el ancho */
 }
 
 /* Panel derecho (información detallada) */
