@@ -173,15 +173,14 @@ h3 {
     color: white;
     border: none;
     border-radius: 4px;
-    font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s;
     align-self: flex-start;
     margin-bottom: 20px;
 }
 
 .botonPrimario2:hover {
     background-color: rgb(102, 102, 102);
+    transform: scale(1.02);
 }
 
 .botonPrimario2:disabled {
@@ -206,6 +205,23 @@ h3 {
 }
 
 
+.botonRojo {
+    background: linear-gradient(90deg, #ff3d64, #ff5e54);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    font-size: 1rem;
+    width: 100%;
+    font-weight: 500;
+}
+
+.botonRojo:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
 /* Estilos varios */
 .contenedorJuegos {
     display: flex;

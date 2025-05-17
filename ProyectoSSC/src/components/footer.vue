@@ -59,6 +59,7 @@ const anioActual = computed(() => {
 
 <style scoped>
 .piePagina {
+
   background-color: var(--color-primario);
   color: var(--color-texto-claro);
   padding: 2rem 0;

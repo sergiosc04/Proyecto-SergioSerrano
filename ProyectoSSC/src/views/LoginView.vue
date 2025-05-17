@@ -4,13 +4,18 @@ import { supabase } from '../supabase'
 import { useSessionStore } from '../stores/session'
 import { useRouter } from 'vue-router'
 
+import { onMounted } from 'vue'
+
 import mail from '../assets/img/login/mail.png'
 import candado from '../assets/img/login/candado.png'
+
+
 const router = useRouter();
 
 const cargando = ref(false);
 const email = ref('');
 const password = ref('');
+
 const sessionStore = useSessionStore();
 
 const manejarLogin = async () => {
@@ -44,13 +49,26 @@ const manejarLogin = async () => {
 const cambiarARegistro = () => {
     router.push('/registro');
 }
+
+onMounted(() => {
+    if (sessionStore.session) {
+        console.log("Sesión activa");
+        router.push('/cuenta');
+        return;
+    }
+})
+
 </script>
 
 <template>
     <div class="contenedorInicioSesion">
+
         <div class="barraLateral"></div>
+
         <div class="contenidoInicioSesion">
+
             <div class="contenedorFormularioInicioSesion">
+                
                 <div class="cabeceraFormulario">
                     <h2 class="tituloInicioSesion">Bienvenido</h2>
                     <p class="subtituloInicioSesion">Ingresa a tu cuenta</p>
@@ -65,6 +83,7 @@ const cambiarARegistro = () => {
                                 class="entradaInicioSesion" />
                         </div>
                     </div>
+
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Contraseña</label>
                         <div class="contenedorInput">
@@ -91,12 +110,15 @@ const cambiarARegistro = () => {
                                 Regístrate.
                             </button>
                         </div>
+
                     </div>
                 </div>
+                
                 <div v-else class="cargando">
                     <div class="spinnerCarga"></div>
                     <p>Iniciando sesión...</p>
                 </div>
+
             </div>
         </div>
     </div>

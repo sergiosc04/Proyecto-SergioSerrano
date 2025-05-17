@@ -63,10 +63,10 @@ onMounted(async () => {
           <div v-else>
             <div class="titulo">¡Bienvenido a <strong>PixelRift!</strong></div>
 
-            <div class="barraDegradado2" />
+            <div class="barraDegradado" />
 
             <router-link to="/cuenta/" class="subtitulo" align="center">
-              Regístrate o Inicia Sesión
+              <strong>Regístrate o Inicia Sesión</strong>
             </router-link>
             para acceder a tu cuenta y guardar tus juegos favoritos.
 
@@ -94,7 +94,7 @@ onMounted(async () => {
         <div class="titulo">
           Tus <strong>Colecciones</strong>
 
-          <div class="barraDegradado" />
+          
         </div>
 
         <div class="subtitulo" v-if="colecciones.length">

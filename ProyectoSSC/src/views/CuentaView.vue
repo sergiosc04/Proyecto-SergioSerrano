@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useSessionStore } from '../stores/session';
-import auth from '../components/auth.vue';
 import { supabase } from '../supabase';
 import { useRouter } from 'vue-router';
 
@@ -184,7 +183,7 @@ onMounted(async () => {
                         </div>
                     </div>
                     <div class="selectorAvatar">
-                        <label for="cambioAvatar" class="botonControl">Actualizar Avatar</label>
+                        <label for="cambioAvatar" class="botonPrimario">Actualizar Avatar</label>
                         <input id="cambioAvatar" type="file" accept="image/*" @change="subirAvatar"
                             class="entradaArchivo" />
                     </div>
@@ -212,7 +211,7 @@ onMounted(async () => {
 
                 <!-- Botón de cerrar sesión -->
                 <div class="tarjetaInfo">
-                    <button type="button" @click="cerrarSesion()" class="botonCerrarSesion">Cerrar Sesión</button>
+                    <button type="button" @click="cerrarSesion()" class="botonRojo">Cerrar Sesión</button>
                 </div>
             </aside>
 
@@ -237,7 +236,7 @@ onMounted(async () => {
                         <input id="idiomas" type="text" v-model="idiomaEditado" class="campoDatos" />
                     </div>
 
-                    <button type="button" @click="actualizarDatos()" class="botonControl">Guardar cambios</button>
+                    <button type="button" @click="actualizarDatos()" class="botonPrimario">Guardar cambios</button>
                 </section>
 
                 <!-- Metadatos técnicos -->
@@ -462,24 +461,6 @@ body {
     margin-top: 0.25rem;
 }
 
-.botonCerrarSesion {
-    background: linear-gradient(90deg, #ff3d64, #ff5e54);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 12px 16px;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.2s;
-    font-size: 1rem;
-    width: 100%;
-    font-weight: 500;
-}
-
-.botonCerrarSesion:hover {
-    opacity: 0.9;
-    transform: scale(1.02);
-}
-
 /* Panel derecho (información detallada) */
 .panelDerecho {
     background-color: 1a1c2e;
@@ -586,15 +567,7 @@ body {
     min-height: 60vh;
 }
 
-.mensajeError {
-    background-color: #291e23;
-    border: 1px solid #ff5555;
-    border-radius: 12px;
-    padding: 2rem;
-    text-align: center;
-    color: #ff5555;
-    max-width: 500px;
-}
+
 
 /* Responsive */
 @media (max-width: 1100px) {

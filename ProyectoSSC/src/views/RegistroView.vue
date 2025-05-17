@@ -2,6 +2,10 @@
 import { ref } from 'vue'
 import { supabase } from '../supabase'
 import { useRouter } from 'vue-router'
+import { onMounted } from 'vue';
+
+import { useSessionStore } from '../stores/session';
+
 
 import mail from '../assets/img/login/mail.png'
 import candado from '../assets/img/login/candado.png'
@@ -11,6 +15,7 @@ const email = ref('');
 const password = ref('');
 const router = useRouter();
 
+const sessionStore = useSessionStore();
 
 const manejarRegistro = async () => {
     try {
@@ -66,6 +71,15 @@ const manejarRegistro = async () => {
 const cambiarALogin = () => {
     router.push('/login');
 }
+
+onMounted(() => {
+    if (sessionStore.session) {
+        console.log("Sesión activa");
+        router.push('/cuenta');
+        return;
+    }
+})
+
 </script>
 
 <template>
