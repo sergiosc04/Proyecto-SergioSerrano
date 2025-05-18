@@ -139,6 +139,7 @@ const actualizarDatos = async () => {
     }
     username.value = usernameEditado.value;
     alert("Se han guardado los cambios correctamente");
+    location.reload();
 }
 
 onMounted(async () => {

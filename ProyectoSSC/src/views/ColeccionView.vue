@@ -53,7 +53,7 @@ onMounted(async () => {
         {{ colecciones.length }} colecciones disponibles
       </p><br>
 
-        <button class="botonControl" @click="toggleCreacion()" v-if="!mostrarCreacion">
+        <button class="botonPrimario" @click="toggleCreacion()" v-if="!mostrarCreacion">
           + Crear nueva colección
         </button>
         
@@ -84,7 +84,10 @@ onMounted(async () => {
           <h2 class="tituloSeccion">Mis colecciones</h2>
 
           <div v-if="error === 'Sin sesión activa'" class="tarjetaInfo">
-            <div class="mensajeInfo">Regístrate o Inicia sesión para ver tus colecciones.</div>
+          <router-link to="/cuenta/" align="center">
+            <strong>Regístrate o Inicia Sesión</strong>
+          </router-link>
+          para crear y administrar colecciones.
           </div>
 
           <div v-else-if="error" class="tarjetaInfo">

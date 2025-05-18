@@ -1,7 +1,7 @@
 <script setup>
 // Importaciones
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import SpinnerCarga from '@/components/SpinnerCarga.vue';
 
@@ -13,6 +13,8 @@ const detallesTiendas = ref([]);
 const indiceSlider = ref(0);
 const cargando = ref(true);
 const route = useRoute();
+const router = useRouter();
+const imagenCargando = ref(true);
 
 // Importar las imágenes
 import steamIcon from '../assets/img/tiendas/steam.png';
@@ -107,10 +109,25 @@ function obtenerNombreTienda(storeId) {
 }
 
 const juegoParaColeccion = () => {
-  const idGuardar = props.juego.id;
-  router.push({ name: 'coleccion', query: { idRecibido: idGuardar } });
+  const idGuardar = juego.value.id;
+  router.push({ 
+    name: 'coleccion', 
+    query: { idRecibido: idGuardar } 
+  });
 };
 
+const manejarCargaImagen = () => {
+  imagenCargando.value = false;
+};
+
+const cambiarImagen = (direccion) => {
+  imagenCargando.value = true;
+  if (direccion === 'siguiente') {
+    capSiguiente();
+  } else {
+    capAnterior();
+  }
+};
 
 // Obtener datos cuando el componente se monta
 onMounted(() => {
@@ -135,22 +152,13 @@ onMounted(() => {
     <header class="cabeceraJuego">
       <h1 class="tituloJuego">{{ juego.name }}</h1>
       <p class="subtituloJuego">{{ juego.released || "Fecha no disponible" }}</p>
-      <button class="botonControl" @click="juegoParaColeccion()">Añadir a colección</button>
+      <button class="botonPrimario" @click="juegoParaColeccion()">Añadir a colección</button>
     </header>
 
     <div class="contenidoFlex">
       <!-- Panel izquierdo: Capturas y datos clave -->
 
       <aside class="panelIzquierdo">
-        <!-- Slider de imágenes -->
-        <div v-if="capturas.length > 0" class="sliderGaleria">
-          <img :src="capturas[indiceSlider].image" class="imagenCaptura" alt="Captura del juego" />
-          <div class="controlesSlider">
-            <button @click="capAnterior" class="botonControl">⇐</button>
-            <span class="contadorImagenes">Imagen {{ indiceSlider + 1 }} de {{ capturas.length }}</span>
-            <button @click="capSiguiente" class="botonControl">⇒</button>
-          </div>
-        </div>
 
         <!-- Datos clave -->
         <div class="tarjetaInfo">
@@ -171,6 +179,29 @@ onMounted(() => {
           </div>
         </div>
 
+          <!-- Estadísticas de jugadores -->
+          <section class="seccionInfo">
+            <h2 class="tituloSeccion">Estadísticas de jugadores</h2>
+
+            <ul class="listaEstadisticas">
+              <li class="itemEstadistica">
+                <span class="valorEstadistica">{{ juego.added || "0" }}</span>
+                <span class="etiquetaEstadistica">Total añadidos</span>
+              </li>
+              <li class="itemEstadistica">
+                <span class="valorEstadistica">{{ juego.added_by_status?.beaten || "0" }}</span>
+                <span class="etiquetaEstadistica">Completados</span>
+              </li>
+              <li class="itemEstadistica">
+                <span class="valorEstadistica">{{ juego.added_by_status?.playing || "0" }}</span>
+                <span class="etiquetaEstadistica">En juego</span>
+              </li>
+              <li class="itemEstadistica">
+                <span class="valorEstadistica">{{ juego.added_by_status?.dropped || "0" }}</span>
+                <span class="etiquetaEstadistica">Abandonados</span>
+              </li>
+            </ul>
+          </section>
         <!-- Plataformas -->
         <div class="tarjetaInfo">
           <h2 class="tituloSeccion">Plataformas</h2>
@@ -197,6 +228,8 @@ onMounted(() => {
           </ul>
         </div>
 
+
+        
         <section class="seccionInfo">
           <h2 class="tituloSeccion">Datos técnicos</h2>
 
@@ -234,6 +267,35 @@ onMounted(() => {
 
       <!-- Panel derecho: Detalles e información -->
       <main class="panelDerecho">
+
+
+        
+        <!-- Slider de imágenes -->
+        <section class="seccionInfo">
+          <h2 class="tituloSeccion">Capturas del juego</h2>
+
+          <div v-if="capturas.length > 0" class="sliderGaleria">
+            <div class="contenedorImagen">
+
+              <SpinnerCarga v-if="imagenCargando" class="spinnerImagen"/>
+              <img 
+                :src="capturas[indiceSlider].image" 
+                class="imagenCaptura" 
+                :class="{ 'oculto': imagenCargando }"
+                alt="Captura del juego" 
+                @load="manejarCargaImagen"
+              />
+            </div>
+
+            <div class="controlesSlider">
+              <button @click="() => cambiarImagen('anterior')" class="botonControl">⇐</button>
+              <span class="contadorImagenes">Imagen {{ indiceSlider + 1 }} de {{ capturas.length }}</span>
+              <button @click="() => cambiarImagen('siguiente')" class="botonControl">⇒</button>
+            </div>
+
+          </div>
+        </section>
+        
         <!-- Descripción -->
         <section class="seccionInfo">
           <h2 class="tituloSeccion">Descripción</h2>
@@ -277,51 +339,6 @@ onMounted(() => {
           </section>
         </div>
 
-
-
-        <!-- Enlaces y estadísticas -->
-        <div class="infoGrid">
-          <!-- Enlaces varios -->
-          <section class="seccionInfo">
-            <h2 class="tituloSeccion">Enlaces útiles</h2>
-
-            <ul class="listaEnlaces">
-              <li v-if="juego.website" class="itemEnlace">
-                <a :href="juego.website" target="_blank" class="enlaceExterno">Sitio web oficial</a>
-              </li>
-              <li v-if="juego.metacritic_url" class="itemEnlace">
-                <a :href="juego.metacritic_url" target="_blank" class="enlaceExterno">Metacritic</a>
-              </li>
-              <li v-if="juego.reddit_url" class="itemEnlace">
-                <a :href="juego.reddit_url" target="_blank" class="enlaceExterno">Reddit</a>
-              </li>
-            </ul>
-          </section>
-
-          <!-- Estadísticas de jugadores -->
-          <section class="seccionInfo">
-            <h2 class="tituloSeccion">Estadísticas de jugadores</h2>
-
-            <ul class="listaEstadisticas">
-              <li class="itemEstadistica">
-                <span class="valorEstadistica">{{ juego.added || "0" }}</span>
-                <span class="etiquetaEstadistica">Total añadidos</span>
-              </li>
-              <li class="itemEstadistica">
-                <span class="valorEstadistica">{{ juego.added_by_status?.beaten || "0" }}</span>
-                <span class="etiquetaEstadistica">Completados</span>
-              </li>
-              <li class="itemEstadistica">
-                <span class="valorEstadistica">{{ juego.added_by_status?.playing || "0" }}</span>
-                <span class="etiquetaEstadistica">En juego</span>
-              </li>
-              <li class="itemEstadistica">
-                <span class="valorEstadistica">{{ juego.added_by_status?.dropped || "0" }}</span>
-                <span class="etiquetaEstadistica">Abandonados</span>
-              </li>
-            </ul>
-          </section>
-        </div>
         <!-- Tags -->
         <section class="seccionInfo">
           <h2 class="tituloSeccion">Tags</h2>
@@ -331,9 +348,6 @@ onMounted(() => {
             </span>
           </div>
         </section>
-
-        <!-- Detalles técnicos -->
-
       </main>
     </div>
   </div>
@@ -426,11 +440,31 @@ body {
   padding: 10px;
 }
 
+.contenedorImagen {
+  position: relative;
+  min-height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinnerImagen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .imagenCaptura {
   width: 100%;
   height: auto;
   border-radius: 8px;
   margin-bottom: 10px;
+  transition: opacity 0.1s ease;
+}
+
+.imagenCaptura.oculto {
+  opacity: 0;
 }
 
 .controlesSlider {
@@ -441,7 +475,7 @@ body {
 }
 
 .botonControl {
-  background: linear-gradient(90deg, #d000ff, #00d9ff);
+  background: #5d5fef;
   color: white;
   border: none;
   border-radius: 6px;
