@@ -57,7 +57,7 @@ onMounted(async () => {
           ¡Bienvenido a <strong>PixelRift!</strong>
         </div>
 
-        <p v-if="sessionStore.session" class="subtituloJuego">Aquí tienes una selección aleatoria de juegos para ti:</p>
+        <p v-if="sessionStore.session" class="subtituloJuego">Te recomendamos que eches un vistazo a:</p>
 
         <div v-else class="subtituloJuego">
           <router-link to="/cuenta/" class="enlaceExterno">

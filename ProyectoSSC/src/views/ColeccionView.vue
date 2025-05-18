@@ -49,7 +49,9 @@ onMounted(async () => {
     <div class="cabeceraJuego">
       <h1 class="tituloJuego" v-if="idRecibido">Añadir juego a colección</h1>
       <h1 class="tituloJuego" v-else>Mis Colecciones</h1>
-      <p class="subtituloJuego" v-if="colecciones && colecciones.length > 0">
+      <p class="subtituloJuego" v-if="colecciones && colecciones.length === 1">
+        {{ colecciones.length }} colección disponible
+      </p><p class="subtituloJuego" v-else-if="colecciones && colecciones.length > 1">
         {{ colecciones.length }} colecciones disponibles
       </p><br>
 

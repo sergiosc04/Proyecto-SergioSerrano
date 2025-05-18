@@ -71,32 +71,36 @@ export function obtenerColecciones() {
 
     // Crear nueva colección
     const crearColeccion = async (nombreColeccion) => {
-        if (!idusuario.value) {
-            error.value = "Regístrate o inicia sesión para crear colecciones.";
-            return false;
-        }
+        if (nombreColeccion) {
+            if (!idusuario.value) {
+                error.value = "Regístrate o inicia sesión para crear colecciones.";
+                return false;
+            }
 
-        loading.value = true;
-        try {
-            const { data, error } = await supabase
-                .from('coleccion')
-                .insert([{
-                    idusuario: idusuario.value,
-                    nombreColeccion: nombreColeccion
-                }]);
+            loading.value = true;
+            try {
+                const { data, error } = await supabase
+                    .from('coleccion')
+                    .insert([{
+                        idusuario: idusuario.value,
+                        nombreColeccion: nombreColeccion
+                    }]);
 
-            if (error) throw error;
+                if (error) throw error;
 
-            await getColeccion(idusuario.value);
+                await getColeccion(idusuario.value);
 
 
-            return true;
-        } catch (err) {
-            console.error('Error al crear colección:', err);
-            error.value = 'No se pudo crear la colección.';
-            return false;
-        } finally {
-            loading.value = false;
+                return true;
+            } catch (err) {
+                console.error('Error al crear colección:', err);
+                error.value = 'No se pudo crear la colección.';
+                return false;
+            } finally {
+                loading.value = false;
+            }
+        }else{
+            alert("Introduce un nombre a la colección")
         }
     }
 

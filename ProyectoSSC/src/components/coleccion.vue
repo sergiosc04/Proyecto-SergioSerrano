@@ -356,14 +356,14 @@ onMounted(async () => {
         </div>
 
         <div v-else>
-            <p class="textoVacio">Esta colección no tiene juegos aún. <router-link to="/buscar">Explorar
+            <p class="textoVacio">Esta colección no tiene juegos aún. <router-link to="/catalogo">Explorar
                     juegos.</router-link> </p>
         </div>
 
         <!-- Botón para mostrar opciones -->
         <button v-if="!mostrarOpciones" @click="toggleFunciones()" class="botonSecundario">
             <img class="botonesOpciones" src="../assets/img/botones/opciones.png" alt="Opciones">
-            <span>Mostrar opciones</span>
+            <span>Opciones de {{ nombre }}</span>
         </button>
 
         <!-- Botones de opciones -->

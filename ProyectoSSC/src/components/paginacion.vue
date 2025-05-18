@@ -93,7 +93,7 @@ const actualizarJuegosPagina = (event) => {
     justify-content: center;
     width: 100%;
     margin: 30px 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .paginador-contenedor {
@@ -101,10 +101,23 @@ const actualizarJuegosPagina = (event) => {
     align-items: center;
     gap: 20px;
     padding: 12px 24px;
-    background-color: #f5f7fa;
+    background-color: #1f2136;
     border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     max-width: 600px;
+    border: 1px solid #333654;
+    position: relative;
+}
+
+.paginador-contenedor::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #d000ff, #00d9ff);
+    border-radius: 8px 8px 0 0;
 }
 
 .paginador-navegacion {
@@ -121,7 +134,7 @@ const actualizarJuegosPagina = (event) => {
 }
 
 .paginador-pagina label {
-    color: #555;
+    color: #a4a8e0;
     font-weight: 500;
 }
 
@@ -129,9 +142,11 @@ const actualizarJuegosPagina = (event) => {
     width: 60px;
     text-align: center;
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #333654;
     border-radius: 6px;
     font-size: 14px;
+    background-color: #1a1c2e;
+    color: #ffffff;
 }
 
 .paginador-selector {
@@ -139,16 +154,18 @@ const actualizarJuegosPagina = (event) => {
     align-items: center;
     gap: 8px;
     font-size: 14px;
-    color: #555;
+    color: #a4a8e0;
 }
 
 .paginador-selector input {
     width: 50px;
     text-align: center;
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #333654;
     border-radius: 6px;
     font-size: 14px;
+    background-color: #1a1c2e;
+    color: #ffffff;
 }
 
 .paginador-btn {
@@ -157,35 +174,37 @@ const actualizarJuegosPagina = (event) => {
     justify-content: center;
     width: 36px;
     height: 36px;
-    border: none;
+    border: 1px solid #333654;
     border-radius: 6px;
-    background-color: #fff;
+    background-color: #1a1c2e;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .paginador-btn:hover:not(:disabled) {
-    background-color: #eef1f6;
+    border-color: #00d9ff;
+    background-color: #252744;
     transform: translateY(-1px);
 }
 
 .paginador-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background-color: #f0f0f0;
+    background-color: #1a1c2e;
 }
 
 .paginador-icono {
     width: 16px;
     height: 16px;
+    filter: invert(1);
 }
 
 .paginador-ir-btn {
     padding: 8px 16px;
     border: none;
     border-radius: 6px;
-    background-color: #4a55b5;
+    background: linear-gradient(90deg, #d000ff, #00d9ff);
     color: white;
     font-weight: 500;
     cursor: pointer;
@@ -193,8 +212,8 @@ const actualizarJuegosPagina = (event) => {
 }
 
 .paginador-ir-btn:hover:not(:disabled) {
-    background-color: #3a44a0;
-    transform: translateY(-1px);
+    opacity: 0.9;
+    transform: scale(1.05);
 }
 
 .paginador-ir-btn:disabled {
@@ -204,7 +223,36 @@ const actualizarJuegosPagina = (event) => {
 
 input:focus {
     outline: none;
-    border-color: #4a55b5;
-    box-shadow: 0 0 0 2px rgba(74, 85, 181, 0.2);
+    border-color: #00d9ff;
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .paginador-contenedor {
+        flex-direction: column;
+        padding: 16px;
+        gap: 16px;
+    }
+    
+    .paginador-selector {
+        order: 3;
+    }
+    
+    .paginador-ir-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .paginador-navegacion {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .paginador-pagina input,
+    .paginador-selector input {
+        width: 45px;
+    }
 }
 </style>
