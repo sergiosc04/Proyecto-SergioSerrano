@@ -8,6 +8,7 @@ import { onMounted } from 'vue'
 
 import mail from '../assets/img/login/mail.png'
 import candado from '../assets/img/login/candado.png'
+import SpinnerCarga from '@/components/SpinnerCarga.vue'
 
 
 const router = useRouter();
@@ -115,7 +116,7 @@ onMounted(() => {
                 </div>
                 
                 <div v-else class="cargando">
-                    <div class="spinnerCarga"></div>
+                    <SpinnerCarga/>
                     <p>Iniciando sesión...</p>
                 </div>
 

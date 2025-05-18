@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted } from 'vue';
 import tarjetaJuego from '../components/tarjetaJuego.vue';
-import Paginacion from '../components/paginacion.vue';
 import { getJuegos } from '../compostables/obtenerJuegos';
 import SpinnerCarga from '@/components/SpinnerCarga.vue';
 import { useSessionStore } from '../stores/session.js';
@@ -44,7 +43,7 @@ onMounted(async () => {
 
   <!-- Contenido principal cuando ya cargó -->
   <div v-else>
-<BannerJuego v-if="juegos?.length" :juegos="juegos" />
+    <BannerJuego v-if="juegos?.length" :juegos="juegos" />
     <div class="contenedorPrincipal">
       <!-- Sección del Banner destacado -->
 
@@ -82,52 +81,53 @@ onMounted(async () => {
       </section>
 
       <!-- Sección de colecciones -->
-      <section class="seccionInfo seccionColecciones">
-        <h2 class="tituloSeccion">Tus Colecciones</h2>
 
-        <div class="subtituloInfo" v-if="colecciones?.length">
-          <p>Tienes <strong>{{ colecciones.length }}</strong> colecciones.</p>
-        </div>
+        <div class="cabeceraJuego">
+          <h2 class="tituloSeccion">Tus Colecciones</h2>
 
-        <!-- Contenido condicional de colecciones -->
-        <div v-if="sessionStore.session" class="vistaPrevia">
-          <!-- Estado de carga de colecciones -->
-          <div v-if="loadingColecciones" class="contenedorCarga">
-            <SpinnerCarga />
-            <p>Cargando colecciones...</p>
+          <div class="subtituloInfo" v-if="colecciones?.length">
+            <p>Tienes <strong>{{ colecciones.length }}</strong> colecciones.</p>
           </div>
 
-          <!-- Listado de colecciones -->
-          <div v-else-if="colecciones?.length" class="listaColecciones">
-            <div v-for="coleccion in colecciones" :key="coleccion.idcoleccion" class="elementoColeccion">
-              <h3>{{ coleccion.nombreColeccion }}</h3>
-              <div class="valorEstadistica" v-if="coleccion.datosentrada.juegos.length">
-                Esta colección tiene {{ coleccion.datosentrada.juegos.length }} juegos.
+          <!-- Contenido condicional de colecciones -->
+          <div v-if="sessionStore.session" class="vistaPrevia">
+            <!-- Estado de carga de colecciones -->
+            <div v-if="loadingColecciones" class="contenedorCarga">
+              <SpinnerCarga />
+              <p>Cargando colecciones...</p>
+            </div>
+
+            <!-- Listado de colecciones -->
+            <div v-else-if="colecciones?.length" class="listaColecciones">
+              <div v-for="coleccion in colecciones" :key="coleccion.idcoleccion" class="elementoColeccion">
+                <h3>{{ coleccion.nombreColeccion }}</h3>
+                <div class="valorEstadistica" v-if="coleccion.datosentrada.juegos.length">
+                  Esta colección tiene {{ coleccion.datosentrada.juegos.length }} juegos.
+                </div>
+                <div class="valorEstadistica" v-else>
+                  Esta colección no tiene juegos aún.
+                </div>
+                <router-link to="/coleccion" class="botonTienda">
+                  Ver colección
+                </router-link>
               </div>
-              <div class="valorEstadistica" v-else>
-                Esta colección no tiene juegos aún.
-              </div>
-              <router-link to="/coleccion" class="botonTienda">
-                Ver colección
+            </div>
+
+            <div class="contenedorBotonVerTodo">
+              <router-link to="/coleccion/" class="botonControl">
+                Ver todas las colecciones
               </router-link>
             </div>
           </div>
 
-          <div class="contenedorBotonVerTodo">
-            <router-link to="/coleccion/" class="botonControl">
-              Ver todas las colecciones
+          <!-- Mensaje para usuarios no autenticados -->
+          <div v-else class="sinColecciones">
+            <p>Inicia sesión para ver y crear colecciones.</p>
+            <router-link to="/cuenta/">
+              <button class="botonControl">Iniciar sesión</button>
             </router-link>
           </div>
         </div>
-
-        <!-- Mensaje para usuarios no autenticados -->
-        <div v-else class="sinColecciones">
-          <p>Inicia sesión para ver y crear colecciones.</p>
-          <router-link to="/cuenta/">
-            <button class="botonControl">Iniciar sesión</button>
-          </router-link>
-        </div>
-      </section>
     </div>
   </div>
 </template>
@@ -174,19 +174,18 @@ body {
 }
 
 .tituloJuego {
-  margin-top:1rem;
-  margin-bottom:1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   color: #ffffff;
   font-size: 2.5rem;
   font-weight: 700;
-  margin: 0;
   text-shadow: 0 0 15px rgba(208, 0, 255, 0.3);
 }
 
 .subtituloJuego {
   color: #a4a8e0;
-  margin-top: 1.2rem;
-  margin-bottom: 1.2rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
   font-size: 1rem;
 }
 
@@ -213,16 +212,6 @@ body {
   text-align: center;
 }
 
-.tituloSeccion::before {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 50%; 
-  width: 50%;
-  height: 2px;
-  background: linear-gradient(to right, #d000ff, #00d9ff);
-  transform: translateX(-50%);
-}
 
 .contenedorCarga {
   display: flex;

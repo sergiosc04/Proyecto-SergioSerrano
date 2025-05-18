@@ -328,30 +328,10 @@ onMounted(async () => {
 
 <template>
     <div class="listaColeccion">
-        <h2> Colección {{ nombre }} - {{ longColeccion }} juegos en la colección
-            <button v-if="!mostrarOpciones" @click="toggleFunciones()" class="botonSecundario">
-                <img class="botonesOpciones" src="../assets/img/botones/opciones.png"><span>
-                    &nbsp;►</span>
-            </button>
-
-            <span v-if="mostrarOpciones" class="opciones">
-                <button @click="toggleFunciones()" class="botonSecundario">
-                    <img class="botonesOpciones" src="../assets/img/botones/opciones.png"><span> &nbsp;◄</span>
-                </button>
-                <button @click="cambiarNombre(idcoleccion)" class="botonSecundario">
-                    <img class="botonesOpciones" src="../assets/img/botones/editar.png"><span>
-                        &nbsp;Cambiar Nombre</span>
-                </button>
-                <button @click="eliminarColeccion(nombre, idcoleccion)" class="botonSecundario">
-                    <img class="botonesOpciones" src="../assets/img/botones/basura.png"><span>
-                        &nbsp;Eliminar Colección</span>
-                </button>
-                <button @click="nuevoJuego(idcoleccion, 0)" :disabled="cargando" class="botonSecundario">
-                    <img class="botonesOpciones" src="../assets/img/botones/nuevoJuego.png"><span>
-                        &nbsp;<strong> Añadir juego por ID</strong></span>
-                </button>
-            </span>
-        </h2>
+        <div class="textoColeccion">
+            <div class="titulo2">Colección <strong>{{ nombre }}</strong></div>
+            <div class="subtitulo" v-if="longColeccion">{{ longColeccion }} juegos en la colección.</div>
+        </div>
 
         <p v-if="longColeccion"></p>
 
@@ -380,75 +360,214 @@ onMounted(async () => {
                     juegos.</router-link> </p>
         </div>
 
+        <!-- Botón para mostrar opciones -->
+        <button v-if="!mostrarOpciones" @click="toggleFunciones()" class="botonSecundario">
+            <img class="botonesOpciones" src="../assets/img/botones/opciones.png" alt="Opciones">
+            <span>Mostrar opciones</span>
+        </button>
+
+        <!-- Botones de opciones -->
+        <div v-if="mostrarOpciones" class="opciones">
+            <!-- Botón para ocultar -->
+            <button @click="toggleFunciones()" class="botonSecundario">
+                <img class="botonesOpciones" src="../assets/img/botones/cerrar.png" alt="Cerrar">
+                <span>&nbsp;Ocultar opciones</span>
+            </button>
+
+            <button @click="cambiarNombre(idcoleccion)" class="botonSecundario">
+                <img class="botonesOpciones" src="../assets/img/botones/editar.png"><span>
+                    &nbsp;Cambiar Nombre</span>
+            </button>
+
+            <button @click="eliminarColeccion(nombre, idcoleccion)" class="botonSecundario">
+                <img class="botonesOpciones" src="../assets/img/botones/basura.png"><span>
+                    &nbsp;Eliminar Colección</span>
+            </button>
+
+            <button @click="nuevoJuego(idcoleccion, 0)" :disabled="cargando" class="botonSecundario">
+                <img class="botonesOpciones" src="../assets/img/botones/nuevoJuego.png"><span>
+                    &nbsp;<strong>Añadir juego por ID</strong></span>
+            </button>
+        </div>
+
 
     </div>
 </template>
 
-<style>
+<style scoped>
+.textoColeccion {
+    text-align: center;
+}
+
 .botonesOpciones {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     vertical-align: middle;
+    filter: brightness(1.3) contrast(1.1);
+    transition: transform 0.3s ease;
 }
 
 .textoVacio {
-    background-color: #ebebeb;
-    color: #666;
-    padding: 0.5rem;
+    background-color: #131520;
+    color: #a1a1b5;
+    padding: 1.2rem;
     text-align: center;
+    border-radius: 12px;
+    margin-top: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    line-height: 1.6;
+}
+
+.textoVacio a {
+    color: #5d5fef;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.textoVacio a:hover {
+    color: #4b4aca;
+    text-decoration: underline;
 }
 
 .listaColeccion {
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 16px;
+    background-color: #181b29;
+    color: #e9e9ec;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(79, 70, 229, 0.15);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.listaColeccion::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #5d5fef, #9d4edd);
+}
+
+.listaColeccion h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .coleccionesJuegos {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 1.5rem;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     padding-bottom: 1rem;
+    /* Personalización del scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #5d5fef #2d3142;
+}
+
+.coleccionesJuegos::-webkit-scrollbar {
+    height: 8px;
+}
+
+.coleccionesJuegos::-webkit-scrollbar-track {
+    background: #2d3142;
+    border-radius: 8px;
+}
+
+.coleccionesJuegos::-webkit-scrollbar-thumb {
+    background-color: #5d5fef;
+    border-radius: 8px;
 }
 
 .tarjetaJuegoContainer {
     scroll-snap-align: start;
-    min-width: 200px;
+    min-width: 250px;
+    max-width: 300px;
     padding: 0.5rem;
     flex-shrink: 0;
-
-    border-radius: 8px;
+    border-radius: 16px;
     text-align: center;
     position: relative;
-}
-
-.botonPrincipal:hover {
-    background-color: #3f5972;
+    transition: transform 0.3s ease;
 }
 
 .botonPrincipal {
-    background-color: #2c3e50;
+    background-color: #5d5fef;
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.8rem 1.5rem;
     margin-top: 20px;
     margin-bottom: 20px;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
     font-size: 1rem;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(93, 95, 239, 0.3);
+}
+
+.botonPrincipal:hover {
+    background-color: #4b4aca;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(93, 95, 239, 0.4);
 }
 
 .botonPrincipal:disabled {
-    background-color: #3f5972;
+    background-color: #3d4259;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
+
+.botonSecundario {
+    background-color: #2d3142;
+    color: #e9e9ec;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem; /* Añadido: espacio entre imagen y texto */
+    padding-right: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(5px);
+}
+
+.botonSecundario:hover {
+    background-color: #3d4259;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(93, 95, 239, 0.2);
+}
+
+
+.opciones {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
 
 .botonEliminar {
     position: absolute;
@@ -456,26 +575,110 @@ onMounted(async () => {
     left: 15px;
     width: 35px;
     height: 35px;
-    border-radius: 3px;
-    border: 1px solid black;
-    background-color: rgba(255, 0, 0, 0.8);
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border: none;
+    background-color: rgba(255, 59, 48, 0.8);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
     z-index: 10;
-    transition: background-color, transform 0.2s;
+    transition: all 0.2s ease;
 }
 
 .botonEliminar img {
     height: 1.5rem;
+    transition: transform 0.2s ease;
 }
 
 .botonEliminar:hover {
-    background-color: rgba(255, 0, 0, 1);
-    transform: translateY(-3px);
+    background-color: rgba(255, 59, 48, 1);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+
+@media (max-width: 768px) {
+    .listaColeccion {
+        padding: 1rem;
+        margin: 0.5rem;
+    }
+
+    .textoColeccion {
+        margin-bottom: 1rem;
+    }
+
+    .titulo2 {
+        font-size: 1.2rem;
+    }
+
+    .subtitulo {
+        font-size: 0.9rem;
+    }
+
+    .coleccionesJuegos {
+        gap: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+
+    .tarjetaJuegoContainer {
+        min-width: 160px;
+        max-width: 200px;
+        padding: 0.3rem;
+    }
+
+    .botonPrincipal {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    .botonSecundario {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .botonesOpciones {
+        width: 18px;
+        height: 18px;
+    }
+
+    .opciones {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .botonEliminar {
+        width: 30px;
+        height: 30px;
+        top: 10px;
+        left: 10px;
+    }
+
+    .botonEliminar img {
+        height: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .tarjetaJuegoContainer {
+        min-width: 140px;
+        max-width: 180px;
+    }
+
+    .botonSecundario span {
+        font-size: 0.75rem;
+    }
+
+    .listaColeccion::before {
+        height: 3px;
+    }
 }
 </style>
