@@ -87,7 +87,6 @@ body {
     font-weight: 700;
     text-align: center;
     margin-bottom: 1rem;
-    text-shadow: 0 0 15px rgba(208, 0, 255, 0.3);
 }
 
 .titulo2 {
@@ -368,15 +367,3 @@ a:hover {
 .contenedorModal {
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
-
-/* Modificar en el <script setup>
-const cerrarSesion = async () => {
-    try {
-        mostrarModalCerrarSesion.value = false; // Cerrar el modal primero
-        await supabase.auth.signOut();
-        sessionStore.logout();
-        router.push('/');
-    } catch (error) {
-        console.error("Error al cerrar sesión:", error);
-    }
-} */

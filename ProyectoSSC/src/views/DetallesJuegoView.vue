@@ -402,7 +402,6 @@ body {
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0;
-  text-shadow: 0 0 15px var(--color-acento-primario);
 }
 
 .subtituloJuego {

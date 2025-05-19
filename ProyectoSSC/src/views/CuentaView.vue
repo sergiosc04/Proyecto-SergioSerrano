@@ -210,13 +210,13 @@ onMounted(async () => {
                         <div class="itemInfoTecnica">
                             <span class="etiquetaInfoTecnica">UID del Usuario</span>
                             <span class="valorInfoTecnica">{{ sessionStore.session?.user?.id || 'No disponible'
-                                }}</span>
+                            }}</span>
                         </div>
 
                         <div class="itemInfoTecnica">
                             <span class="etiquetaInfoTecnica">Nivel acceso BBDD</span>
                             <span class="valorInfoTecnica">{{ sessionStore.session?.user?.role || 'No disponible'
-                                }}</span>
+                            }}</span>
                         </div>
 
                         <div class="itemInfoTecnica">
@@ -268,12 +268,6 @@ onMounted(async () => {
                             <span class="valorEstadistica">{{ sessionStore.user?.email }}</span>
 
                         </li>
-
-                        <li class="itemEstadistica">
-                            <span class="etiquetaEstadistica">Rol</span>
-                            <span class="valorEstadistica">{{ sessionStore.session?.user?.role || 'Usuario' }}</span>
-                        </li>
-
                         <li class="itemEstadistica">
                             <span class="etiquetaEstadistica">Fecha de registro</span>
                             <span class="valorEstadistica">{{ sessionStore.session?.user?.created_at ? new

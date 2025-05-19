@@ -289,6 +289,7 @@ body {
   cursor: pointer;
   transition: all 0.2s;
   flex: 1;
+  font-size: 1rem;
 }
 
 .botonControl:hover {

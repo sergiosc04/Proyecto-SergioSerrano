@@ -106,8 +106,7 @@ const cerrar = () => {
 
 .botonesModal {
     display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
+    justify-content: center;
 }
 
 .botonPrimario:hover,

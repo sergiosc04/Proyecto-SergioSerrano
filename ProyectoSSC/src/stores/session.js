@@ -41,8 +41,9 @@ export const useSessionStore = defineStore('session', {
 
                     // Recuperar el avatar después de establecer la sesión
                     await this.recuperarAvatar();
-                    
+
                     console.log('Sesión y avatar recuperados correctamente');
+
                     return true;
                 } else {
                     console.warn('No hay sesión activa');
