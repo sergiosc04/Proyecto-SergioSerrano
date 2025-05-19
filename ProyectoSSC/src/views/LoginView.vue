@@ -3,8 +3,8 @@ import { ref } from 'vue'
 import { supabase } from '../supabase'
 import { useSessionStore } from '../stores/session'
 import { useRouter } from 'vue-router'
-
 import { onMounted } from 'vue'
+import Modal from '@/components/Modal.vue'
 
 import mail from '../assets/img/login/mail.png'
 import candado from '../assets/img/login/candado.png'
@@ -16,6 +16,10 @@ const router = useRouter();
 const cargando = ref(false);
 const email = ref('');
 const password = ref('');
+
+// Modal states
+const mostrarModal = ref(false);
+const mensajeModal = ref('');
 
 const sessionStore = useSessionStore();
 
@@ -33,14 +37,17 @@ const manejarLogin = async () => {
         if (data?.session) {
             // Después del login, se guarda la sesión en el store
             sessionStore.setSession(data.session)
-            alert("Sesión iniciada correctamente.");
+            mensajeModal.value = "Sesión iniciada correctamente.";
+            mostrarModal.value = true;
             router.push('/cuenta');
         } else {
-            alert("Error al recuperar la sesión");
+            mensajeModal.value = "Error al recuperar la sesión";
+            mostrarModal.value = true;
         }
     } catch (error) {
         if (error instanceof Error) {
-            alert(error.message)
+            mensajeModal.value = error.message;
+            mostrarModal.value = true;
         }
     } finally {
         cargando.value = false;
@@ -69,7 +76,7 @@ onMounted(() => {
         <div class="contenidoInicioSesion">
 
             <div class="contenedorFormularioInicioSesion">
-                
+
                 <div class="cabeceraFormulario">
                     <h2 class="tituloInicioSesion">Bienvenido</h2>
                     <p class="subtituloInicioSesion">Ingresa a tu cuenta</p>
@@ -79,7 +86,7 @@ onMounted(() => {
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Correo electrónico</label>
                         <div class="contenedorInput">
-                            <img :src="mail" alt="Email" class="iconoInput"/>
+                            <img :src="mail" alt="Email" class="iconoInput" />
                             <input required type="email" placeholder="ejemplo@correo.com" v-model="email"
                                 class="entradaInicioSesion" />
                         </div>
@@ -88,7 +95,7 @@ onMounted(() => {
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Contraseña</label>
                         <div class="contenedorInput">
-                            <img :src="candado" alt="Password" class="iconoInput"/>
+                            <img :src="candado" alt="Password" class="iconoInput" />
                             <input required type="password" placeholder="Ingresa tu contraseña" v-model="password"
                                 class="entradaInicioSesion" />
                         </div>
@@ -114,15 +121,18 @@ onMounted(() => {
 
                     </div>
                 </div>
-                
+
                 <div v-else class="cargando">
-                    <SpinnerCarga/>
+                    <SpinnerCarga />
                     <p>Iniciando sesión...</p>
                 </div>
 
             </div>
         </div>
     </div>
+
+    <Modal v-model:mostrar="mostrarModal" tipo="alerta" titulo="Aviso" :mensaje="mensajeModal"
+        @cerrar="mostrarModal = false" />
 </template>
 
 <style scoped>

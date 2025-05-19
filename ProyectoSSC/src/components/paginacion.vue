@@ -204,7 +204,7 @@ const actualizarJuegosPagina = (event) => {
     padding: 8px 16px;
     border: none;
     border-radius: 6px;
-    background: linear-gradient(90deg, #d000ff, #00d9ff);
+    background: var(--color-fondo-boton);
     color: white;
     font-weight: 500;
     cursor: pointer;
@@ -234,11 +234,11 @@ input:focus {
         padding: 16px;
         gap: 16px;
     }
-    
+
     .paginador-selector {
         order: 3;
     }
-    
+
     .paginador-ir-btn {
         width: 100%;
     }
@@ -249,7 +249,7 @@ input:focus {
         width: 100%;
         justify-content: space-between;
     }
-    
+
     .paginador-pagina input,
     .paginador-selector input {
         width: 45px;

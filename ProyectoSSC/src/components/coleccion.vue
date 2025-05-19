@@ -4,6 +4,7 @@ import tarjetaJuego from '../components/tarjetaJuego.vue';
 import { supabase } from '../supabase'
 import SpinnerCarga from './SpinnerCarga.vue';
 import { useRouter } from 'vue-router';
+import Modal from '@/components/Modal.vue';
 
 //variables recibidas desde el coleccionView
 const props = defineProps({
@@ -36,6 +37,13 @@ const router = useRouter();
 
 //importamos la clave del .env
 const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
+
+// Modal states
+const mostrarModal = ref(false);
+const mensajeModal = ref('');
+const mensajeConfirmacion = ref('');
+const mostrarModalConfirmacion = ref(false);
+const idJuegoAEliminar = ref(null);
 
 // Metodo para obtener información de in juego, para usar cuando haya idRecibido
 const getJuegoUnico = async (id) => {
@@ -210,7 +218,10 @@ async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
 
         if (error) throw error;
 
-        alert(`Juego ${idFinal} añadido correctamente.`);
+
+        mensajeModal.value = `Juego ${idFinal} añadido correctamente.`;
+        mostrarModal.value = true;
+
         console.log("Redirigiendo a la página de colección...");
 
 
@@ -220,12 +231,11 @@ async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
     router.replace({ name: 'coleccion' });
     setTimeout(() => {
         location.reload();
-    }, 500);
+    }, 3000);
 }
 
 //Funcion para eliminar un juego mediante su id de coleccion y de juego
 async function eliminarJuego(idColeccionBuscar, idJuego) {
-    // Solicitar ID si no se proporciona
     if (!idJuego) {
         do {
             const entrada = prompt("Introduce la ID de un juego a eliminar:");
@@ -241,52 +251,67 @@ async function eliminarJuego(idColeccionBuscar, idJuego) {
         jsonDatos = await getDatosColeccion(idColeccionBuscar);
     } catch (err) {
         console.error("Error al obtener datos:", err);
-        alert("Error al cargar la colección");
+        mensajeModal.value = "Error al cargar la colección";
+        mostrarModal.value = true;
         return;
     }
 
-    if (!confirm(`¿Eliminar juego ${idJuego} de la colección?`)) return;
+    idJuegoAEliminar.value = idJuego;
+    mensajeConfirmacion.value = `¿Eliminar juego ${idJuego} de la colección?`;
+    mostrarModalConfirmacion.value = true;
+}
 
-    // Verificar estructura de datos
-    const juegos = jsonDatos[0].datosentrada.juegos;
-    if (!Array.isArray(juegos)) {
-        alert("La colección no contiene juegos");
-        return;
-    }
+// Nueva función para confirmar la eliminación
+async function confirmarEliminarJuego() {
+    const idJuego = idJuegoAEliminar.value;
+    let jsonDatos;
 
-    // Buscar existencia del juego
-    let existe = false;
-    for (const juego of juegos) {
-        if (juego === idJuego) {
-            existe = true;
-            break;
-        }
-    }
-
-    if (!existe) {
-        alert("Este juego no está en la colección");
-        return;
-    }
-
-    // Eliminar el juego
-    const indice = juegos.indexOf(idJuego);
-    juegos.splice(indice, 1);
-
-    // Actualizar en Supabase
     try {
+        jsonDatos = await getDatosColeccion(props.idcoleccion);
+
+        // Verificar estructura de datos
+        const juegos = jsonDatos[0].datosentrada.juegos;
+        if (!Array.isArray(juegos)) {
+            mensajeModal.value = "La colección no contiene juegos";
+            mostrarModal.value = true;
+            return;
+        }
+
+        // Buscar existencia del juego
+        let existe = false;
+        for (const juego of juegos) {
+            if (juego === idJuego) {
+                existe = true;
+                break;
+            }
+        }
+
+        if (!existe) {
+            mensajeModal.value = "Este juego no está en la colección";
+            mostrarModal.value = true;
+            return;
+        }
+
+        // Eliminar el juego
+        const indice = juegos.indexOf(idJuego);
+        juegos.splice(indice, 1);
+
+        // Actualizar en Supabase
         const { error } = await supabase
             .from('coleccion')
             .update({ datosentrada: jsonDatos[0].datosentrada })
-            .eq('idcoleccion', idColeccionBuscar);
+            .eq('idcoleccion', props.idcoleccion);
 
         if (error) throw error;
 
-        alert(`Juego ${idJuego} eliminado correctamente`);
+        mensajeModal.value = `Juego ${idJuego} eliminado correctamente`;
+        mostrarModal.value = true;
         location.reload();
 
     } catch (err) {
         console.error("Error en Supabase:", err);
-        alert("Error al guardar cambios");
+        mensajeModal.value = "Error al guardar cambios";
+        mostrarModal.value = true;
     }
 }
 
@@ -390,7 +415,30 @@ onMounted(async () => {
             </button>
         </div>
 
+        <!-- Modal para confirmación de eliminación -->
+        <Modal v-if="mostrarModalConfirmacion" @close="mostrarModalConfirmacion = false">
+            <template #header>
+                <h3>Confirmar eliminación</h3>
+            </template>
+            <template #default>
+                <p>{{ mensajeConfirmacion }}</p>
+            </template>
+            <template #footer>
+                <button @click="mostrarModalConfirmacion = false" class="botonSecundario">
+                    Cancelar
+                </button>
+                <button @click="confirmarEliminarJuego(); mostrarModalConfirmacion = false" class="botonPrincipal">
+                    Eliminar
+                </button>
+            </template>
+        </Modal>
 
+        <Modal v-model:mostrar="mostrarModal" tipo="alerta" titulo="Aviso" :mensaje="mensajeModal"
+            @cerrar="mostrarModal = false" />
+
+        <Modal v-model:mostrar="mostrarModalConfirmacion" tipo="confirmar" titulo="Confirmar eliminación"
+            :mensaje="mensajeConfirmacion" @confirmar="confirmarEliminarJuego"
+            @cancelar="mostrarModalConfirmacion = false" />
     </div>
 </template>
 
@@ -547,7 +595,8 @@ onMounted(async () => {
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 1rem; /* Añadido: espacio entre imagen y texto */
+    gap: 1rem;
+    /* Añadido: espacio entre imagen y texto */
     padding-right: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(5px);

@@ -110,9 +110,9 @@ function obtenerNombreTienda(storeId) {
 
 const juegoParaColeccion = () => {
   const idGuardar = juego.value.id;
-  router.push({ 
-    name: 'coleccion', 
-    query: { idRecibido: idGuardar } 
+  router.push({
+    name: 'coleccion',
+    query: { idRecibido: idGuardar }
   });
 };
 
@@ -165,7 +165,7 @@ onMounted(() => {
           <h2 class="tituloSeccion">Calificaciones</h2>
           <div class="datosCalificacion">
             <div class="itemCalificacion">
-              <span class="valorCalificacion">{{ juego.rating || "N/A" }}</span>
+              <span class="valorCalificacion">{{ juego.rating || "N/A" }} ★</span>
               <span class="etiquetaCalificacion">Rating</span>
             </div>
             <div class="itemCalificacion">
@@ -179,29 +179,29 @@ onMounted(() => {
           </div>
         </div>
 
-          <!-- Estadísticas de jugadores -->
-          <section class="seccionInfo">
-            <h2 class="tituloSeccion">Estadísticas de jugadores</h2>
+        <!-- Estadísticas de jugadores -->
+        <section class="seccionInfo">
+          <h2 class="tituloSeccion">Estadísticas de jugadores</h2>
 
-            <ul class="listaEstadisticas">
-              <li class="itemEstadistica">
-                <span class="valorEstadistica">{{ juego.added || "0" }}</span>
-                <span class="etiquetaEstadistica">Total añadidos</span>
-              </li>
-              <li class="itemEstadistica">
-                <span class="valorEstadistica">{{ juego.added_by_status?.beaten || "0" }}</span>
-                <span class="etiquetaEstadistica">Completados</span>
-              </li>
-              <li class="itemEstadistica">
-                <span class="valorEstadistica">{{ juego.added_by_status?.playing || "0" }}</span>
-                <span class="etiquetaEstadistica">En juego</span>
-              </li>
-              <li class="itemEstadistica">
-                <span class="valorEstadistica">{{ juego.added_by_status?.dropped || "0" }}</span>
-                <span class="etiquetaEstadistica">Abandonados</span>
-              </li>
-            </ul>
-          </section>
+          <ul class="listaEstadisticas">
+            <li class="itemEstadistica">
+              <span class="valorEstadistica">{{ juego.added || "0" }}</span>
+              <span class="etiquetaEstadistica">Total añadidos</span>
+            </li>
+            <li class="itemEstadistica">
+              <span class="valorEstadistica">{{ juego.added_by_status?.beaten || "0" }}</span>
+              <span class="etiquetaEstadistica">Completados</span>
+            </li>
+            <li class="itemEstadistica">
+              <span class="valorEstadistica">{{ juego.added_by_status?.playing || "0" }}</span>
+              <span class="etiquetaEstadistica">En juego</span>
+            </li>
+            <li class="itemEstadistica">
+              <span class="valorEstadistica">{{ juego.added_by_status?.dropped || "0" }}</span>
+              <span class="etiquetaEstadistica">Abandonados</span>
+            </li>
+          </ul>
+        </section>
         <!-- Plataformas -->
         <div class="tarjetaInfo">
           <h2 class="tituloSeccion">Plataformas</h2>
@@ -229,7 +229,7 @@ onMounted(() => {
         </div>
 
 
-        
+
         <section class="seccionInfo">
           <h2 class="tituloSeccion">Datos técnicos</h2>
 
@@ -269,7 +269,7 @@ onMounted(() => {
       <main class="panelDerecho">
 
 
-        
+
         <!-- Slider de imágenes -->
         <section class="seccionInfo">
           <h2 class="tituloSeccion">Capturas del juego</h2>
@@ -277,14 +277,9 @@ onMounted(() => {
           <div v-if="capturas.length > 0" class="sliderGaleria">
             <div class="contenedorImagen">
 
-              <SpinnerCarga v-if="imagenCargando" class="spinnerImagen"/>
-              <img 
-                :src="capturas[indiceSlider].image" 
-                class="imagenCaptura" 
-                :class="{ 'oculto': imagenCargando }"
-                alt="Captura del juego" 
-                @load="manejarCargaImagen"
-              />
+              <SpinnerCarga v-if="imagenCargando" class="spinnerImagen" />
+              <img :src="capturas[indiceSlider].image" class="imagenCaptura" :class="{ 'oculto': imagenCargando }"
+                alt="Captura del juego" @load="manejarCargaImagen" />
             </div>
 
             <div class="controlesSlider">
@@ -295,7 +290,7 @@ onMounted(() => {
 
           </div>
         </section>
-        
+
         <!-- Descripción -->
         <section class="seccionInfo">
           <h2 class="tituloSeccion">Descripción</h2>

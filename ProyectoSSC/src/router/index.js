@@ -38,6 +38,29 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue'),
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    }
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'auto'
+    })
+    return {
+      top: 0,
+      left: 0,
+      behavior: 'auto'
+    }
+  }
 })
 
-export default router;
+//para que el scroll vuelva al inicio de la pagina al cambiar de ruta
+router.afterEach(() => {
+  setTimeout(() => {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  }, 50);
+})
+
+export default router

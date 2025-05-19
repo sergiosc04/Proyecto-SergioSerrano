@@ -4,11 +4,14 @@ import Coleccion from '../components/coleccion.vue';
 import { useRoute } from 'vue-router';
 import { obtenerColecciones } from '../compostables/obtenerColecciones';
 import SpinnerCarga from '@/components/SpinnerCarga.vue';
+import Modal from '@/components/Modal.vue';
 
 const route = useRoute();
 const idRecibido = Number(route.query.idRecibido);
 const nombreColeccion = ref("");
 const mostrarCreacion = ref(false);
+const mostrarModal = ref(false);
+const mensajeModal = ref('');
 
 const {
   colecciones,
@@ -23,11 +26,21 @@ const toggleCreacion = () => {
 }
 
 const manejarCrearColeccion = async () => {
+  if (!nombreColeccion.value.trim()) {
+    mensajeModal.value = "Introduce un nombre para la colección";
+    mostrarModal.value = true;
+    return;
+  }
+
   const resultado = await crearColeccion(nombreColeccion.value);
   if (resultado) {
-    alert(`Colección creada correctamente`);
     nombreColeccion.value = '';
     mostrarCreacion.value = false;
+    mensajeModal.value = 'Colección creada correctamente.';
+    mostrarModal.value = true;
+  } else if (error.value) {
+    mensajeModal.value = error.value;
+    mostrarModal.value = true;
   }
 }
 
@@ -51,30 +64,31 @@ onMounted(async () => {
       <h1 class="tituloJuego" v-else>Mis Colecciones</h1>
       <p class="subtituloJuego" v-if="colecciones && colecciones.length === 1">
         {{ colecciones.length }} colección disponible
-      </p><p class="subtituloJuego" v-else-if="colecciones && colecciones.length > 1">
+      </p>
+      <p class="subtituloJuego" v-else-if="colecciones && colecciones.length > 1">
         {{ colecciones.length }} colecciones disponibles
       </p><br>
 
-        <button class="botonPrimario" @click="toggleCreacion()" v-if="!mostrarCreacion">
-          + Crear nueva colección
-        </button>
-        
-      <form v-if="mostrarCreacion" @submit.prevent="manejarCrearColeccion" class="formularioCreacion">
-          <div class="grupoFormulario">
-            <label for="nombreColeccion" class="etiquetaFormulario">Nombre de la colección</label>
-            <input id="nombreColeccion" v-model="nombreColeccion" type="text" required
-              placeholder="Escribe un nombre..." class="campoTexto" />
+      <button class="botonPrimario" @click="toggleCreacion()" v-if="!mostrarCreacion">
+        + Crear nueva colección
+      </button>
 
-            <div class="grupoControles">
-              <button type="submit" :disabled="loading" class="botonControl">
-                {{ loading ? 'Guardando...' : 'Crear colección' }}
-              </button>
-              <button type="button" class="botonSecundario" @click="toggleCreacion">
-                Cancelar
-              </button>
-            </div>
+      <form v-if="mostrarCreacion" @submit.prevent="manejarCrearColeccion" class="formularioCreacion">
+        <div class="grupoFormulario">
+          <label for="nombreColeccion" class="etiquetaFormulario">Nombre de la colección</label>
+          <input id="nombreColeccion" v-model="nombreColeccion" type="text" required placeholder="Escribe un nombre..."
+            class="campoTexto" />
+
+          <div class="grupoControles">
+            <button type="submit" :disabled="loading" class="botonControl">
+              {{ loading ? 'Guardando...' : 'Crear colección' }}
+            </button>
+            <button type="button" class="botonSecundario" @click="toggleCreacion">
+              Cancelar
+            </button>
           </div>
-        </form>
+        </div>
+      </form>
     </div>
 
     <div class="contenidoFlex">
@@ -86,10 +100,10 @@ onMounted(async () => {
           <h2 class="tituloSeccion">Mis colecciones</h2>
 
           <div v-if="error === 'Sin sesión activa'" class="tarjetaInfo">
-          <router-link to="/cuenta/" align="center">
-            <strong>Regístrate o Inicia Sesión</strong>
-          </router-link>
-          para crear y administrar colecciones.
+            <router-link to="/cuenta/" align="center">
+              <strong>Regístrate o Inicia Sesión</strong>
+            </router-link>
+            para crear y administrar colecciones.
           </div>
 
           <div v-else-if="error" class="tarjetaInfo">
@@ -108,6 +122,10 @@ onMounted(async () => {
         </div>
       </main>
     </div>
+
+    <!-- Componente Modal -->
+    <Modal v-model:mostrar="mostrarModal" tipo="alerta" titulo="Aviso" :mensaje="mensajeModal"
+      @cerrar="mostrarModal = false" />
   </div>
 </template>
 
@@ -128,9 +146,12 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #1a1c2e;
   padding: 2rem;
-  min-width: 320px; /* Añadir ancho mínimo */
-  max-width: 1920px; /* Añadir ancho máximo */
-  margin: 0 auto; /* Centrar el contenedor */
+  min-width: 320px;
+  /* Añadir ancho mínimo */
+  max-width: 1920px;
+  /* Añadir ancho máximo */
+  margin: 0 auto;
+  /* Centrar el contenedor */
 }
 
 .cabeceraJuego {
@@ -296,7 +317,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  min-height: 200px; /* Añadir altura mínima */
+  min-height: 200px;
+  /* Añadir altura mínima */
 }
 
 /* Tarjetas informativas */
@@ -331,9 +353,12 @@ body {
   min-height: 100vh;
   background-color: #1a1c2e;
   color: #ffffff;
-  min-width: 320px; /* Añadir el mismo ancho mínimo */
-  max-width: 1920px; /* Añadir el mismo ancho máximo */
-  margin: 0 auto; /* Centrar el contenedor */
+  min-width: 320px;
+  /* Añadir el mismo ancho mínimo */
+  max-width: 1920px;
+  /* Añadir el mismo ancho máximo */
+  margin: 0 auto;
+  /* Centrar el contenedor */
 }
 
 /* Responsive */

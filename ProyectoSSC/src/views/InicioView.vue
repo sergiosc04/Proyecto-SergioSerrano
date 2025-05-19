@@ -82,52 +82,52 @@ onMounted(async () => {
 
       <!-- Sección de colecciones -->
 
-        <div class="cabeceraJuego">
-          <h2 class="tituloSeccion">Tus Colecciones</h2>
+      <div class="cabeceraJuego">
+        <h2 class="tituloSeccion">Tus Colecciones</h2>
 
-          <div class="subtituloInfo" v-if="colecciones?.length">
-            <p>Tienes <strong>{{ colecciones.length }}</strong> colecciones.</p>
+        <div class="subtituloInfo" v-if="colecciones?.length">
+          <p>Tienes <strong>{{ colecciones.length }}</strong> colecciones.</p>
+        </div>
+
+        <!-- Contenido condicional de colecciones -->
+        <div v-if="sessionStore.session" class="vistaPrevia">
+          <!-- Estado de carga de colecciones -->
+          <div v-if="loadingColecciones" class="contenedorCarga">
+            <SpinnerCarga />
+            <p>Cargando colecciones...</p>
           </div>
 
-          <!-- Contenido condicional de colecciones -->
-          <div v-if="sessionStore.session" class="vistaPrevia">
-            <!-- Estado de carga de colecciones -->
-            <div v-if="loadingColecciones" class="contenedorCarga">
-              <SpinnerCarga />
-              <p>Cargando colecciones...</p>
-            </div>
-
-            <!-- Listado de colecciones -->
-            <div v-else-if="colecciones?.length" class="listaColecciones">
-              <div v-for="coleccion in colecciones" :key="coleccion.idcoleccion" class="elementoColeccion">
-                <h3>{{ coleccion.nombreColeccion }}</h3>
-                <div class="valorEstadistica" v-if="coleccion.datosentrada.juegos.length">
-                  Esta colección tiene {{ coleccion.datosentrada.juegos.length }} juegos.
-                </div>
-                <div class="valorEstadistica" v-else>
-                  Esta colección no tiene juegos aún.
-                </div>
-                <router-link to="/coleccion" class="botonTienda">
-                  Ver colección
-                </router-link>
+          <!-- Listado de colecciones -->
+          <div v-else-if="colecciones?.length" class="listaColecciones">
+            <div v-for="coleccion in colecciones" :key="coleccion.idcoleccion" class="elementoColeccion">
+              <h3>{{ coleccion.nombreColeccion }}</h3>
+              <div class="valorEstadistica" v-if="coleccion.datosentrada.juegos.length">
+                Esta colección tiene {{ coleccion.datosentrada.juegos.length }} juegos.
               </div>
-            </div>
-
-            <div class="contenedorBotonVerTodo">
-              <router-link to="/coleccion/" class="botonControl">
-                Ver todas las colecciones
+              <div class="valorEstadistica" v-else>
+                Esta colección no tiene juegos aún.
+              </div>
+              <router-link to="/coleccion" class="botonTienda">
+                Ver colección
               </router-link>
             </div>
           </div>
 
-          <!-- Mensaje para usuarios no autenticados -->
-          <div v-else class="sinColecciones">
-            <p>Inicia sesión para ver y crear colecciones.</p>
-            <router-link to="/cuenta/">
-              <button class="botonControl">Iniciar sesión</button>
+          <div class="contenedorBotonVerTodo">
+            <router-link to="/coleccion/" class="botonControl">
+              Ver todas las colecciones
             </router-link>
           </div>
         </div>
+
+        <!-- Mensaje para usuarios no autenticados -->
+        <div v-else class="sinColecciones">
+          <p>Inicia sesión para ver y crear colecciones.</p>
+          <router-link to="/cuenta/">
+            <button class="botonControl">Iniciar sesión</button>
+          </router-link>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -280,7 +280,7 @@ body {
 }
 
 .botonControl {
-  background: linear-gradient(90deg, #d000ff, #00d9ff);
+  background: #5d5fef;
   color: white;
   border: none;
   border-radius: 6px;

@@ -104,7 +104,7 @@ onMounted(() => {
                 </select>
               </div>
             </div>
-                        <Paginacion v-model:numPagina="paginaInput" v-model:juegosPagina="juegosPagina" :cargando="cargando"
+            <Paginacion v-model:numPagina="paginaInput" v-model:juegosPagina="juegosPagina" :cargando="cargando"
               :paginaAnterior="paginaAnterior" :paginaSiguiente="paginaSiguiente" @actualizarJuegos="obtenerJuegos" />
           </div>
         </section>
@@ -112,10 +112,10 @@ onMounted(() => {
         <!-- Listado de juegos -->
         <section class="seccionInfo">
           <h2 class="tituloSeccion">
-          <span v-if="idBuscar">Resultados de búsqueda: "{{ idBuscar }}"</span>
-          <div v-if="generoSelect">Género: {{ generoSelect }}</div> 
+            <span v-if="idBuscar">Resultados de búsqueda: "{{ idBuscar }}"</span>
+            <div v-if="generoSelect">Género: {{ generoSelect }}</div>
 
-          <span v-if="!idBuscar">Juegos recomendados</span>
+            <span v-if="!idBuscar">Juegos recomendados</span>
 
           </h2>
 
@@ -317,7 +317,7 @@ body {
 
 /* Botones */
 .botonControl {
-  background: linear-gradient(90deg, #d000ff, #00d9ff);
+  background: #5d5fef;
   color: white;
   border: none;
   border-radius: 6px;

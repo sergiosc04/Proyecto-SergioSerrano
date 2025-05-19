@@ -3,9 +3,8 @@ import { ref } from 'vue'
 import { supabase } from '../supabase'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue';
-
 import { useSessionStore } from '../stores/session';
-
+import Modal from '@/components/Modal.vue'
 
 import mail from '../assets/img/login/mail.png'
 import candado from '../assets/img/login/candado.png'
@@ -14,6 +13,10 @@ const cargando = ref(false);
 const email = ref('');
 const password = ref('');
 const router = useRouter();
+
+// Modal states
+const mostrarModal = ref(false);
+const mensajeModal = ref('');
 
 const sessionStore = useSessionStore();
 
@@ -59,10 +62,14 @@ const manejarRegistro = async () => {
 
         if (errorActualizarColeccion) throw errorActualizarColeccion;
 
-        alert('¡Registrado correctamente! Comprueba tu correo electrónico para verificar la cuenta.');
+        mensajeModal.value = '¡Registrado correctamente! Comprueba tu correo electrónico para verificar la cuenta.';
+        mostrarModal.value = true;
 
     } catch (error) {
-        if (error instanceof Error) alert(error.message);
+        if (error instanceof Error) {
+            mensajeModal.value = error.message;
+            mostrarModal.value = true;
+        }
     } finally {
         cargando.value = false;
     }
@@ -96,7 +103,7 @@ onMounted(() => {
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Correo electrónico</label>
                         <div class="contenedorInput">
-                            <img :src="mail" alt="Email" class="iconoInput"/>
+                            <img :src="mail" alt="Email" class="iconoInput" />
                             <input required type="email" placeholder="ejemplo@correo.com" v-model="email"
                                 class="entradaInicioSesion" />
                         </div>
@@ -104,7 +111,7 @@ onMounted(() => {
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Contraseña</label>
                         <div class="contenedorInput">
-                            <img :src="candado" alt="Password" class="iconoInput"/>
+                            <img :src="candado" alt="Password" class="iconoInput" />
                             <input required type="password" placeholder="Ingresa tu contraseña" v-model="password"
                                 class="entradaInicioSesion" />
                         </div>
@@ -135,6 +142,9 @@ onMounted(() => {
                 </div>
             </div>
         </div>
+
+        <Modal v-model:mostrar="mostrarModal" tipo="alerta" titulo="Aviso" :mensaje="mensajeModal"
+            @cerrar="mostrarModal = false" />
     </div>
 </template>
 

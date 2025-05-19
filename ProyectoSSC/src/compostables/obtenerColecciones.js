@@ -7,6 +7,8 @@ export function obtenerColecciones() {
     const colecciones = ref([])
     const loading = ref(false)
     const error = ref(null)
+    const mostrarModal = ref(false)
+    const mensajeModal = ref('')
 
     // Obtener el ID de autenticación
     const getIdAuth = async () => {
@@ -89,8 +91,6 @@ export function obtenerColecciones() {
                 if (error) throw error;
 
                 await getColeccion(idusuario.value);
-
-
                 return true;
             } catch (err) {
                 console.error('Error al crear colección:', err);
@@ -99,8 +99,9 @@ export function obtenerColecciones() {
             } finally {
                 loading.value = false;
             }
-        }else{
-            alert("Introduce un nombre a la colección")
+        } else {
+            error.value = "Introduce un nombre para la colección";
+            return false;
         }
     }
 
@@ -110,6 +111,8 @@ export function obtenerColecciones() {
         colecciones,
         loading,
         error,
+        mostrarModal,
+        mensajeModal,
         getIdAuth,
         getColeccion,
         crearColeccion

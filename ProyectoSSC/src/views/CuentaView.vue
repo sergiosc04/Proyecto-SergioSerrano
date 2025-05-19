@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useSessionStore } from '../stores/session';
 import { supabase } from '../supabase';
 import { useRouter } from 'vue-router';
+import Modal from '@/components/Modal.vue';
 
 const sessionStore = useSessionStore();
 const router = useRouter();
@@ -18,18 +19,22 @@ const idiomaEditado = ref("");
 const idAuth = ref(null);
 const error = ref(null);
 
+// Referencias para los modals
+const mostrarModalCerrarSesion = ref(false);
+const mostrarModalExito = ref(false);
+const mostrarModalAvatar = ref(false);
+const mensajeModal = ref('');
+const mensajeExito = ref('');
+
 // Función para cerrar sesión
 const cerrarSesion = async () => {
-    if (confirm("¿Estás seguro de que quieres cerrar sesión?")) {
-        try {
-            await supabase.auth.signOut();
-            sessionStore.logout();
-            alert('Sesión cerrada correctamente');
-            router.push('/');
-            location.reload();
-        } catch (error) {
-            console.error("Error al cerrar sesión:", error);
-        }
+    try {
+        await supabase.auth.signOut();
+        sessionStore.logout();
+        router.push('/');
+        location.reload();
+    } catch (error) {
+        console.error("Error al cerrar sesión:", error);
     }
 }
 
@@ -79,22 +84,24 @@ const subirAvatar = async (evento) => {
     const archivo = evento.target.files[0];
 
     if (!archivo) {
-        error.value = "No se ha seleccionado ningún archivo.";
+        mensajeModal.value = "No se ha seleccionado ningún archivo.";
+        mostrarModalAvatar.value = true;
         return;
     }
-6
+
     const nombreArchivo = `${idAuth.value}_${archivo.name}`;
     const rutaArchivo = nombreArchivo;
 
     const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(rutaArchivo, archivo, {
-            upsert: true 
+            upsert: true
         });
 
     if (uploadError) {
         console.error("Error al subir avatar:", uploadError.message);
-        error.value = uploadError.message;
+        mensajeModal.value = "Error al subir el avatar: " + uploadError.message;
+        mostrarModalAvatar.value = true;
         return;
     }
 
@@ -112,15 +119,16 @@ const subirAvatar = async (evento) => {
 
     if (dbError) {
         console.error("Error al actualizar avatar_url:", dbError.message);
-        error.value = dbError.message;
+        mensajeModal.value = "Error al guardar el avatar: " + dbError.message;
+        mostrarModalAvatar.value = true;
         return;
     }
 
-    alert("Avatar subido y guardado correctamente");
-    location.reload();
+    mensajeModal.value = "Avatar subido y guardado correctamente";
+    mostrarModalAvatar.value = true;
 }
 
-// Función para actualizar username
+// Modificar la función actualizarDatos
 const actualizarDatos = async () => {
     if (!idAuth.value) {
         error.value = "No hay usuario autenticado";
@@ -138,8 +146,8 @@ const actualizarDatos = async () => {
         return;
     }
     username.value = usernameEditado.value;
-    alert("Se han guardado los cambios correctamente");
-    location.reload();
+    mensajeExito.value = "Se han guardado los cambios correctamente";
+    mostrarModalExito.value = true;
 }
 
 onMounted(async () => {
@@ -194,7 +202,7 @@ onMounted(async () => {
                 </div>
 
                 <!-- Datos de la cuenta y estadísticas -->
-                                 <!-- Metadatos técnicos -->
+                <!-- Metadatos técnicos -->
                 <section class="seccionInfo">
                     <h2 class="tituloSeccion">Metadatos de la cuenta</h2>
 
@@ -221,7 +229,8 @@ onMounted(async () => {
 
                 <!-- Botón de cerrar sesión -->
                 <div class="tarjetaInfo">
-                    <button type="button" @click="cerrarSesion()" class="botonRojo">Cerrar Sesión</button>
+                    <button type="button" @click="mostrarModalCerrarSesion = true" class="botonRojo">Cerrar
+                        Sesión</button>
                 </div>
             </aside>
 
@@ -257,7 +266,7 @@ onMounted(async () => {
                         <li class="itemEstadistica">
                             <span class="etiquetaEstadistica">Email</span>
                             <span class="valorEstadistica">{{ sessionStore.user?.email }}</span>
-                            
+
                         </li>
 
                         <li class="itemEstadistica">
@@ -288,6 +297,19 @@ onMounted(async () => {
                 <p>Por favor, inicia sesión para ver tu perfil</p>
             </div>
         </div>
+
+        <!-- Modal de Cerrar Sesión -->
+        <Modal v-model:mostrar="mostrarModalCerrarSesion" tipo="confirmar" titulo="Cerrar Sesión"
+            mensaje="¿Estás seguro de que quieres cerrar sesión?" @confirmar="cerrarSesion()"
+            @cancelar="mostrarModalCerrarSesion = false" />
+
+        <!-- Modal de Éxito -->
+        <Modal v-model:mostrar="mostrarModalExito" tipo="alerta" titulo="Éxito" :mensaje="mensajeExito"
+            @cerrar="mostrarModalExito = false; location.reload()" />
+
+        <!-- Modal de Mensaje (para subir avatar) -->
+        <Modal v-model:mostrar="mostrarModalAvatar" tipo="alerta" titulo="Avatar" :mensaje="mensajeModal"
+            @cerrar="mostrarModalAvatar = false; if (mensajeModal.includes('correctamente')) location.reload();" />
     </div>
 </template>
 
@@ -450,7 +472,7 @@ body {
 .itemEstadistica {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; 
+    align-items: flex-start;
     background: #1a1c2e;
     padding: 0.75rem;
     border-radius: 8px;
@@ -469,8 +491,9 @@ body {
     color: #a4a8e0;
     font-size: 0.8rem;
     margin-bottom: 0.25rem;
-    text-align: left; 
-    width: 100%; /* Añadido para asegurar que ocupa todo el ancho */
+    text-align: left;
+    width: 100%;
+    /* Añadido para asegurar que ocupa todo el ancho */
 }
 
 /* Panel derecho (información detallada) */
@@ -579,7 +602,89 @@ body {
     min-height: 60vh;
 }
 
+/* Modales */
+.fondoModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
 
+.contenedorModal {
+    background: #1f2136;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.tituloModal {
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin: 0 0 1rem 0;
+    position: relative;
+}
+
+.tituloModal::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+}
+
+.contenidoModal {
+    color: #a4a8e0;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.botonesModal {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.botonConfirmar {
+    background: linear-gradient(90deg, #d000ff, #00d9ff);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    font-size: 1rem;
+}
+
+.botonConfirmar:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.botonCancelar {
+    background: transparent;
+    color: #a4a8e0;
+    border: 1px solid #333654;
+    border-radius: 6px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    font-size: 1rem;
+}
+
+.botonCancelar:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
 
 /* Responsive */
 @media (max-width: 1100px) {
