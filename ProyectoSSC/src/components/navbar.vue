@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useSessionStore } from '../stores/session.js';
 import { RouterLink } from 'vue-router';
 import { useObtenerNombreUsuario } from '../compostables/obtenerNombreUsuario.js';
@@ -10,141 +10,180 @@ const menuAbierto = ref(false);
 
 const toggleMenu = () => {
   menuAbierto.value = !menuAbierto.value;
+  if (menuAbierto.value) {
+    document.body.style.overflow = 'hidden'; // Previene scroll cuando el menú está abierto
+  } else {
+    document.body.style.overflow = 'auto';
+  }
 };
+
+// Cerrar el menú si se hace clic fuera
+const cerrarMenuSiClickFuera = (event) => {
+  if (menuAbierto.value && !event.target.closest('.menuBoton') && !event.target.closest('.navbarLinks')) {
+    menuAbierto.value = false;
+    document.body.style.overflow = 'auto';
+  }
+};
+
+// Detectar si la pantalla es móvil
+const esPantallaMovil = computed(() => {
+  return window.innerWidth < 768;
+});
 
 onMounted(async () => {
   await sessionStore.recuperarSesion();
   await obtenerUsername();
+
+  // Agregar listener para cerrar menú al hacer clic fuera
+  document.addEventListener('click', cerrarMenuSiClickFuera);
+
+  // Agregar listener para cambios en el tamaño de la ventana
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768 && menuAbierto.value) {
+      menuAbierto.value = false;
+      document.body.style.overflow = 'auto';
+    }
+  });
 });
 </script>
 
 <template>
-  <nav class="navbarContenedor">
-    <div class="navbarContenido">
+  <header class="cabecera">
+    <nav class="navbarPrincipal">
       <!-- Logo -->
       <RouterLink to="/" class="navbarLogo">
         <img src="../assets/img/logo/PixelRift-Logo-Colores.png" alt="PixelRift Logo" />
       </RouterLink>
 
+      <!-- Overlay para fondo oscuro cuando el menú móvil está activo -->
+      <div v-if="menuAbierto" class="menuOverlay" @click="menuAbierto = false"></div>
+
+      <!-- Links navegación -->
+      <div class="navbarLinksContenedor" :class="{ 'menuAbierto': menuAbierto }">
+        <div class="navbarLinks">
+          <RouterLink class="navEnlace" to="/" @click="menuAbierto = false">
+            <span class="textoEnlace">INICIO</span>
+          </RouterLink>
+          <RouterLink class="navEnlace" to="/catalogo/" @click="menuAbierto = false">
+            <span class="textoEnlace">CATÁLOGO</span>
+          </RouterLink>
+          <RouterLink class="navEnlace" to="/coleccion/" @click="menuAbierto = false">
+            <span class="textoEnlace">COLECCIONES</span>
+          </RouterLink>
+          <RouterLink class="navEnlace" to="/cuenta/" @click="menuAbierto = false">
+            <span class="textoEnlace">CUENTA</span>
+          </RouterLink>
+        </div>
+
+        <!-- Datos de sesión visibles en móvil dentro del menú -->
+        <div class="navbarSesionMovil">
+          <RouterLink class="navbarUsuarioMovil" to="/cuenta/" @click="menuAbierto = false">
+            <div class="usuarioAvatarMovil">
+              <img v-if="sessionStore.avatarUrl" :src="sessionStore.avatarUrl" alt="Usuario" />
+              <img v-else src="../assets/img/usuarioPH.jpg" alt="Usuario" />
+            </div>
+            <span class="nombreUsuarioMovil">
+              {{ nombreUsuario || "Iniciar sesión" }}
+            </span>
+          </RouterLink>
+        </div>
+      </div>
+
       <!-- Botón hamburguesa para móvil -->
-      <button class="menuBoton" @click="toggleMenu">
-        <img src="../assets/img/botones/menuHamburguesa.png" alt="Menú" />
+      <button class="menuBoton" @click="toggleMenu" :class="{ 'activo': menuAbierto }">
+        <span class="linea"></span>
+        <span class="linea"></span>
+        <span class="linea"></span>
       </button>
 
-      <!-- Links navegación (escritorio y móvil) -->
-      <div class="navbarLinks" :class="{ 'menuAbierto': menuAbierto }">
-        <RouterLink class="navEnlace" to="/" @click="menuAbierto = false">INICIO</RouterLink>
-        <RouterLink class="navEnlace" to="/catalogo/" @click="menuAbierto = false">CATÁLOGO</RouterLink>
-        <RouterLink class="navEnlace" to="/coleccion/" @click="menuAbierto = false">COLECCIONES</RouterLink>
-        <RouterLink class="navEnlace" to="/cuenta/" @click="menuAbierto = false">CUENTA</RouterLink>
-      </div>
-
-      <!-- Datos de la sesión -->
+      <!-- Datos de la sesión (visible solo en desktop) -->
       <div class="navbarSesion">
-        <RouterLink class="navbarUsuarioNombre" to="/cuenta/">
-          {{ nombreUsuario || "Iniciar sesión" }}
-        </RouterLink>
-
-        <RouterLink class="navbarUsuarioAvatar" to="/cuenta/">
-          <img 
-            v-if="sessionStore.avatarUrl" 
-            :src="sessionStore.avatarUrl" 
-            alt="Usuario" 
-          />
-          <img 
-            v-else 
-            src="../assets/img/usuarioPH.jpg" 
-            alt="Usuario"
-          />
+        <RouterLink class="navbarUsuario" to="/cuenta/">
+          <span class="usuarioNombre">{{ nombreUsuario || "Iniciar sesión" }}</span>
+          <div class="usuarioAvatar">
+            <img v-if="sessionStore.avatarUrl" :src="sessionStore.avatarUrl" alt="Usuario" />
+            <img v-else src="../assets/img/usuarioPH.jpg" alt="Usuario" />
+          </div>
         </RouterLink>
       </div>
-    </div>
-  </nav>
+    </nav>
+  </header>
 </template>
 
 <style scoped>
-.navbarContenedor {
-  background: linear-gradient(120deg, #101d4f 0%, #4e0e78 50%, #730979 100%);
-  padding: 0.8rem 1.5rem;
-  box-shadow: 0 4px 12px rgba(116, 9, 255, 0.2);
+.cabecera {
   position: sticky;
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 1000;
-  color: #fff;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(120deg, #101d4f 0%, #4e0e78 50%, #730979 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.navbarContenido {
+.navbarPrincipal {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0.8rem 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
   position: relative;
+  background: transparent;
+}
+
+/* Logo */
+.navbarLogo {
+  display: flex;
+  z-index: 100;
 }
 
 .navbarLogo img {
-  height: 60px; /* Aumentado de 45px */
+  height: 50px;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .navbarLogo img:hover {
   transform: scale(1.08) rotate(-2deg);
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
-
-/* Animación de cambio de color (hue-rotate) al pasar el ratón */
-transition: filter 0.6s infinite;
-animation: rotarColores 1.5s linear;
-animation-iteration-count: infinite;
+  animation: rotarColores 1.5s linear infinite;
 }
 
 @keyframes rotarColores {
-from {
+  from {
     filter: hue-rotate(0deg) drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
-}
-to {
+  }
+
+  to {
     filter: hue-rotate(360deg) drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+  }
 }
 
-}
-
-.menuBoton {
-  display: none;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  z-index: 110;
-}
-
-.menuBoton img {
-  width: 28px;
-  height: 28px;
-  filter: brightness(0) invert(1);
-  transition: transform 0.3s ease;
-}
-
-.menuBoton:hover img {
-  transform: scale(1.1);
+/* Navegación Links */
+.navbarLinksContenedor {
+  display: flex;
+  flex-direction: column;
 }
 
 .navbarLinks {
   display: flex;
-  gap: 1.5rem;
-  align-items: center;
+  gap: 1rem;
 }
 
 .navEnlace {
-  color: #fff;
+  position: relative;
+  color: white;
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.95rem;
   padding: 0.6rem 1rem;
-  position: relative;
+  border-radius: 6px;
+  transition: all 0.3s ease;
   overflow: hidden;
-  transition: color 0.3s ease;
-  letter-spacing: 0.5px;
-  border-radius: 8px;
+}
+
+.navEnlace .textoEnlace {
+  position: relative;
+  z-index: 2;
 }
 
 .navEnlace::before {
@@ -154,7 +193,7 @@ to {
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, #9c27b0, #3f51b5);
+  background: linear-gradient(90deg, #ff6b6b, #7b68ee);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.3s ease;
@@ -162,7 +201,8 @@ to {
 }
 
 .navEnlace:hover {
-  color: #e0d2ff;
+  transform: translateY(-2px);
+  color: #f0f0f0;
 }
 
 .navEnlace:hover::before {
@@ -170,120 +210,235 @@ to {
   transform-origin: left;
 }
 
-.router-link-active {
-  background-color: rgba(255, 255, 255, 0.12);
+/* Enlaces activos */
+.navEnlace.router-link-active {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-.router-link-active::before {
+.navEnlace.router-link-active::before {
   transform: scaleX(1);
 }
 
-.navbarLogo.router-link-active {
-  background-color: transparent;
-}
-
-
+/* Datos de sesión */
 .navbarSesion {
   display: flex;
   align-items: center;
-  gap: 1rem;
 }
 
-.navbarUsuarioNombre {
+.navbarUsuario {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
   text-decoration: none;
-  color: #fff;
-  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 30px;
   transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.navbarUsuario:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.usuarioNombre {
+  color: white;
+  font-weight: 500;
   font-size: 0.95rem;
-  white-space: nowrap;
 }
 
-.navbarUsuarioNombre:hover {
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-  color: #e0d2ff;
+.usuarioAvatar {
+  display: flex;
+  align-items: center;
 }
 
-.navbarUsuarioAvatar {
-  flex-shrink: 0;
-  margin-left: 0.5rem;
-}
-
-.navbarUsuarioAvatar img {
-  width: 50px; /* Aumentado de 38px */
-  height: 50px; /* Aumentado de 38px */
+.usuarioAvatar img {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  transition: all 0.4s ease;
-  box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
 }
 
-.navbarUsuarioAvatar:hover img {
-  border-color: white;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+.navbarUsuario:hover .usuarioAvatar img {
+  border-color: rgba(255, 255, 255, 0.8);
   transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
 }
 
-/* Modificar selector para excluir logo y enlaces de cuenta */
-.navEnlace.router-link-active:not(.navbarLogo):not(.navbarUsuarioNombre):not(.navbarUsuarioAvatar) {
-  background-color: rgba(255, 255, 255, 0.12);
+/* Botón hamburguesa */
+.menuBoton {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 100;
 }
 
-/* Asegurar que el logo y enlaces de cuenta no tengan fondo */
-.navbarLogo.router-link-active,
-.navbarUsuarioNombre.router-link-active,
-.navbarUsuarioAvatar.router-link-active {
-  background-color: transparent;
+.menuBoton .linea {
+  width: 100%;
+  height: 3px;
+  background-color: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
 }
 
-/* Eliminar línea decorativa para logo y cuenta */
-.navbarLogo.router-link-active::before,
-.navbarUsuarioNombre.router-link-active::before,
-.navbarUsuarioAvatar.router-link-active::before {
+.menuBoton.activo .linea:nth-child(1) {
+  transform: translateY(8.5px) rotate(45deg);
+}
+
+.menuBoton.activo .linea:nth-child(2) {
+  opacity: 0;
+}
+
+.menuBoton.activo .linea:nth-child(3) {
+  transform: translateY(-8.5px) rotate(-45deg);
+}
+
+/* Overlay para el menú móvil */
+.menuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 50;
+  backdrop-filter: blur(5px);
+}
+
+/* Componentes móviles ocultos por defecto */
+.navbarSesionMovil {
   display: none;
 }
 
 /* Responsive Design */
-@media (min-width: 992px) {
+@media (max-width: 1024px) {
   .navEnlace {
-    position: relative;
-    transition: all 0.3s ease;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
   }
-  
-  .navEnlace:hover {
-    transform: translateY(-2px);
-  }
-}
 
-@media (max-width: 992px) {
-  .navbarLogo img {
-    height: 45px; /* Aumentado de 40px */
+  .usuarioNombre {
+    font-size: 0.85rem;
   }
-  
-  .navbarUsuarioAvatar img {
-    height: 38px; /* Aumentado de 35px */
-    width: 38px; /* Aumentado de 35px */
+
+  .usuarioAvatar img {
+    width: 38px;
+    height: 38px;
   }
 }
 
 @media (max-width: 768px) {
-  .navbarLogo img {
-    height: 40px; /* Aumentado de 35px */
+  .navbarPrincipal {
+    padding: 0.6rem 1.2rem;
+  }
+
+  .menuBoton {
+    display: flex;
+  }
+
+  .navbarLinksContenedor {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 75%;
+    max-width: 300px;
+    height: 100vh;
+    background: linear-gradient(135deg, #1e1e3f 0%, #4e0e78 100%);
+    z-index: 90;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+    padding: 6rem 1.5rem 2rem;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+  }
+
+  .navbarLinksContenedor.menuAbierto {
+    right: 0;
+  }
+
+  .navbarLinks {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .navEnlace {
+    width: 100%;
+    text-align: left;
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+  }
+
+  .navEnlace:hover {
+    transform: none;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .navbarSesion {
+    display: none;
+  }
+
+  .navbarSesionMovil {
+    display: block;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .navbarUsuarioMovil {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    padding: 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .usuarioAvatarMovil img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .nombreUsuarioMovil {
+    color: white;
+    font-weight: 500;
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .navbarContenedor {
-    padding: 0.6rem 1rem;
-  }
-  
   .navbarLogo img {
-    height: 35px; /* Aumentado de 32px */
+    height: 40px;
   }
-  
-  .navbarUsuarioAvatar img {
-    height: 35px; /* Aumentado de 32px */
-    width: 35px; /* Aumentado de 32px */
+
+  .navbarPrincipal {
+    padding: 0.5rem 1rem;
+  }
+
+  .navbarLinksContenedor {
+    width: 85%;
+  }
+
+  .navEnlace {
+    font-size: 1rem;
+    padding: 0.8rem;
+  }
+
+  .usuarioAvatarMovil img {
+    width: 40px;
+    height: 40px;
   }
 }
 </style>

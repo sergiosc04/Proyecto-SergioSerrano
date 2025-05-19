@@ -154,7 +154,7 @@ onMounted(() => {
     height: 100vh;
     width: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1a1c2e;
+    background-color: var(--color-fondo);
 }
 
 .barraLateral {
@@ -205,7 +205,7 @@ onMounted(() => {
     left: -2px;
     right: -2px;
     bottom: -2px;
-    background: linear-gradient(45deg, #d000ff, #00d9ff);
+    background: var(--gradiente-primario);
     border-radius: 14px;
     z-index: -1;
 }
@@ -217,13 +217,13 @@ onMounted(() => {
 
 .tituloInicioSesion {
     margin: 0;
-    color: #ffffff;
+    color: var(--color-texto);
     font-size: 26px;
     font-weight: 600;
 }
 
 .subtituloInicioSesion {
-    color: #a4a8e0;
+    color: var(--color-texto-secundario);
     margin-top: 6px;
     font-size: 15px;
 }
@@ -241,7 +241,7 @@ onMounted(() => {
     display: block;
     margin-bottom: 6px;
     font-size: 14px;
-    color: #c3c7f7;
+    color: var(--color-texto-secundario);
     font-weight: 500;
 }
 
@@ -262,21 +262,21 @@ onMounted(() => {
 .entradaInicioSesion {
     width: 100%;
     padding: 12px 12px 12px 40px;
-    border: 1px solid #333654;
+    border: 1px solid var(--color-borde);
     border-radius: 6px;
     font-size: 15px;
     transition: border-color 0.2s ease;
-    background-color: #1a1c2e;
-    color: #ffffff;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
 }
 
 .entradaInicioSesion::placeholder {
-    color: #6a6f9c;
+    color: var(--color-texto-secundario);
 }
 
 .entradaInicioSesion:focus {
     outline: none;
-    border-color: #00d9ff;
+    border-color: var(--color-acento-secundario);
 }
 
 .olvidoPassword {
@@ -306,8 +306,8 @@ onMounted(() => {
 .botonInicioSesion {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(90deg, #d000ff, #00d9ff);
-    color: white;
+    background: var(--gradiente-primario);
+    color: var(--color-texto);
     border: none;
     border-radius: 6px;
     font-size: 15px;
@@ -342,12 +342,12 @@ onMounted(() => {
 .lineaSeparador {
     flex: 1;
     height: 1px;
-    background-color: #333654;
+    background-color: var(--color-borde);
 }
 
 .textoSeparador {
     padding: 0 15px;
-    color: #9d9fc3;
+    color: var(--color-texto-secundario);
     font-size: 14px;
 }
 
@@ -358,13 +358,13 @@ onMounted(() => {
     align-items: center;
     gap: 5px;
     font-size: 14px;
-    color: #9d9fc3;
+    color: var(--color-texto-secundario);
 }
 
 .botonRegistro {
     background: none;
     border: none;
-    color: #00d9ff;
+    color: var(--color-acento-secundario);
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
@@ -374,7 +374,7 @@ onMounted(() => {
 }
 
 .botonRegistro:hover {
-    color: #d000ff;
+    color: var(--color-acento-primario);
 }
 
 .cargando {
@@ -384,6 +384,44 @@ onMounted(() => {
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    color: #a4a8e0;
+    color: var(--color-texto-secundario);
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    .barraLateral {
+        display: none;
+    }
+
+    .contenidoInicioSesion {
+        padding: 16px;
+    }
+
+    .contenedorFormularioInicioSesion {
+        padding: 20px;
+    }
+
+    .tituloInicioSesion {
+        font-size: 22px;
+    }
+
+    .subtituloInicioSesion {
+        font-size: 14px;
+    }
+
+    .entradaInicioSesion {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .contenedorFormularioInicioSesion {
+        padding: 16px;
+    }
+
+    .botonInicioSesion {
+        padding: 10px;
+        font-size: 14px;
+    }
 }
 </style>

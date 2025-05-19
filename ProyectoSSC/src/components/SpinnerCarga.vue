@@ -16,8 +16,8 @@
 
 .spinner {
     margin: 15px;
-    border: 4px solid #a4a4a4;
-    border-top: 4px solid rgb(90, 90, 90);
+    border: 4px solid var(--color-borde);
+    border-top: 4px solid var(--color-fondo-boton);
     border-radius: 50%;
     width: 40px;
     height: 40px;

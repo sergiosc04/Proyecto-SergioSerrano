@@ -361,7 +361,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-color: #1a1c2e;
+  background-color: var(--color-fondo);
   min-height: 100vh;
   width: 100%;
 }
@@ -371,7 +371,7 @@ body {
   min-height: 100vh;
   width: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #1a1c2e;
+  background-color: var(--color-fondo);
   padding: 2rem;
 }
 
@@ -379,12 +379,12 @@ body {
   text-align: center;
   margin: 0 auto 2rem auto;
   max-width: 1400px;
-  background: linear-gradient(90deg, #1f2136, #252744, #1f2136);
+  background: var(--gradiente-secundario);
   padding: 1.5rem;
   border-radius: 12px;
   position: relative;
   overflow: hidden;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
 }
 
 .cabeceraJuego::before {
@@ -394,19 +394,19 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(45deg, #d000ff, #00d9ff);
+  background: var(--gradiente-primario);
 }
 
 .tituloJuego {
-  color: #ffffff;
+  color: var(--color-texto);
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0;
-  text-shadow: 0 0 15px rgba(208, 0, 255, 0.3);
+  text-shadow: 0 0 15px var(--color-acento-primario);
 }
 
 .subtituloJuego {
-  color: #a4a8e0;
+  color: var(--color-texto-secundario);
   margin-top: 0.5rem;
   font-size: 1rem;
 }
@@ -428,10 +428,10 @@ body {
 }
 
 .sliderGaleria {
-  background-color: #1f2136;
+  background-color: var(--color-primario);
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
   padding: 10px;
 }
 
@@ -470,8 +470,8 @@ body {
 }
 
 .botonControl {
-  background: #5d5fef;
-  color: white;
+  background: var(--color-fondo-boton);
+  color: var(--color-texto);
   border: none;
   border-radius: 6px;
   padding: 8px 16px;
@@ -485,15 +485,15 @@ body {
 }
 
 .contadorImagenes {
-  color: #a4a8e0;
+  color: var(--color-texto-secundario);
   font-size: 14px;
 }
 
 .tarjetaInfo {
-  background-color: #1f2136;
+  background-color: var(--color-primario);
   border-radius: 12px;
   padding: 1.25rem;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
 }
 
 .datosCalificacion {
@@ -511,11 +511,11 @@ body {
 .valorCalificacion {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #ffffff;
+  color: var(--color-texto);
 }
 
 .etiquetaCalificacion {
-  color: #a4a8e0;
+  color: var(--color-texto-secundario);
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
@@ -534,20 +534,20 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: linear-gradient(90deg, #2c2e48, #252744);
-  color: #00d9ff;
+  background: var(--gradiente-secundario);
+  color: var(--color-acento-secundario);
   text-decoration: none;
   padding: 0.75rem;
   border-radius: 6px;
   text-align: left;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
   transition: all 0.2s;
 }
 
 .botonTienda:hover {
-  background: linear-gradient(90deg, #252744, #2c2e48);
+  background: var(--gradiente-terciario);
   transform: translateY(-2px);
-  border-color: #00d9ff;
+  border-color: var(--color-acento-secundario);
 }
 
 .iconoTienda {

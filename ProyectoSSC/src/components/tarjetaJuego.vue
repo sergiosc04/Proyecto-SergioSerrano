@@ -126,9 +126,9 @@ a {
 }
 
 .tarjetaJuego:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.2);
-  border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.3);
 }
 
 .contenedor-img {
@@ -176,8 +176,8 @@ a {
     position: absolute;
     top: 12px;
     right: 12px;
-    background: rgba(79, 70, 229, 0.9);
-    color: white;
+    background: var(--color-fondo-boton);
+    color: var(--color-texto);
     font-weight: bold;
     padding: 4px 8px;
     border-radius: 8px;
@@ -187,15 +187,14 @@ a {
 }
 
 .estrella {
-    color: #FFD700;
+    color: var(--color-advertencia);
     margin-left: 2px;
 }
 
 .tarjeta--contenido {
     padding: 1.2rem;
     flex: 1;
-    /* Permite que el contenido ocupe el espacio disponible */
-    background: linear-gradient(180deg, #181b29 0%, #131520 100%);
+    background: var(--gradiente-oscuro);
     display: flex;
     flex-direction: column;
 }
@@ -204,7 +203,7 @@ a {
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 0.8rem;
-    color: #ffffff;
+    color: var(--color-texto);
     line-height: 1.3;
     letter-spacing: 0.02em;
 }
@@ -223,12 +222,12 @@ a {
 }
 
 .info-label {
-    color: #a1a1b5;
+    color: var(--color-texto-secundario);
     font-weight: 500;
 }
 
 .info-value {
-    color: #e9e9ec;
+    color: var(--color-texto);
     font-weight: 400;
 }
 
@@ -237,7 +236,7 @@ a {
     justify-content: space-between;
     gap: 8px;
     padding: 1rem;
-    background-color: #0f111a;
+    background-color: var(--color-fondo);
 }
 
 .boton-accion {
@@ -255,23 +254,23 @@ a {
 }
 
 .boton-ver {
-    background-color: #2d3142;
-    color: #e9e9ec;
+    background-color: var(--color-secundario);
+    color: var(--color-texto);
     padding: 0.7rem 1.5rem;
     /* Añadido padding horizontal */
 }
 
 .boton-ver:hover {
-    background-color: #3d4259;
+    background-color: var(--color-fondo-hover);
 }
 
 .boton-coleccion {
-    background-color: #5d5fef;
-    color: white;
+    background-color: var(--color-fondo-boton);
+    color: var(--color-texto);
 }
 
 .boton-coleccion:hover {
-    background-color: #4b4aca;
+    background-color: var(--color-acento-terciario);
 }
 
 .boton-texto {

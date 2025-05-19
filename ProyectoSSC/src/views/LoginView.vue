@@ -136,21 +136,12 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.iconoInput {
-    position: absolute;
-    left: 12px;
-    width: 20px;
-    height: 20px;
-    opacity: 0.7;
-}
-
-
 .contenedorInicioSesion {
     display: flex;
     height: 100vh;
     width: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1a1c2e;
+    background-color: var(--color-fondo);
 }
 
 .barraLateral {
@@ -171,7 +162,8 @@ onMounted(() => {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(81, 45, 168, 0.3), rgba(41, 53, 125, 0.4));
+    background: var(--gradiente-terciario);
+    opacity: 0.4;
 }
 
 .contenidoInicioSesion {
@@ -180,13 +172,13 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
     padding: 20px;
-    background-color: #1a1c2e;
+    background-color: var(--color-fondo);
 }
 
 .contenedorFormularioInicioSesion {
     width: 100%;
     max-width: 400px;
-    background-color: #1f2136;
+    background-color: var(--color-primario);
     border-radius: 12px;
     padding: 28px;
     border: 2px solid transparent;
@@ -201,7 +193,7 @@ onMounted(() => {
     left: -2px;
     right: -2px;
     bottom: -2px;
-    background: linear-gradient(45deg, #d000ff, #00d9ff);
+    background: var(--gradiente-primario);
     border-radius: 14px;
     z-index: -1;
 }
@@ -213,13 +205,13 @@ onMounted(() => {
 
 .tituloInicioSesion {
     margin: 0;
-    color: #ffffff;
+    color: var(--color-texto);
     font-size: 26px;
     font-weight: 600;
 }
 
 .subtituloInicioSesion {
-    color: #a4a8e0;
+    color: var(--color-texto-secundario);
     margin-top: 6px;
     font-size: 15px;
 }
@@ -237,7 +229,7 @@ onMounted(() => {
     display: block;
     margin-bottom: 6px;
     font-size: 14px;
-    color: #c3c7f7;
+    color: var(--color-texto-secundario);
     font-weight: 500;
 }
 
@@ -250,41 +242,29 @@ onMounted(() => {
 .iconoInput {
     position: absolute;
     left: 12px;
-    color: #8a8ebd;
-    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
 }
 
 .entradaInicioSesion {
     width: 100%;
     padding: 12px 12px 12px 40px;
-    border: 1px solid #333654;
+    border: 1px solid var(--color-borde);
     border-radius: 6px;
     font-size: 15px;
     transition: border-color 0.2s ease;
-    background-color: #1a1c2e;
-    color: #ffffff;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
 }
 
 .entradaInicioSesion::placeholder {
-    color: #6a6f9c;
+    color: var(--color-texto-terciario);
 }
 
 .entradaInicioSesion:focus {
     outline: none;
-    border-color: #00d9ff;
-}
-
-
-.enlaceOlvido {
-    color: #00d9ff;
-    font-size: 13px;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.enlaceOlvido:hover {
-    color: #d000ff;
-    text-decoration: underline;
+    border-color: var(--color-acento-secundario);
 }
 
 .accionesInicioSesion {
@@ -297,8 +277,8 @@ onMounted(() => {
 .botonInicioSesion {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(90deg, #d000ff, #00d9ff);
-    color: white;
+    background: var(--gradiente-primario);
+    color: var(--color-texto);
     border: none;
     border-radius: 6px;
     font-size: 15px;
@@ -315,15 +295,6 @@ onMounted(() => {
     opacity: 0.9;
 }
 
-.textoBoton {
-    flex: 1;
-    text-align: center;
-}
-
-.iconoBoton {
-    font-size: 18px;
-}
-
 .separadorOr {
     display: flex;
     align-items: center;
@@ -333,12 +304,12 @@ onMounted(() => {
 .lineaSeparador {
     flex: 1;
     height: 1px;
-    background-color: #333654;
+    background-color: var(--color-borde);
 }
 
 .textoSeparador {
     padding: 0 15px;
-    color: #9d9fc3;
+    color: var(--color-texto-secundario);
     font-size: 14px;
 }
 
@@ -349,13 +320,13 @@ onMounted(() => {
     align-items: center;
     gap: 5px;
     font-size: 14px;
-    color: #9d9fc3;
+    color: var(--color-texto-secundario);
 }
 
 .botonRegistro {
     background: none;
     border: none;
-    color: #00d9ff;
+    color: var(--color-acento-secundario);
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
@@ -365,7 +336,7 @@ onMounted(() => {
 }
 
 .botonRegistro:hover {
-    color: #d000ff;
+    color: var(--color-acento-primario);
 }
 
 .cargando {
@@ -375,6 +346,44 @@ onMounted(() => {
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    color: #a4a8e0;
+    color: var(--color-texto-secundario);
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    .barraLateral {
+        display: none;
+    }
+
+    .contenidoInicioSesion {
+        padding: 16px;
+    }
+
+    .contenedorFormularioInicioSesion {
+        padding: 20px;
+    }
+
+    .tituloInicioSesion {
+        font-size: 22px;
+    }
+
+    .subtituloInicioSesion {
+        font-size: 14px;
+    }
+
+    .entradaInicioSesion {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .contenedorFormularioInicioSesion {
+        padding: 16px;
+    }
+
+    .botonInicioSesion {
+        padding: 10px;
+        font-size: 14px;
+    }
 }
 </style>

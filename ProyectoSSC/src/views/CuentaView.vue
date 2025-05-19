@@ -100,7 +100,7 @@ const subirAvatar = async (evento) => {
 
     if (uploadError) {
         console.error("Error al subir avatar:", uploadError.message);
-        mensajeModal.value = "Error al subir el avatar: " + uploadError.message;
+        mensajeModal.value = "Error al subir el avatar:No se pueden subir imagenes repetidas";
         mostrarModalAvatar.value = true;
         return;
     }
@@ -119,7 +119,7 @@ const subirAvatar = async (evento) => {
 
     if (dbError) {
         console.error("Error al actualizar avatar_url:", dbError.message);
-        mensajeModal.value = "Error al guardar el avatar: " + dbError.message;
+        mensajeModal.value = "Error al guardar el avatar: " + "Error de base de datos";
         mostrarModalAvatar.value = true;
         return;
     }
@@ -210,13 +210,13 @@ onMounted(async () => {
                         <div class="itemInfoTecnica">
                             <span class="etiquetaInfoTecnica">UID del Usuario</span>
                             <span class="valorInfoTecnica">{{ sessionStore.session?.user?.id || 'No disponible'
-                            }}</span>
+                                }}</span>
                         </div>
 
                         <div class="itemInfoTecnica">
                             <span class="etiquetaInfoTecnica">Nivel acceso BBDD</span>
                             <span class="valorInfoTecnica">{{ sessionStore.session?.user?.role || 'No disponible'
-                            }}</span>
+                                }}</span>
                         </div>
 
                         <div class="itemInfoTecnica">
@@ -351,7 +351,7 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(45deg, #d000ff, #00d9ff);
+    background: linear-gradient(90deg, #ff6b6b, #7b68ee);
 }
 
 .tituloJuego {

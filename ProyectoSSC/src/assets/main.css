@@ -16,6 +16,7 @@ body {
 :root {
     /* Colores base (existentes) */
     --color-fondo: #1a1c2e;
+    --color-fondo-coleccion: #202339;
     --color-primario: #1f2136;
     --color-secundario: #252744;
     --color-borde: #333654;
@@ -25,7 +26,7 @@ body {
     /* Gradientes (existentes) */
     --gradiente-primario: linear-gradient(90deg, #d000ff, #00d9ff);
     --gradiente-secundario: linear-gradient(90deg, #1f2136, #252744, #1f2136);
-
+    --gradiente-terciario: linear-gradient(90deg, #ff6b6b, #7b68ee);
     /* Nuevos colores de fondo (variaciones de claridad) */
     --color-fondo-claro: #20243a;
     /* Fondo un poco más claro para crear capas */

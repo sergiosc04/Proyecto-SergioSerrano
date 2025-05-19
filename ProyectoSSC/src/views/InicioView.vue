@@ -137,7 +137,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-color: #1a1c2e;
+  background-color: var(--color-fondo);
   min-height: 100vh;
   width: 100%;
 }
@@ -147,7 +147,7 @@ body {
   min-height: 100vh;
   width: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #1a1c2e;
+  background-color: var(--color-fondo);
   padding: 2rem;
 }
 
@@ -170,7 +170,7 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(45deg, #d000ff, #00d9ff);
+  background: linear-gradient(90deg, #ff6b6b, #7b68ee);
 }
 
 .tituloJuego {
@@ -183,28 +183,28 @@ body {
 }
 
 .subtituloJuego {
-  color: #a4a8e0;
+  color: var(--color-texto-secundario);
   margin-top: 2rem;
   margin-bottom: 2rem;
   font-size: 1rem;
 }
 
 .seccionInfo {
-  background-color: #1f2136;
+  background-color: var(--color-primario);
   border-radius: 12px;
   padding: 1.5rem;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
   max-width: 1400px;
   margin: 0 auto 2rem auto;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
 .seccionColecciones {
-  background: linear-gradient(145deg, #1f2136, #252744);
+  background: var(--gradiente-secundario);
 }
 
 .tituloSeccion {
-  color: #ffffff;
+  color: var(--color-texto);
   font-size: 2rem;
   margin-bottom: 1rem;
   padding-bottom: 1rem;
@@ -253,7 +253,7 @@ body {
 
 .valorEstadistica {
   font-size: 0.9rem;
-  color: #a4a8e0;
+  color: var(--color-texto-secundario);
   margin-bottom: 1rem;
   text-align: center;
 }
@@ -263,25 +263,25 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  background: linear-gradient(90deg, #2c2e48, #252744);
-  color: #00d9ff;
+  background: var(--gradiente-secundario);
+  color: var(--color-acento-secundario);
   text-decoration: none;
   padding: 0.75rem;
   border-radius: 6px;
   text-align: center;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
   transition: all 0.2s;
 }
 
 .botonTienda:hover {
-  background: linear-gradient(90deg, #252744, #2c2e48);
+  background: var(--gradiente-terciario);
   transform: translateY(-2px);
-  border-color: #00d9ff;
+  border-color: var(--color-acento-secundario);
 }
 
 .botonControl {
-  background: #5d5fef;
-  color: white;
+  background: var(--color-fondo-boton);
+  color: var(--color-texto);
   border: none;
   border-radius: 6px;
   padding: 0.8rem 1.5rem;
@@ -292,11 +292,6 @@ body {
   font-weight: 600;
 }
 
-.botonControl:hover {
-  opacity: 0.9;
-  transform: scale(1.05);
-}
-
 .contenedorBotonVerTodo {
   display: flex;
   justify-content: center;
@@ -304,30 +299,29 @@ body {
 }
 
 .subtituloInfo {
-  color: #a4a8e0;
+  color: var(--color-texto-secundario);
   font-size: 1rem;
   text-align: center;
   margin-bottom: 1rem;
 }
 
 .sinColecciones {
-  background: #1a1c2e;
+  background-color: var(--color-fondo);
   border-radius: 12px;
   padding: 2rem;
   text-align: center;
-  border: 1px solid rgba(99, 102, 241, 0.1);
+  border: 1px solid var(--color-borde);
   margin-top: 1rem;
-  color: #a4a8e0;
 }
 
 .enlaceExterno {
-  color: #00d9ff;
+  color: var(--color-acento-secundario);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .enlaceExterno:hover {
-  color: #d000ff;
+  color: var(--color-acento-primario);
   text-decoration: underline;
 }
 

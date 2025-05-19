@@ -152,7 +152,7 @@ export default {
 
             <!-- Título del juego con enlace a la página de detalles -->
             <h1 class="titulo-juego"><router-link :to="`/juego/${juegoAleatorio.slug}`">{{ juegoAleatorio.name
-            }}</router-link></h1>
+                    }}</router-link></h1>
 
             <!-- Información adicional del juego -->
             <div class="info-juego">
@@ -182,7 +182,7 @@ export default {
 
 <style scoped>
 a {
-    color: white;
+    color: var(--color-texto);
     text-decoration: none;
 }
 
@@ -201,8 +201,8 @@ a {
 .bannerError {
     width: 100%;
     padding: 2rem;
-    background-color: #f8d7da;
-    color: #721c24;
+    background-color: var(--color-error);
+    color: var(--color-texto);
     text-align: center;
     border-radius: 5px;
     margin-bottom: 1rem;
@@ -274,13 +274,12 @@ a {
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%);
 }
 
-/* Estilo para el título del juego (reducido) */
+/* Estilo para el título del juego */
 .titulo-juego {
     font-size: 2rem;
-    /* antes 3rem */
     margin-bottom: 1rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    color: white;
+    color: var(--color-texto);
     font-weight: 700;
 }
 
@@ -292,9 +291,9 @@ a {
     margin-bottom: 2rem;
 }
 
-/* Párrafos de información (reducidos) */
+/* Párrafos de información */
 .info-juego p {
-    color: white;
+    color: var(--color-texto);
     font-size: 1rem;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     margin: 0;
@@ -307,12 +306,12 @@ a {
     margin-top: 1.5rem;
 }
 
-/* Estilo base para los botones (reducidos) */
+/* Estilo base para los botones */
 .boton-accion {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: var(--color-secundario);
     backdrop-filter: blur(10px);
-    color: white;
-    border: 2px solid white;
+    color: var(--color-texto);
+    border: 2px solid var(--color-borde);
     padding: 0.5rem 1rem;
     border-radius: 4px;
     cursor: pointer;
@@ -323,9 +322,10 @@ a {
 
 /* Efecto hover ajustado */
 .boton-accion:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: var(--color-fondo-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: var(--color-acento-secundario);
 }
 
 /* Adaptación responsive */
@@ -343,10 +343,11 @@ a {
     }
 }
 
-/* Estilos específicos para el botón aleatorio (padding reducido) */
+/* Estilos específicos para el botón aleatorio */
 .boton-aleatorio {
     padding: 0.5rem 1rem;
-    border-color: #ff9800;
-    color: #ffc163;
+    border-color: var(--borde-primario);
+    color: var(--color-texto-hover);
+    background: var(--gradiente-terciario);
 }
 </style>

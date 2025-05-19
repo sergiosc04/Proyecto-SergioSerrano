@@ -97,7 +97,6 @@ onMounted(async () => {
 
         <!-- Sección de colecciones -->
         <div class="seccionInfo">
-          <h2 class="tituloSeccion">Mis colecciones</h2>
 
           <div v-if="error === 'Sin sesión activa'" class="tarjetaInfo">
             <router-link to="/cuenta/" align="center">
@@ -135,7 +134,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-color: #1a1c2e;
+  background-color: var(--color-fondo);
   min-height: 100vh;
   width: 100%;
 }
@@ -144,7 +143,7 @@ body {
   min-height: 100vh;
   width: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #1a1c2e;
+  background-color: var(--color-fondo);
   padding: 2rem;
   min-width: 320px;
   /* Añadir ancho mínimo */
@@ -158,12 +157,12 @@ body {
   text-align: center;
   margin: 0 auto 2rem auto;
   max-width: 1400px;
-  background: linear-gradient(90deg, #1f2136, #252744, #1f2136);
+  background: var(--gradiente-secundario);
   padding: 1.5rem;
   border-radius: 12px;
   position: relative;
   overflow: hidden;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
 }
 
 .cabeceraJuego::before {
@@ -173,11 +172,11 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(45deg, #d000ff, #00d9ff);
+  background: linear-gradient(90deg, #ff6b6b, #7b68ee);
 }
 
 .tituloJuego {
-  color: #ffffff;
+  color: var(--color-texto);
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0;
@@ -185,7 +184,7 @@ body {
 }
 
 .subtituloJuego {
-  color: #a4a8e0;
+  color: var(--color-texto-secundario);
   margin-top: 0.5rem;
   font-size: 1rem;
 }
@@ -207,19 +206,19 @@ body {
 }
 
 .seccionInfo {
-  background-color: #1f2136;
+  background-color: var(--color-primario);
   border-radius: 12px;
   padding: 1.5rem;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
   margin-bottom: 1.5rem;
 }
 
 .tituloSeccion {
-  color: #ffffff;
+  color: var(--color-texto);
   font-size: 1.25rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #333654;
+  border-bottom: 1px solid var(--color-borde);
   position: relative;
 }
 
@@ -230,7 +229,7 @@ body {
   left: 0;
   width: 50px;
   height: 2px;
-  background: linear-gradient(to right, #d000ff, #00d9ff);
+  background: var(--gradiente-primario);
 }
 
 /* Formulario de creación */
@@ -255,21 +254,21 @@ body {
 
 .etiquetaFormulario {
   font-weight: 600;
-  color: #ffffff;
+  color: var(--color-texto);
 }
 
 .campoTexto {
   padding: 0.75rem;
-  background-color: #1a1c2e;
-  border: 1px solid #333654;
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
   border-radius: 6px;
   font-size: 1rem;
-  color: #ffffff;
+  color: var(--color-texto);
   width: 100%;
 }
 
 .campoTexto:focus {
-  border-color: #00d9ff;
+  border-color: var(--color-acento-secundario);
   outline: none;
 }
 
@@ -280,26 +279,11 @@ body {
 }
 
 /* Botones */
+
 .botonControl {
-  background: linear-gradient(90deg, #d000ff, #00d9ff);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.2s;
-  flex: 1;
-}
-
-.botonControl:hover {
-  opacity: 0.9;
-  transform: scale(1.05);
-}
-
-.botonSecundario {
-  background: linear-gradient(90deg, #252744, #2c2e48);
-  color: #ffffff;
-  border: 1px solid #333654;
+  background: var(--gradiente-secundario);
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde);
   border-radius: 6px;
   padding: 8px 16px;
   cursor: pointer;
@@ -307,9 +291,9 @@ body {
   flex: 1;
 }
 
-.botonSecundario:hover {
-  border-color: #00d9ff;
-  background: linear-gradient(90deg, #2c2e48, #333a5f);
+.botonControl:hover {
+  border-color: var(--color-acento-secundario);
+  background: var(--gradiente-terciario);
 }
 
 /* Lista de colecciones */
@@ -331,14 +315,14 @@ body {
 }
 
 .mensajeInfo {
-  color: #a4a8e0;
+  color: var(--color-texto-secundario);
   text-align: center;
   font-size: 1rem;
 }
 
 .mensajeError {
-  background-color: #291e23;
-  color: #ff5555;
+  background-color: var(--color-error-fondo);
+  color: var(--color-error-texto);
   padding: 1rem;
   border-radius: 6px;
   text-align: center;
@@ -351,8 +335,8 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #1a1c2e;
-  color: #ffffff;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
   min-width: 320px;
   /* Añadir el mismo ancho mínimo */
   max-width: 1920px;

@@ -64,7 +64,7 @@ onMounted(() => {
     <header class="cabeceraJuego">
       <h1 class="tituloJuego">Catálogo de Juegos</h1>
       <p class="subtituloJuego">
-        Explora y descubre los juegos que quieras
+        Explora, busca y añade tus juegos favoritos a tus colecciones.
       </p>
     </header>
 
@@ -144,7 +144,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-color: #1a1c2e;
+  background-color: var(--color-fondo);
   min-height: 100vh;
   width: 100%;
 }
@@ -153,7 +153,7 @@ body {
   min-height: 100vh;
   width: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #1a1c2e;
+  background-color: var(--color-fondo);
   padding: 2rem;
 }
 
@@ -161,12 +161,12 @@ body {
   text-align: center;
   margin: 0 auto 2rem auto;
   max-width: 1400px;
-  background: linear-gradient(90deg, #1f2136, #252744, #1f2136);
+  background: var(--gradiente-secundario);
   padding: 1.5rem;
   border-radius: 12px;
   position: relative;
   overflow: hidden;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
 }
 
 .cabeceraJuego::before {
@@ -176,11 +176,11 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(45deg, #d000ff, #00d9ff);
+  background: linear-gradient(90deg, #ff6b6b, #7b68ee);
 }
 
 .tituloJuego {
-  color: #ffffff;
+  color: var(--color-texto);
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0;
@@ -188,7 +188,7 @@ body {
 }
 
 .subtituloJuego {
-  color: #a4a8e0;
+  color: var(--color-texto-secundario);
   margin-top: 0.5rem;
   font-size: 1rem;
 }
@@ -202,7 +202,7 @@ body {
 
 /* Panel principal */
 .panelPrincipal {
-  background-color: 1a1c2e;
+  background-color: var(--color-fondo);
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -210,19 +210,19 @@ body {
 }
 
 .seccionInfo {
-  background-color: #1f2136;
+  background-color: var(--color-primario);
   border-radius: 12px;
   padding: 1.5rem;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
   margin-bottom: 1.5rem;
 }
 
 .tituloSeccion {
-  color: #ffffff;
+  color: var(--color-texto);
   font-size: 1.25rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #333654;
+  border-bottom: 1px solid var(--color-borde);
   position: relative;
 }
 
@@ -233,11 +233,11 @@ body {
   left: 0;
   width: 50px;
   height: 2px;
-  background: linear-gradient(to right, #d000ff, #00d9ff);
+  background: var(--gradiente-primario);
 }
 
 .subtituloSeccion {
-  color: #ffffff;
+  color: var(--color-texto);
   font-size: 1.1rem;
   margin: 1.5rem 0 1rem;
 }
@@ -252,26 +252,26 @@ body {
 .campoTexto {
   flex: 1;
   padding: 0.75rem;
-  background-color: #1a1c2e;
-  border: 1px solid #333654;
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
   border-radius: 6px;
   font-size: 1rem;
-  color: #ffffff;
+  color: var(--color-texto);
 }
 
 .campoTexto:focus {
-  border-color: #00d9ff;
+  border-color: var(--color-acento-secundario);
   outline: none;
 }
 
 .campoSelect {
   width: 100%;
   padding: 0.75rem;
-  background-color: #1a1c2e;
-  border: 1px solid #333654;
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
   border-radius: 6px;
   font-size: 1rem;
-  color: #ffffff;
+  color: var(--color-texto);
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -280,7 +280,7 @@ body {
 }
 
 .campoSelect:focus {
-  border-color: #00d9ff;
+  border-color: var(--color-acento-secundario);
   outline: none;
 }
 
@@ -291,10 +291,10 @@ body {
 }
 
 .buscadorAvanzado {
-  background-color: #1a1c2e;
+  background-color: var(--color-fondo);
   border-radius: 8px;
   padding: 1rem;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
 }
 
 .formularioBusqueda {
@@ -310,15 +310,15 @@ body {
 
 .etiquetaFormulario {
   display: block;
-  color: #a4a8e0;
+  color: var(--color-texto-secundario);
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
 }
 
 /* Botones */
 .botonControl {
-  background: #5d5fef;
-  color: white;
+  background: var(--color-fondo-boton);
+  color: var(--color-texto);
   border: none;
   border-radius: 6px;
   padding: 8px 16px;
@@ -333,9 +333,9 @@ body {
 }
 
 .botonSecundario {
-  background: linear-gradient(90deg, #252744, #2c2e48);
-  color: #ffffff;
-  border: 1px solid #333654;
+  background: var(--gradiente-secundario);
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde);
   border-radius: 6px;
   padding: 8px 16px;
   cursor: pointer;
@@ -343,8 +343,8 @@ body {
 }
 
 .botonSecundario:hover {
-  border-color: #00d9ff;
-  background: linear-gradient(90deg, #2c2e48, #333a5f);
+  border-color: var(--color-acento-secundario);
+  background: var(--gradiente-terciario);
 }
 
 /* Listado de juegos */
@@ -357,15 +357,15 @@ body {
 
 /* Tarjetas informativas */
 .tarjetaInfo {
-  background-color: #1a1c2e;
+  background-color: var(--color-fondo);
   border-radius: 8px;
   padding: 1.25rem;
-  border: 1px solid #333654;
+  border: 1px solid var(--color-borde);
   margin-top: 1rem;
 }
 
 .mensajeInfo {
-  color: #a4a8e0;
+  color: var(--color-texto-secundario);
   text-align: center;
   font-size: 1rem;
 }
@@ -384,8 +384,8 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #1a1c2e;
-  color: #ffffff;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
 }
 
 /* Responsive */
@@ -403,14 +403,7 @@ body {
   }
 
   .listadoJuegos {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .listadoJuegos {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
 }
 </style>

@@ -83,22 +83,23 @@ const cerrar = () => {
 }
 
 .contenedorModal {
-    background: #1f2136;
+    background: var(--color-primario);
     border-radius: 12px;
     padding: 2rem;
     max-width: 500px;
     width: 90%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-borde);
 }
 
 .tituloModal {
-    color: #ffffff;
+    color: var(--color-texto);
     font-size: 1.5rem;
     margin: 0 0 1rem 0;
 }
 
 .contenidoModal {
-    color: #a4a8e0;
+    color: var(--color-texto-secundario);
     font-size: 1rem;
     margin-bottom: 1.5rem;
 }

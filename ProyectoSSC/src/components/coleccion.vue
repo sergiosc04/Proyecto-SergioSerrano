@@ -456,11 +456,12 @@ onMounted(async () => {
     vertical-align: middle;
     filter: brightness(1.3) contrast(1.1);
     transition: transform 0.3s ease;
+    border: 1px solid var(--color-secundario);
 }
 
 .textoVacio {
-    background-color: #131520;
-    color: #a1a1b5;
+    background-color: var(--color-primario);
+    color: var(--color-texto-secundario);
     padding: 1.2rem;
     text-align: center;
     border-radius: 12px;
@@ -472,22 +473,23 @@ onMounted(async () => {
 }
 
 .textoVacio a {
-    color: #5d5fef;
+    color: var(--color-fondo-boton);
     text-decoration: none;
     font-weight: 600;
     transition: color 0.2s ease;
 }
 
 .textoVacio a:hover {
-    color: #4b4aca;
+    color: var(--color-acento-terciario);
     text-decoration: underline;
 }
 
 .listaColeccion {
     padding: 1.5rem;
+    border: 1px solid var(--color-borde);
     border-radius: 16px;
-    background-color: #181b29;
-    color: #e9e9ec;
+    background-color: var(--color-fondo-coleccion);
+    color: var(--color-texto);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(79, 70, 229, 0.15);
     transition: all 0.3s ease;
     position: relative;
@@ -501,14 +503,14 @@ onMounted(async () => {
     left: 0;
     width: 100%;
     height: 4px;
-    background: linear-gradient(90deg, #5d5fef, #9d4edd);
+    background: var(--gradiente-primario);
 }
 
 .listaColeccion h2 {
     font-size: 1.8rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
-    color: #ffffff;
+    color: var(--color-texto);
     line-height: 1.3;
     letter-spacing: 0.02em;
     display: flex;
@@ -524,9 +526,8 @@ onMounted(async () => {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     padding-bottom: 1rem;
-    /* Personalización del scrollbar */
     scrollbar-width: thin;
-    scrollbar-color: #5d5fef #2d3142;
+    scrollbar-color: var(--color-fondo-boton) var(--color-secundario);
 }
 
 .coleccionesJuegos::-webkit-scrollbar {
@@ -534,12 +535,12 @@ onMounted(async () => {
 }
 
 .coleccionesJuegos::-webkit-scrollbar-track {
-    background: #2d3142;
+    background: var(--color-secundario);
     border-radius: 8px;
 }
 
 .coleccionesJuegos::-webkit-scrollbar-thumb {
-    background-color: #5d5fef;
+    background-color: var(--color-fondo-boton);
     border-radius: 8px;
 }
 
@@ -556,8 +557,8 @@ onMounted(async () => {
 }
 
 .botonPrincipal {
-    background-color: #5d5fef;
-    color: white;
+    background-color: var(--color-fondo-boton);
+    color: var(--color-texto);
     border: none;
     padding: 0.8rem 1.5rem;
     margin-top: 20px;
@@ -571,23 +572,23 @@ onMounted(async () => {
 }
 
 .botonPrincipal:hover {
-    background-color: #4b4aca;
+    background-color: var(--color-acento-terciario);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(93, 95, 239, 0.4);
 }
 
 .botonPrincipal:disabled {
-    background-color: #3d4259;
+    background-color: var(--color-texto-disabled);
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
 .botonSecundario {
-    background-color: #2d3142;
-    color: #e9e9ec;
-    border: none;
-    padding: 0.6rem 1rem;
+    background-color: var(--color-primario);
+    color: var(--color-texto);
+    border: 1px solid var(--color-texto-secundario);
+    padding: 0.7rem 1rem;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 500;
@@ -595,19 +596,34 @@ onMounted(async () => {
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 1rem;
-    /* Añadido: espacio entre imagen y texto */
-    padding-right: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(5px);
+    gap: 0.6rem;
+    margin: 0.25rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .botonSecundario:hover {
-    background-color: #3d4259;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(93, 95, 239, 0.2);
+    background-color: var(--color-secundario);
+    border-color: var(--color-fondo-boton);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
+.botonSecundario:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.botonSecundario img.botonesOpciones {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s ease;
+    opacity: 0.8;
+}
+
+.botonSecundario:hover img.botonesOpciones {
+    transform: scale(1.05);
+    opacity: 1;
+}
 
 .opciones {
     display: inline-flex;
@@ -626,9 +642,9 @@ onMounted(async () => {
     height: 35px;
     border-radius: 8px;
     border: none;
-    background-color: rgba(255, 59, 48, 0.8);
+    background-color: var(--color-error);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    color: white;
+    color: var(--color-texto);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -643,7 +659,7 @@ onMounted(async () => {
 }
 
 .botonEliminar:hover {
-    background-color: rgba(255, 59, 48, 1);
+    background-color: var(--color-error);
     transform: translateY(-3px) scale(1.05);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }

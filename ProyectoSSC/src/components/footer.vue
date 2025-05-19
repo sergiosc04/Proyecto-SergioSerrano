@@ -46,7 +46,7 @@ const anioActual = computed(() => {
           <li><router-link to="/">Inicio</router-link></li>
           <li><router-link to="/catalogo">Ver catálogo</router-link></li>
           <li><router-link to="/cuenta">Ver cuenta</router-link></li>
-          </ul>
+        </ul>
       </div>
     </div>
     <div class="pieInferior">
@@ -59,9 +59,8 @@ const anioActual = computed(() => {
 
 <style scoped>
 .piePagina {
-
   background-color: var(--color-primario);
-  color: var(--color-texto-claro);
+  color: var(--color-texto);
   padding: 2rem 0;
   margin-top: auto;
 }
@@ -77,7 +76,8 @@ const anioActual = computed(() => {
 
 .seccionPie h4 {
   margin-bottom: 1rem;
-  color: var(--color-texto-claro);
+  color: var(--color-texto);
+  font-weight: 600;
 }
 
 .seccionPie ul {
@@ -90,13 +90,13 @@ const anioActual = computed(() => {
 }
 
 .seccionPie a {
-  color: var(--color-texto-claro);
+  color: var(--color-texto-secundario);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .seccionPie a:hover {
-  color: var(--color-secundario);
+  color: var(--color-texto-hover);
 }
 
 .redesSociales {
@@ -109,16 +109,24 @@ const anioActual = computed(() => {
   height: 20px;
   vertical-align: middle;
   margin-right: 8px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.iconoPie:hover {
+  opacity: 1;
 }
 
 .iconoRed {
   width: 24px;
   height: 24px;
   transition: transform 0.3s ease;
+  opacity: 0.8;
 }
 
 .iconoRed:hover {
   transform: scale(1.1);
+  opacity: 1;
 }
 
 .pieInferior {
@@ -126,10 +134,17 @@ const anioActual = computed(() => {
   padding-top: 2rem;
   margin-top: 2rem;
   border-top: 1px solid var(--color-borde);
+  color: var(--color-texto-terciario);
 }
 
 .logoFooter {
   height: 80px;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.logoFooter:hover {
+  opacity: 1;
 }
 
 @media (max-width: 768px) {
