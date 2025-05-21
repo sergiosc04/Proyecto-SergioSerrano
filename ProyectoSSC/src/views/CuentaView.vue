@@ -32,7 +32,6 @@ const cerrarSesion = async () => {
         await supabase.auth.signOut();
         sessionStore.logout();
         router.push('/');
-        location.reload();
     } catch (error) {
         console.error("Error al cerrar sesión:", error);
     }
@@ -100,7 +99,7 @@ const subirAvatar = async (evento) => {
 
     if (uploadError) {
         console.error("Error al subir avatar:", uploadError.message);
-        mensajeModal.value = "Error al subir el avatar:No se pueden subir imagenes repetidas";
+        mensajeModal.value = "Error: No se pueden subir imágenes repetidas.";
         mostrarModalAvatar.value = true;
         return;
     }
@@ -119,13 +118,14 @@ const subirAvatar = async (evento) => {
 
     if (dbError) {
         console.error("Error al actualizar avatar_url:", dbError.message);
-        mensajeModal.value = "Error al guardar el avatar: " + "Error de base de datos";
+        mensajeModal.value = "Error al guardar el avatar: error en la base de datos";
         mostrarModalAvatar.value = true;
         return;
-    }
+    } else {
 
-    mensajeModal.value = "Avatar subido y guardado correctamente";
-    mostrarModalAvatar.value = true;
+        mensajeModal.value = "Avatar subido y guardado correctamente";
+        mostrarModalAvatar.value = true;
+    }
 }
 
 // Modificar la función actualizarDatos
@@ -240,22 +240,25 @@ onMounted(async () => {
                 <section class="seccionInfo">
                     <h2 class="tituloSeccion">Datos personales</h2>
 
-                    <div class="grupoFormulario">
-                        <label for="username" class="etiquetaCampo">Nombre de Usuario:</label>
-                        <input id="username" type="text" v-model="usernameEditado" class="campoDatos" />
-                    </div>
+                    <form @submit.prevent="actualizarDatos" class="formularioDatos">
+                        <div class="grupoFormulario">
+                            <label for="username" class="etiquetaCampo">Nombre de Usuario:</label>
+                            <input id="username" type="text" v-model="usernameEditado" class="campoDatos" required />
+                        </div>
 
-                    <div class="grupoFormulario">
-                        <label for="biografia" class="etiquetaCampo">Biografía:</label>
-                        <textarea id="biografia" v-model="biografiaEditada" class="campoTextarea" rows="3"></textarea>
-                    </div>
+                        <div class="grupoFormulario">
+                            <label for="biografia" class="etiquetaCampo">Biografía:</label>
+                            <textarea id="biografia" v-model="biografiaEditada" class="campoTextarea"
+                                rows="3"></textarea>
+                        </div>
 
-                    <div class="grupoFormulario">
-                        <label for="idiomas" class="etiquetaCampo">Idiomas:</label>
-                        <input id="idiomas" type="text" v-model="idiomaEditado" class="campoDatos" />
-                    </div>
+                        <div class="grupoFormulario">
+                            <label for="idiomas" class="etiquetaCampo">Idiomas:</label>
+                            <input id="idiomas" type="text" v-model="idiomaEditado" class="campoDatos" />
+                        </div>
 
-                    <button type="button" @click="actualizarDatos()" class="botonPrimario">Guardar cambios</button>
+                        <button type="submit" class="botonPrimario">Guardar cambios</button>
+                    </form>
                 </section>
 
 
@@ -299,11 +302,11 @@ onMounted(async () => {
 
         <!-- Modal de Éxito -->
         <Modal v-model:mostrar="mostrarModalExito" tipo="alerta" titulo="Éxito" :mensaje="mensajeExito"
-            @cerrar="mostrarModalExito = false; location.reload()" />
+            @cerrar="mostrarModalExito = false;" />
 
         <!-- Modal de Mensaje (para subir avatar) -->
         <Modal v-model:mostrar="mostrarModalAvatar" tipo="alerta" titulo="Avatar" :mensaje="mensajeModal"
-            @cerrar="mostrarModalAvatar = false; if (mensajeModal.includes('correctamente')) location.reload();" />
+            @cerrar="mostrarModalAvatar = false; if (mensajeModal.includes('correctamente'));" />
     </div>
 </template>
 

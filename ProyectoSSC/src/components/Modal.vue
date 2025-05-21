@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
     mostrar: {
@@ -52,11 +51,12 @@ const cerrar = () => {
         <div class="contenedorModal">
             <h2 class="tituloModal">{{ titulo }}</h2>
             <p class="contenidoModal">{{ mensaje }}</p>
+
             <div class="botonesModal">
                 <button v-if="tipo === 'confirmar'" @click="confirmar" class="botonPrimario">
                     {{ textoConfirmar }}
                 </button>
-                <button v-if="tipo === 'confirmar'" @click="cancelar" class="botonSecundario">
+                <button v-if="tipo === 'confirmar'" @click="cancelar" class="botonPrimario">
                     {{ textoCancelar }}
                 </button>
                 <button v-if="tipo === 'alerta'" @click="cerrar" class="botonPrimario">

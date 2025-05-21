@@ -37,6 +37,11 @@ const router = createRouter({
       name: 'login',
       component: () => import('../views/LoginView.vue'),
     },
+    {
+      // Ruta wildcard para manejar todas las URLs no encontradas
+      path: '/:pathMatch(.*)*',
+      redirect: '/'
+    }
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {

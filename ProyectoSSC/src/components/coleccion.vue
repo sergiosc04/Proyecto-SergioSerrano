@@ -230,8 +230,9 @@ async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
     }
     router.replace({ name: 'coleccion' });
     setTimeout(() => {
-        location.reload();
-    }, 3000);
+        router.push("/coleccion");
+
+    }, 2000);
 }
 
 //Funcion para eliminar un juego mediante su id de coleccion y de juego
@@ -354,11 +355,10 @@ onMounted(async () => {
 <template>
     <div class="listaColeccion">
         <div class="textoColeccion">
+
             <div class="titulo2">Colección <strong>{{ nombre }}</strong></div>
             <div class="subtitulo" v-if="longColeccion">{{ longColeccion }} juegos en la colección.</div>
         </div>
-
-        <p v-if="longColeccion"></p>
 
         <span v-if="idRecibido">
             <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando" class="botonPrincipal">
