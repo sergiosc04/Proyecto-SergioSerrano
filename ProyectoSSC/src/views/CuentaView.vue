@@ -19,6 +19,12 @@ const idiomaEditado = ref("");
 const idAuth = ref(null);
 const error = ref(null);
 
+const claveRecargar = ref("0");
+
+const recargarComponente = () => {
+    componentKey.value += 1
+}
+
 // Referencias para los modals
 const mostrarModalCerrarSesion = ref(false);
 const mostrarModalExito = ref(false);
@@ -148,10 +154,12 @@ const actualizarDatos = async () => {
     username.value = usernameEditado.value;
     mensajeExito.value = "Se han guardado los cambios correctamente";
     mostrarModalExito.value = true;
+    recargarComponente();
+
+
 }
 
 onMounted(async () => {
-
     if (!sessionStore.session) {
         console.log("No hay sesión activa");
         router.push('/login');

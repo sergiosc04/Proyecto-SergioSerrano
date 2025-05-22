@@ -33,6 +33,12 @@ let coleccion = ref("");
 let mostrarOpciones = ref(false);
 let longColeccion = ref();
 
+const claveRecargar = ref("0");
+
+const recargarComponente = () => {
+    claveRecargar.value += 1
+}
+
 const router = useRouter();
 
 //importamos la clave del .env
@@ -105,7 +111,7 @@ async function cambiarNombre(idColeccionModificar) {
 
                 router.replace({ name: 'coleccion' });
                 setTimeout(() => {
-                    location.reload();
+                    recargarComponente();
                 }, 500);
             }
         } else {
@@ -229,9 +235,9 @@ async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
         console.error("Error al añadir el juego:", err);
     }
     router.replace({ name: 'coleccion' });
+
     setTimeout(() => {
         router.push("/coleccion");
-
     }, 2000);
 }
 
