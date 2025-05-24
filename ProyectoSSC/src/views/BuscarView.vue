@@ -21,7 +21,7 @@ const {
   idBuscar,
   buscarInput,
   generoSelect,
-  juegosPagina,
+  juegosPagina = 20,
   obtenerJuegos,
 } = getJuegos();
 

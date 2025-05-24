@@ -32,6 +32,7 @@ let cargando = ref(true);
 let coleccion = ref("");
 let mostrarOpciones = ref(false);
 let longColeccion = ref();
+const nombreColeccion = ref(props.nombre);
 
 const claveRecargar = ref("0");
 
@@ -84,7 +85,6 @@ const getJuegos = async () => {
 
 //Funcion para cambiar el nombre de la colección
 async function cambiarNombre(idColeccionModificar) {
-
     let intro = false;
     let nuevoNombre = "";
 
@@ -92,7 +92,6 @@ async function cambiarNombre(idColeccionModificar) {
         nuevoNombre = prompt("Introduce el nuevo nombre:");
 
         if (nuevoNombre) {
-
             const { error } = await supabase
                 .from('coleccion')
                 .upsert([
@@ -103,24 +102,19 @@ async function cambiarNombre(idColeccionModificar) {
                 ]);
 
             if (error) {
-                alert(`Introduce un nombre. Error: ${error}`);
-            }
-            else {
-                alert("Nombre modificado correctamente a " + nuevoNombre);
+                mensajeModal.value = `Error al cambiar el nombre: ${error.message}`;
+                mostrarModal.value = true;
+            } else {
+                nombreColeccion.value = nuevoNombre;
+                mensajeModal.value = "Nombre modificado correctamente a " + nuevoNombre;
+                mostrarModal.value = true;
                 intro = true;
-
-                router.replace({ name: 'coleccion' });
-                setTimeout(() => {
-                    recargarComponente();
-                }, 500);
             }
         } else {
             console.log("Cambio de nombre cancelado");
             intro = true;
         }
-
     } while (intro == false);
-
 }
 //Función para eliminar una colección
 async function eliminarColeccion(nombreColeccionEliminar, idColeccionEliminar) {
@@ -362,7 +356,7 @@ onMounted(async () => {
     <div class="listaColeccion">
         <div class="textoColeccion">
 
-            <div class="titulo2">Colección <strong>{{ nombre }}</strong></div>
+            <div class="titulo2">Colección <strong>{{ nombreColeccion }}</strong></div>
             <div class="subtitulo" v-if="longColeccion">{{ longColeccion }} juegos en la colección.</div>
         </div>
 
@@ -394,7 +388,7 @@ onMounted(async () => {
         <!-- Botón para mostrar opciones -->
         <button v-if="!mostrarOpciones" @click="toggleFunciones()" class="botonSecundario">
             <img class="botonesOpciones" src="../assets/img/botones/opciones.png" alt="Opciones">
-            <span>Opciones de {{ nombre }}</span>
+            <span>Opciones de {{ nombreColeccion }}</span>
         </button>
 
         <!-- Botones de opciones -->
@@ -410,7 +404,7 @@ onMounted(async () => {
                     &nbsp;Cambiar Nombre</span>
             </button>
 
-            <button @click="eliminarColeccion(nombre, idcoleccion)" class="botonSecundario">
+            <button @click="eliminarColeccion(nombreColeccion, idcoleccion)" class="botonSecundario">
                 <img class="botonesOpciones" src="../assets/img/botones/basura.png"><span>
                     &nbsp;Eliminar Colección</span>
             </button>
