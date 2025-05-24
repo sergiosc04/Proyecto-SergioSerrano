@@ -26,6 +26,8 @@ const props = defineProps({
     }
 });
 
+const emit = defineEmits(['coleccionEliminada']);
+
 let juegos = ref([]);
 let juegoUnico = ref(null);
 let cargando = ref(true);
@@ -118,21 +120,28 @@ async function cambiarNombre(idColeccionModificar) {
 }
 //Función para eliminar una colección
 async function eliminarColeccion(nombreColeccionEliminar, idColeccionEliminar) {
-
     if (confirm(`¿Eliminar colección ${nombreColeccionEliminar}?`)) {
+        try {
+            const { error } = await supabase
+                .from('coleccion')
+                .delete()
+                .eq('idcoleccion', idColeccionEliminar);
 
-        const { data, error } = await supabase
-            .from('coleccion')
-            .delete()
-            .eq('idcoleccion', idColeccionEliminar)
+            if (error) {
+                mensajeModal.value = `Error al eliminar: ${error.message}`;
+                mostrarModal.value = true;
+                return;
+            }
 
-        if (error) alert(error);
+            mensajeModal.value = `Colección ${nombreColeccionEliminar} eliminada correctamente`;
+            mostrarModal.value = true;
+            emit('coleccionEliminada', idColeccionEliminar);
 
-        router.replace({ name: 'coleccion' });
-        setTimeout(() => {
-            location.reload();
-        }, 500);
-
+        } catch (err) {
+            console.error("Error al eliminar:", err);
+            mensajeModal.value = "Error al eliminar la colección";
+            mostrarModal.value = true;
+        }
     } else {
         console.log("Eliminado de coleccion " + nombreColeccionEliminar + " cancelado");
     }

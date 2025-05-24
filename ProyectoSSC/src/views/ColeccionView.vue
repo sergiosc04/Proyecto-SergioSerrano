@@ -44,6 +44,10 @@ const manejarCrearColeccion = async () => {
   }
 }
 
+const handleColeccionEliminada = async () => {
+  await getIdAuth(); // Esto recargará la lista de colecciones
+};
+
 onMounted(async () => {
   await getIdAuth();
 });
@@ -114,9 +118,15 @@ onMounted(async () => {
           </div>
 
           <div v-else class="listaColecciones">
-            <Coleccion v-for="(coleccion, index) in colecciones" :key="index" :nombre="coleccion.nombreColeccion"
-              :idcoleccion="coleccion.idcoleccion" :idRecibido="idRecibido"
-              :juegos="coleccion.datosentrada?.juegos || []" />
+            <Coleccion 
+              v-for="(coleccion, index) in colecciones" 
+              :key="index" 
+              :nombre="coleccion.nombreColeccion"
+              :idcoleccion="coleccion.idcoleccion" 
+              :idRecibido="idRecibido"
+              :juegos="coleccion.datosentrada?.juegos || []" 
+              @coleccion-eliminada="handleColeccionEliminada"
+            />
           </div>
         </div>
       </main>
