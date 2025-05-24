@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import Coleccion from '../components/coleccion.vue';
 import { useRoute } from 'vue-router';
-import { obtenerColecciones } from '../compostables/obtenerColecciones';
+import { obtenerColecciones } from '../composables/obtenerColecciones';
 import SpinnerCarga from '@/components/SpinnerCarga.vue';
 import Modal from '@/components/Modal.vue';
 

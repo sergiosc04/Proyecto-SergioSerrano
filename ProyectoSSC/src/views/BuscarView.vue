@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import tarjetaJuego from '../components/tarjetaJuego.vue';
 import Paginacion from '../components/paginacion.vue';
-import { getJuegos } from '../compostables/obtenerJuegos';
+import { getJuegos } from '../composables/obtenerJuegos';
 import SpinnerCarga from '../components/SpinnerCarga.vue';
 
 //Importamos la clave del .env

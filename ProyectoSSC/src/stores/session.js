@@ -8,7 +8,9 @@ export const useSessionStore = defineStore('session', {
     state: () => ({
         user: null,
         session: null,
-        avatarUrl: null
+        avatarUrl: null,
+        username: '',
+        isLoadingUsername: false
     }),
 
     actions: {
@@ -24,6 +26,7 @@ export const useSessionStore = defineStore('session', {
             this.session = null;
             this.user = null;
             this.avatarUrl = null;
+            this.username = '';
         },
 
         // Nuevo método para recuperar la sesión
@@ -39,10 +42,13 @@ export const useSessionStore = defineStore('session', {
                 if (data?.session) {
                     this.setSession(data.session);
 
-                    // Recuperar el avatar después de establecer la sesión
-                    await this.recuperarAvatar();
+                    // Recuperar el avatar y username después de establecer la sesión
+                    await Promise.all([
+                        this.recuperarAvatar(),
+                        this.recuperarUsername()
+                    ]);
 
-                    console.log('Sesión y avatar recuperados correctamente');
+                    console.log('Sesión, avatar y username recuperados correctamente');
 
                     return true;
                 } else {
@@ -74,6 +80,42 @@ export const useSessionStore = defineStore('session', {
 
             this.avatarUrl = usuario?.avatar_url || null;
             return this.avatarUrl;
+        },
+
+        setUsername(newUsername) {
+            this.username = newUsername;
+        },
+
+        setLoadingUsername(status) {
+            this.isLoadingUsername = status;
+        },
+
+        async recuperarUsername() {
+            if (!this.user?.id) {
+                console.warn("Usuario no disponible");
+                return null;
+            }
+
+            try {
+                this.setLoadingUsername(true);
+                const { data: usuario, error } = await supabase
+                    .from('usuarios')
+                    .select('username')
+                    .eq('idauth', this.user.id)
+                    .single();
+
+                if (error) throw error;
+                
+                this.setUsername(usuario?.username || '');
+                return this.username;
+                
+            } catch (error) {
+                console.error('Error al obtener nombre de usuario:', error);
+                this.setUsername('');
+                return null;
+            } finally {
+                this.setLoadingUsername(false);
+            }
         },
     }
     //Las sesiones duran 1 hora, por lo que la sesion se cierra automaticamente al pasar este tiempo

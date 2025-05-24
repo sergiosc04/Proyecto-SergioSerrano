@@ -141,22 +141,31 @@ const actualizarDatos = async () => {
         return;
     }
 
-    const { error: dbError } = await supabase
-        .from('usuarios')
-        .update({ username: usernameEditado.value, biografia: biografiaEditada.value, idioma: idiomaEditado.value })
-        .eq('idauth', idAuth.value);
+    try {
+        const { error: dbError } = await supabase
+            .from('usuarios')
+            .update({ 
+                username: usernameEditado.value, 
+                biografia: biografiaEditada.value, 
+                idioma: idiomaEditado.value 
+            })
+            .eq('idauth', idAuth.value);
 
-    if (dbError) {
-        console.error("Error al guardar los cambios:", dbError.message);
-        error.value = dbError.message;
-        return;
+        if (dbError) throw dbError;
+
+        // Actualizar valores locales y store
+        username.value = usernameEditado.value;
+        sessionStore.setUsername(usernameEditado.value);
+        biografia.value = biografiaEditada.value;
+        idioma.value = idiomaEditado.value;
+
+        mensajeExito.value = "Se han guardado los cambios correctamente";
+        mostrarModalExito.value = true;
+    } catch (error) {
+        console.error("Error al guardar los cambios:", error.message);
+        mensajeModal.value = "Error al guardar los cambios: " + error.message;
+        mostrarModalExito.value = true;
     }
-    username.value = usernameEditado.value;
-    mensajeExito.value = "Se han guardado los cambios correctamente";
-    mostrarModalExito.value = true;
-    recargarComponente();
-
-
 }
 
 onMounted(async () => {
@@ -177,7 +186,9 @@ onMounted(async () => {
     <div class="contenedorPrincipal">
         <!-- Cabecera del perfil similar a la cabecera del juego -->
         <header class="cabeceraJuego">
-            <h1 class="tituloJuego" v-if="username">Perfil de {{ username }}</h1>
+            <h1 class="tituloJuego" v-if="sessionStore.username">
+                Perfil de {{ sessionStore.username }}
+            </h1>
             <h1 class="tituloJuego" v-else>Perfil de Usuario</h1>
             <p class="subtituloJuego">Gestiona tu cuenta y personaliza tu perfil</p>
         </header>

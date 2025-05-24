@@ -2,10 +2,10 @@
 import { ref, onMounted, computed } from 'vue';
 import { useSessionStore } from '../stores/session.js';
 import { RouterLink } from 'vue-router';
-import { useObtenerNombreUsuario } from '../compostables/obtenerNombreUsuario.js';
+import { useObtenerNombreUsuario } from '../composables/obtenerNombreUsuario.js';
 
 const sessionStore = useSessionStore();
-const { nombreUsuario, obtenerUsername } = useObtenerNombreUsuario();
+const { obtenerUsername } = useObtenerNombreUsuario();
 const menuAbierto = ref(false);
 
 const toggleMenu = () => {
@@ -24,11 +24,6 @@ const cerrarMenuSiClickFuera = (event) => {
     document.body.style.overflow = 'auto';
   }
 };
-
-// Detectar si la pantalla es móvil
-const esPantallaMovil = computed(() => {
-  return window.innerWidth < 768;
-});
 
 onMounted(async () => {
   await sessionStore.recuperarSesion();
@@ -82,9 +77,12 @@ onMounted(async () => {
               <img v-if="sessionStore.avatarUrl" :src="sessionStore.avatarUrl" alt="Usuario" />
               <img v-else src="../assets/img/usuarioPH.jpg" alt="Usuario" />
             </div>
-            <span class="nombreUsuarioMovil">
-              {{ nombreUsuario || "Iniciar sesión" }}
-            </span>
+            <template v-if="!sessionStore.isLoadingUsername">
+              <span class="nombreUsuarioMovil">{{ sessionStore.username || "Iniciar sesión" }}</span>
+            </template>
+            <template v-else>
+              <span class="nombreUsuarioMovil cargando">Cargando...</span>
+            </template>
           </RouterLink>
         </div>
       </div>
@@ -99,7 +97,12 @@ onMounted(async () => {
       <!-- Datos de la sesión (visible solo en desktop) -->
       <div class="navbarSesion">
         <RouterLink class="navbarUsuario" to="/cuenta/">
-          <span class="usuarioNombre">{{ nombreUsuario || "Iniciar sesión" }}</span>
+          <template v-if="!sessionStore.isLoadingUsername">
+            <span class="usuarioNombre">{{ sessionStore.username || "Iniciar sesión" }}</span>
+          </template>
+          <template v-else>
+            <span class="usuarioNombre cargando">Cargando...</span>
+          </template>
           <div class="usuarioAvatar">
             <img v-if="sessionStore.avatarUrl" :src="sessionStore.avatarUrl" alt="Usuario" />
             <img v-else src="../assets/img/usuarioPH.jpg" alt="Usuario" />
@@ -439,6 +442,23 @@ onMounted(async () => {
   .usuarioAvatarMovil img {
     width: 40px;
     height: 40px;
+  }
+}
+
+.cargando {
+  opacity: 0.7;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.7;
   }
 }
 </style>

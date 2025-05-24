@@ -1,12 +1,12 @@
 <script setup>
 import { onMounted } from 'vue';
 import tarjetaJuego from '../components/tarjetaJuego.vue';
-import { getJuegos } from '../compostables/obtenerJuegos';
+import { getJuegos } from '../composables/obtenerJuegos';
 import SpinnerCarga from '@/components/SpinnerCarga.vue';
 import { useSessionStore } from '../stores/session.js';
 import BannerJuego from '@/components/bannerJuego.vue';
-import { useObtenerNombreUsuario } from '../compostables/obtenerNombreUsuario';
-import { obtenerColecciones } from '../compostables/obtenerColecciones';
+import { useObtenerNombreUsuario } from '../composables/obtenerNombreUsuario';
+import { obtenerColecciones } from '../composables/obtenerColecciones';
 
 const sessionStore = useSessionStore();
 const { nombreUsuario, obtenerUsername } = useObtenerNombreUsuario();
