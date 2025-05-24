@@ -24,52 +24,95 @@ const manejarRegistro = async () => {
     try {
         cargando.value = true;
 
+        // Primero verificar si el usuario ya existe
+        const { data: usuarioExistente } = await supabase
+            .from('usuarios')
+            .select('idusuario')
+            .eq('email', email.value)
+            .single();
+
+        if (usuarioExistente) {
+            mensajeModal.value = 'Esta cuenta ya existe, inicia sesión';
+            mostrarModal.value = true;
+            cargando.value = false;
+            return;
+        }
+
         const { data, error } = await supabase.auth.signUp({
             email: email.value,
             password: password.value,
         });
 
-        if (error) throw error;
+        if (error) {
+            if (error.message.includes('User already registered')) {
+                mensajeModal.value = 'Esta cuenta ya existe, inicia sesión';
+                mostrarModal.value = true;
+                return;
+            }
+            throw error;
+        }
 
         const user = data.user;
         const idauth = user?.id;
         if (!idauth) throw new Error('No se pudo obtener el idauth del usuario');
 
-        const { data: coleccion, error: errorColeccion } = await supabase
-            .from('coleccion')
-            .insert({})
-            .select('idcoleccion')
-            .single();
+        try {
+            const { data: usuario, error: errorUsuario } = await supabase
+                .from('usuarios')
+                .select('idusuario')
+                .eq('idauth', idauth)
+                .single();
 
-        if (errorColeccion) throw errorColeccion;
+            if (usuario) {
+                mensajeModal.value = 'Esta cuenta ya existe, inicia sesión';
+                mostrarModal.value = true;
+                return;
+            }
 
-        const idcoleccion = coleccion.idcoleccion;
+            const { data: coleccion, error: errorColeccion } = await supabase
+                .from('coleccion')
+                .insert({})
+                .select('idcoleccion')
+                .single();
 
-        const { data: usuario, error: errorUsuario } = await supabase
-            .from('usuarios')
-            .insert({ idauth, idcoleccion })
-            .select('idusuario')
-            .single();
+            if (errorColeccion) throw errorColeccion;
 
-        if (errorUsuario) throw errorUsuario;
+            const idcoleccion = coleccion.idcoleccion;
 
-        const idusuario = usuario.idusuario;
+            const { data: nuevoUsuario, error: errorNuevoUsuario } = await supabase
+                .from('usuarios')
+                .insert({ idauth, idcoleccion })
+                .select('idusuario')
+                .single();
 
-        const { error: errorActualizarColeccion } = await supabase
-            .from('coleccion')
-            .update({ idusuario })
-            .eq('idcoleccion', idcoleccion);
+            if (errorNuevoUsuario) throw errorNuevoUsuario;
 
-        if (errorActualizarColeccion) throw errorActualizarColeccion;
+            const idusuario = nuevoUsuario.idusuario;
+
+            const { error: errorActualizarColeccion } = await supabase
+                .from('coleccion')
+                .update({ idusuario })
+                .eq('idcoleccion', idcoleccion);
+
+            if (errorActualizarColeccion) throw errorActualizarColeccion;
+
+        } catch (dbError) {
+            if (dbError.code === '409' || dbError.message.includes('duplicate')) {
+                mensajeModal.value = 'Esta cuenta ya existe, inicia sesión';
+                mostrarModal.value = true;
+                alert("Esta cuenta ya existe, inicia sesión")
+                return;
+            }
+            throw dbError;
+        }
 
         mensajeModal.value = '¡Registrado correctamente! Comprueba tu correo electrónico para verificar la cuenta.';
         mostrarModal.value = true;
 
     } catch (error) {
-        if (error instanceof Error) {
-            mensajeModal.value = error.message;
-            mostrarModal.value = true;
-        }
+        mensajeModal.value = 'Ya existe una cuenta con este correo, por favor, inicia sesión.';
+        mostrarModal.value = true;
+        console.error('Error durante el registro:', error);
     } finally {
         cargando.value = false;
     }
