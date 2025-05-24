@@ -227,21 +227,14 @@ async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
 
         if (error) throw error;
 
-
-        mensajeModal.value = `Juego ${idFinal} añadido correctamente.`;
-        mostrarModal.value = true;
-
-        console.log("Redirigiendo a la página de colección...");
-
+        alert(`Juego ${idFinal} añadido correctamente.`)
 
     } catch (err) {
         console.error("Error al añadir el juego:", err);
     }
-    router.replace({ name: 'coleccion' });
 
-    setTimeout(() => {
-        router.push("/coleccion");
-    }, 2000);
+    router.push("/");
+
 }
 
 //Funcion para eliminar un juego mediante su id de coleccion y de juego
