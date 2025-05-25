@@ -444,7 +444,55 @@ onMounted(async () => {
     </div>
 </template>
 
-<style scoped>
+<style scoped>/* Ajustes para que el componente Coleccion tenga el mismo ancho que el contenedor padre */
+
+.listaColeccion {
+    padding: 1.5rem;
+    border: 1px solid var(--color-borde);
+    border-radius: 16px;
+    background-color: var(--color-fondo-coleccion);
+    color: var(--color-texto);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(79, 70, 229, 0.15);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    
+    /* AJUSTES PRINCIPALES - Hacer que coincida con el contenedor padre */
+    width: 100%;
+    max-width: 1350px; /* Mismo max-width que cabeceraJuego y contenidoFlex */
+    margin: 0 auto; /* Centrar como el contenedor padre */
+    box-sizing: border-box;
+}
+
+/* Ajustar el contenedor de juegos para que respete el ancho del padre */
+.coleccionesJuegos {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    padding: 1rem 1rem 1rem 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-fondo-boton) var(--color-secundario);
+    
+    /* Asegurar que se mantenga dentro del contenedor padre */
+    width: 100%;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+/* Resto de estilos permanecen igual */
+.listaColeccion::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--gradiente-primario);
+}
+
 .textoColeccion {
     text-align: center;
 }
@@ -486,28 +534,6 @@ onMounted(async () => {
     text-decoration: underline;
 }
 
-.listaColeccion {
-    padding: 1.5rem;
-    border: 1px solid var(--color-borde);
-    border-radius: 16px;
-    background-color: var(--color-fondo-coleccion);
-    color: var(--color-texto);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(79, 70, 229, 0.15);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.listaColeccion::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: var(--gradiente-primario);
-}
-
 .listaColeccion h2 {
     font-size: 1.8rem;
     font-weight: 600;
@@ -519,17 +545,6 @@ onMounted(async () => {
     align-items: center;
     flex-wrap: wrap;
     gap: 10px;
-}
-
-.coleccionesJuegos {
-    display: flex;
-    flex-direction: row;
-    gap: 1.5rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: 1rem;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-fondo-boton) var(--color-secundario);
 }
 
 .coleccionesJuegos::-webkit-scrollbar {
@@ -546,16 +561,24 @@ onMounted(async () => {
     border-radius: 8px;
 }
 
+.coleccionesJuegos::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-acento-terciario);
+}
+
 .tarjetaJuegoContainer {
     scroll-snap-align: start;
-    min-width: 250px;
-    max-width: 300px;
-    padding: 0.5rem;
+    min-width: 280px;
+    max-width: 280px;
+    width: 280px;
+    padding: 0.8rem;
     flex-shrink: 0;
+    flex-grow: 0;
     border-radius: 16px;
     text-align: center;
     position: relative;
     transition: transform 0.3s ease;
+    box-sizing: border-box;
+    margin-right: 0.5rem;
 }
 
 .botonPrincipal {
@@ -635,7 +658,6 @@ onMounted(async () => {
     margin-top: 10px;
 }
 
-
 .botonEliminar {
     position: absolute;
     top: 15px;
@@ -666,11 +688,12 @@ onMounted(async () => {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
-
+/* Media queries ajustadas */
 @media (max-width: 768px) {
     .listaColeccion {
         padding: 1rem;
-        margin: 0.5rem;
+        margin: 0.5rem auto; /* Mantener centrado */
+        max-width: calc(100% - 1rem); /* Ajustar para el margen */
     }
 
     .textoColeccion {
@@ -686,14 +709,16 @@ onMounted(async () => {
     }
 
     .coleccionesJuegos {
-        gap: 0.8rem;
-        padding-bottom: 0.8rem;
+        gap: 1.5rem;
+        padding: 0.8rem 0.8rem 0.8rem 0;
     }
 
     .tarjetaJuegoContainer {
-        min-width: 160px;
+        min-width: 200px;
         max-width: 200px;
-        padding: 0.3rem;
+        width: 200px;
+        padding: 0.5rem;
+        margin-right: 0.3rem;
     }
 
     .botonPrincipal {
@@ -735,9 +760,16 @@ onMounted(async () => {
 }
 
 @media (max-width: 480px) {
+    .listaColeccion {
+        max-width: calc(100% - 0.5rem);
+        margin: 0.25rem auto;
+    }
+
     .tarjetaJuegoContainer {
-        min-width: 140px;
+        min-width: 180px;
         max-width: 180px;
+        width: 180px;
+        margin-right: 5rem;
     }
 
     .botonSecundario span {

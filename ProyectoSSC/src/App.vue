@@ -4,6 +4,7 @@ import { useSessionStore } from './stores/session';
 
 import navbar from './components/navbar.vue';
 import piePagina from './components/footer.vue';
+import CookieConsent from './components/CookieConsent.vue';
 
 const sessionStore = useSessionStore();
 
@@ -24,7 +25,8 @@ onMounted(async () => {
     <span>
         <piePagina />
     </span>
-    
+
+    <CookieConsent />
 </template>
 
 <style>

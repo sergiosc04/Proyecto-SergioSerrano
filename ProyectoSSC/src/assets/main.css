@@ -367,3 +367,23 @@ a:hover {
 .contenedorModal {
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
+
+/* Estilos personalizados para la barra de desplazamiento */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-fondo);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-fondo-boton);
+    border-radius: 6px;
+    border: 2px solid var(--color-fondo);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-acento-primario);
+}

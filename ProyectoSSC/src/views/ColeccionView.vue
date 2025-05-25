@@ -43,7 +43,7 @@ const manejarCrearColeccion = async () => {
     mostrarModal.value = true;
   }
 }
-
+9
 const handleColeccionEliminada = async () => {
   await getIdAuth(); // Esto recargará la lista de colecciones
 };
