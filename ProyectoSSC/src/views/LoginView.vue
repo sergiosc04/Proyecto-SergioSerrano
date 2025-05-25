@@ -1,71 +1,79 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { supabase } from '../supabase'
 import { useSessionStore } from '../stores/session'
 import { useRouter } from 'vue-router'
-import { onMounted } from 'vue'
 import Modal from '@/components/Modal.vue'
 
 import mail from '../assets/img/login/mail.png'
 import candado from '../assets/img/login/candado.png'
 import SpinnerCarga from '@/components/SpinnerCarga.vue'
 
+const router = useRouter()
 
-const router = useRouter();
+const cargando = ref(false)         // Estado de carga durante login
+const email = ref('')               // Email del usuario
+const password = ref('')            // Contraseña del usuario
 
-const cargando = ref(false);
-const email = ref('');
-const password = ref('');
+// Estado del modal para mostrar mensajes
+const mostrarModal = ref(false)
+const mensajeModal = ref('')
 
-// Modal states
-const mostrarModal = ref(false);
-const mensajeModal = ref('');
+const sessionStore = useSessionStore()
 
-const sessionStore = useSessionStore();
-
+// Función que maneja el proceso de inicio de sesión
 const manejarLogin = async () => {
     try {
         cargando.value = true
 
+        // Intenta autenticar con email y password
         const { data, error } = await supabase.auth.signInWithPassword({
             email: email.value,
             password: password.value,
         })
 
-        if (error) throw error;
+        if (error) throw error
 
         if (data?.session) {
-            // Después del login, se guarda la sesión en el store
+            // Guarda la sesión en el store tras login exitoso
             sessionStore.setSession(data.session)
-            mensajeModal.value = "Sesión iniciada correctamente.";
-            mostrarModal.value = true;
-            router.push('/cuenta');
+            mensajeModal.value = "Sesión iniciada correctamente."
+            mostrarModal.value = true
+            router.push('/cuenta') // Redirige a la página de cuenta
         } else {
-            mensajeModal.value = "Error al recuperar la sesión";
-            mostrarModal.value = true;
+            mensajeModal.value = "Error al recuperar la sesión"
+            mostrarModal.value = true
         }
     } catch (error) {
-        if (error instanceof Error) {
-            mensajeModal.value = error.message;
-            mostrarModal.value = true;
+        // Verifica si el error tiene la propiedad 'code' y si es 'invalid_credentials'
+        if (error?.code === 'invalid_credentials') {
+            mensajeModal.value = "Email o contraseña incorrectos"
+            mostrarModal.value = true
+        } else if (error instanceof Error) {
+            mensajeModal.value = error.message
+            mostrarModal.value = true
+        } else {
+            // Fallback para otros tipos de error
+            mensajeModal.value = "Error desconocido al iniciar sesión"
+            mostrarModal.value = true
         }
     } finally {
-        cargando.value = false;
+        cargando.value = false
     }
 }
 
+// Navega a la página de registro
 const cambiarARegistro = () => {
-    router.push('/registro');
+    router.push('/registro')
 }
 
+// Si ya hay sesión activa, redirige automáticamente a /cuenta
 onMounted(() => {
     if (sessionStore.session) {
-        console.log("Sesión activa");
-        router.push('/cuenta');
-        return;
+        console.log("Sesión activa")
+        router.push('/cuenta')
     }
 })
-
 </script>
 
 <template>
@@ -82,6 +90,7 @@ onMounted(() => {
                     <p class="subtituloInicioSesion">Ingresa a tu cuenta</p>
                 </div>
 
+                <!-- Formulario de login -->
                 <div v-if="!cargando" class="formularioInicioSesion">
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Correo electrónico</label>
@@ -118,10 +127,10 @@ onMounted(() => {
                                 Regístrate.
                             </button>
                         </div>
-
                     </div>
                 </div>
 
+                <!-- Spinner mientras se procesa el login -->
                 <div v-else class="cargando">
                     <SpinnerCarga />
                     <p>Iniciando sesión...</p>
@@ -131,6 +140,7 @@ onMounted(() => {
         </div>
     </div>
 
+    <!-- Modal para mostrar mensajes y errores -->
     <Modal v-model:mostrar="mostrarModal" tipo="alerta" titulo="Aviso" :mensaje="mensajeModal"
         @cerrar="mostrarModal = false" />
 </template>

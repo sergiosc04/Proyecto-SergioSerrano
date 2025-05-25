@@ -4,20 +4,26 @@ import { useSessionStore } from '../stores/session.js';
 import { RouterLink } from 'vue-router';
 import { useObtenerNombreUsuario } from '../composables/obtenerNombreUsuario.js';
 
+// Instancia del store de sesión
 const sessionStore = useSessionStore();
+// Función para obtener el nombre de usuario
 const { obtenerUsername } = useObtenerNombreUsuario();
+// Estado para controlar si el menú está abierto o cerrado
 const menuAbierto = ref(false);
 
+// Función para alternar el estado del menú
 const toggleMenu = () => {
   menuAbierto.value = !menuAbierto.value;
+
+  // Bloquear scroll del body cuando el menú está abierto
   if (menuAbierto.value) {
-    document.body.style.overflow = 'hidden'; // Previene scroll cuando el menú está abierto
+    document.body.style.overflow = 'hidden';
   } else {
     document.body.style.overflow = 'auto';
   }
 };
 
-// Cerrar el menú si se hace clic fuera
+// Función para cerrar el menú si se hace clic fuera del menú o del botón
 const cerrarMenuSiClickFuera = (event) => {
   if (menuAbierto.value && !event.target.closest('.menuBoton') && !event.target.closest('.navbarLinks')) {
     menuAbierto.value = false;
@@ -26,13 +32,14 @@ const cerrarMenuSiClickFuera = (event) => {
 };
 
 onMounted(async () => {
+  // Recuperar la sesión y obtener el nombre de usuario al montar el componente
   await sessionStore.recuperarSesion();
   await obtenerUsername();
 
-  // Agregar listener para cerrar menú al hacer clic fuera
+  // Añadir listener para cerrar el menú al hacer clic fuera
   document.addEventListener('click', cerrarMenuSiClickFuera);
 
-  // Agregar listener para cambios en el tamaño de la ventana
+  // Añadir listener para cerrar el menú al cambiar tamaño de ventana (desktop)
   window.addEventListener('resize', () => {
     if (window.innerWidth >= 768 && menuAbierto.value) {
       menuAbierto.value = false;
@@ -45,7 +52,7 @@ onMounted(async () => {
 <template>
   <header class="cabecera">
     <nav class="navbarPrincipal">
-      <!-- Logo -->
+      <!-- Logo con enlace a la página principal -->
       <RouterLink to="/" class="navbarLogo">
         <img src="../assets/img/logo/PixelRift-Logo-Colores.png" alt="PixelRift Logo" />
       </RouterLink>
@@ -53,9 +60,10 @@ onMounted(async () => {
       <!-- Overlay para fondo oscuro cuando el menú móvil está activo -->
       <div v-if="menuAbierto" class="menuOverlay" @click="menuAbierto = false"></div>
 
-      <!-- Links navegación -->
+      <!-- Contenedor de links de navegación -->
       <div class="navbarLinksContenedor" :class="{ 'menuAbierto': menuAbierto }">
         <div class="navbarLinks">
+          <!-- Enlaces principales -->
           <RouterLink class="navEnlace" to="/" @click="menuAbierto = false">
             <span class="textoEnlace">INICIO</span>
           </RouterLink>
@@ -74,9 +82,11 @@ onMounted(async () => {
         <div class="navbarSesionMovil">
           <RouterLink class="navbarUsuarioMovil" to="/cuenta/" @click="menuAbierto = false">
             <div class="usuarioAvatarMovil">
+              <!-- Avatar de usuario o imagen por defecto -->
               <img v-if="sessionStore.avatarUrl" :src="sessionStore.avatarUrl" alt="Usuario" />
               <img v-else src="../assets/img/usuarioPH.jpg" alt="Usuario" />
             </div>
+            <!-- Mostrar nombre de usuario o mensaje de iniciar sesión -->
             <template v-if="!sessionStore.isLoadingUsername">
               <span class="nombreUsuarioMovil">{{ sessionStore.username || "Iniciar sesión" }}</span>
             </template>
@@ -87,14 +97,14 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- Botón hamburguesa para móvil -->
+      <!-- Botón hamburguesa para abrir/cerrar menú en móvil -->
       <button class="menuBoton" @click="toggleMenu" :class="{ 'activo': menuAbierto }">
         <span class="linea"></span>
         <span class="linea"></span>
         <span class="linea"></span>
       </button>
 
-      <!-- Datos de la sesión (visible solo en desktop) -->
+      <!-- Datos de sesión visibles solo en escritorio -->
       <div class="navbarSesion">
         <RouterLink class="navbarUsuario" to="/cuenta/">
           <template v-if="!sessionStore.isLoadingUsername">
@@ -104,6 +114,7 @@ onMounted(async () => {
             <span class="usuarioNombre cargando">Cargando...</span>
           </template>
           <div class="usuarioAvatar">
+            <!-- Avatar de usuario o imagen por defecto -->
             <img v-if="sessionStore.avatarUrl" :src="sessionStore.avatarUrl" alt="Usuario" />
             <img v-else src="../assets/img/usuarioPH.jpg" alt="Usuario" />
           </div>

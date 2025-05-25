@@ -1,4 +1,8 @@
 <script setup>
+/* 
+  SCRIPT SETUP - Lógica principal del componente Coleccion
+  Importaciones de Vue, componentes, Supabase y utilidades
+*/
 import { ref, onMounted } from 'vue';
 import tarjetaJuego from '../components/tarjetaJuego.vue';
 import { supabase } from '../supabase'
@@ -6,7 +10,7 @@ import SpinnerCarga from './SpinnerCarga.vue';
 import { useRouter } from 'vue-router';
 import Modal from '@/components/Modal.vue';
 
-//variables recibidas desde el coleccionView
+// Props recibidas del componente padre
 const props = defineProps({
     nombre: {
         type: String,
@@ -26,58 +30,53 @@ const props = defineProps({
     }
 });
 
+// Evento emitido al eliminar colección
 const emit = defineEmits(['coleccionEliminada']);
 
-let juegos = ref([]);
-let juegoUnico = ref(null);
-let cargando = ref(true);
-let coleccion = ref("");
-let mostrarOpciones = ref(false);
-let longColeccion = ref();
-const nombreColeccion = ref(props.nombre);
+// Variables reactivas para el estado del componente
+let juegos = ref([]); // Array de juegos en la colección
+let juegoUnico = ref(null); // Juego individual cuando se recibe ID
+let cargando = ref(true); // Estado de carga
+let coleccion = ref(""); // Datos de la colección
+let mostrarOpciones = ref(false); // Controla visibilidad de opciones
+let longColeccion = ref(); // Cantidad de juegos en colección
+const nombreColeccion = ref(props.nombre); // Nombre editable de la colección
+const claveRecibida = ref("0"); // Clave para forzar recarga
 
-const claveRecargar = ref("0");
+const router = useRouter(); // Router para navegación
+const claveAPI = import.meta.env.VITE_RAWG_API_KEY; // API key para RAWG
 
-const recargarComponente = () => {
-    claveRecargar.value += 1
-}
-
-const router = useRouter();
-
-//importamos la clave del .env
-const claveAPI = import.meta.env.VITE_RAWG_API_KEY;
-
-// Modal states
+// Estados para los modales
 const mostrarModal = ref(false);
 const mensajeModal = ref('');
 const mensajeConfirmacion = ref('');
 const mostrarModalConfirmacion = ref(false);
 const idJuegoAEliminar = ref(null);
 
-// Metodo para obtener información de in juego, para usar cuando haya idRecibido
+/**
+ * Obtiene información de un juego específico desde la API RAWG
+ * @param {Number} id - ID del juego a buscar
+ */
 const getJuegoUnico = async (id) => {
     try {
         const response = await fetch(`https://api.rawg.io/api/games/${id}?key=${claveAPI}`);
         const data = await response.json();
-
         juegoUnico.value = data;
-
     } catch (error) {
         console.error(`Error al obtener el juego ${id}:`, error);
     }
     cargando.value = false;
 };
 
-// Metodo para obtener información de los juegos, se recorre el array con los ID de los juegos, se busca cada juego, y se mete al final del objeto con todos los datos de los juegos
+/**
+ * Obtiene información de todos los juegos de la colección
+ */
 const getJuegos = async () => {
-
     for (const id of props.juegos) {
         try {
             const response = await fetch(`https://api.rawg.io/api/games/${id}?key=${claveAPI}`);
             const data = await response.json();
-
             juegos.value.push(data);
-
         } catch (error) {
             console.error(`Error al obtener el juego ${id}:`, error);
         }
@@ -85,7 +84,10 @@ const getJuegos = async () => {
     cargando.value = false;
 };
 
-//Funcion para cambiar el nombre de la colección
+/**
+ * Cambia el nombre de la colección en Supabase
+ * @param {Number} idColeccionModificar - ID de la colección a modificar
+ */
 async function cambiarNombre(idColeccionModificar) {
     let intro = false;
     let nuevoNombre = "";
@@ -96,12 +98,10 @@ async function cambiarNombre(idColeccionModificar) {
         if (nuevoNombre) {
             const { error } = await supabase
                 .from('coleccion')
-                .upsert([
-                    {
-                        idcoleccion: idColeccionModificar,
-                        nombreColeccion: nuevoNombre
-                    }
-                ]);
+                .upsert([{
+                    idcoleccion: idColeccionModificar,
+                    nombreColeccion: nuevoNombre
+                }]);
 
             if (error) {
                 mensajeModal.value = `Error al cambiar el nombre: ${error.message}`;
@@ -118,7 +118,12 @@ async function cambiarNombre(idColeccionModificar) {
         }
     } while (intro == false);
 }
-//Función para eliminar una colección
+
+/**
+ * Elimina una colección de Supabase
+ * @param {String} nombreColeccionEliminar - Nombre de la colección
+ * @param {Number} idColeccionEliminar - ID de la colección
+ */
 async function eliminarColeccion(nombreColeccionEliminar, idColeccionEliminar) {
     if (confirm(`¿Eliminar colección ${nombreColeccionEliminar}?`)) {
         try {
@@ -147,6 +152,10 @@ async function eliminarColeccion(nombreColeccionEliminar, idColeccionEliminar) {
     }
 }
 
+/**
+ * Obtiene los datos de una colección desde Supabase
+ * @param {Number} idColeccionIntro - ID de la colección
+ */
 async function getDatosColeccion(idColeccionIntro) {
     try {
         const { data, error } = await supabase
@@ -155,7 +164,6 @@ async function getDatosColeccion(idColeccionIntro) {
             .eq('idcoleccion', idColeccionIntro);
 
         if (error) throw error;
-
         coleccion = data;
         return coleccion;
 
@@ -163,17 +171,21 @@ async function getDatosColeccion(idColeccionIntro) {
         console.error('Error al obtener las colecciones:', error);
     }
 }
-async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
 
+/**
+ * Añade un nuevo juego a la colección
+ * @param {Number} idColeccionBuscar - ID colección destino
+ * @param {Number} idJuego - ID del juego (opcional)
+ * @param {Number} idRecibido - ID recibido por props (opcional)
+ */
+async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
     let idFinal = idRecibido || idJuego;
 
-    // Si no hay ID, pedimos al usuario que introduzca una
+    // Si no hay ID, pedimos al usuario
     if (!idFinal) {
         do {
             const entrada = prompt("Introduce la ID de un juego a añadir:");
-            if (entrada === null) {
-                return;
-            }
+            if (entrada === null) return;
             idFinal = Number(entrada);
         } while (!Number.isInteger(idFinal) || idFinal <= 0);
     }
@@ -184,60 +196,49 @@ async function nuevoJuego(idColeccionBuscar, idJuego, idRecibido) {
     let jsonDatos;
     try {
         jsonDatos = await getDatosColeccion(idColeccionBuscar);
-
-
     } catch (err) {
         console.error("Error al obtener datos de la colección:", err);
         return;
     }
 
-    // Asegurar que el array de juegos existe
+    // Verificar y preparar array de juegos
     let juegos = jsonDatos[0].datosentrada.juegos;
     if (!Array.isArray(juegos)) {
         juegos = [];
         jsonDatos[0].datosentrada.juegos = juegos;
     }
 
-    // Comprobar si el juego ya está
-    let yaExiste = false;
-    for (let juego of juegos) {
-        if (juego === idFinal) {
-            yaExiste = true;
-            break;
-        }
-    }
-
-    if (yaExiste) {
+    // Comprobar si el juego ya existe
+    if (juegos.includes(idFinal)) {
         console.log("El juego ya está en la colección: " + idFinal);
         alert("El juego ya está en la colección.");
         return;
     }
 
-    // Añadir el nuevo juego al principio
+    // Añadir el nuevo juego
     juegos.unshift(idFinal);
 
-    // Guardar en Supabase
+    // Actualizar en Supabase
     try {
         const { data, error } = await supabase
             .from('coleccion')
-            .update({
-                datosentrada: jsonDatos[0].datosentrada
-            })
+            .update({ datosentrada: jsonDatos[0].datosentrada })
             .eq('idcoleccion', idColeccionBuscar);
 
         if (error) throw error;
-
         alert(`Juego ${idFinal} añadido correctamente.`)
-
     } catch (err) {
         console.error("Error al añadir el juego:", err);
     }
 
     router.push("/");
-
 }
 
-//Funcion para eliminar un juego mediante su id de coleccion y de juego
+/**
+ * Elimina un juego de la colección
+ * @param {Number} idColeccionBuscar - ID de la colección
+ * @param {Number} idJuego - ID del juego a eliminar
+ */
 async function eliminarJuego(idColeccionBuscar, idJuego) {
     if (!idJuego) {
         do {
@@ -246,50 +247,26 @@ async function eliminarJuego(idColeccionBuscar, idJuego) {
             idJuego = Number(entrada);
         } while (!Number.isInteger(idJuego) || idJuego <= 0);
     }
-    console.log(`ID de juego seleccionada: ${idJuego}`);
-
-    // Obtener datos de la colección
-    let jsonDatos;
-    try {
-        jsonDatos = await getDatosColeccion(idColeccionBuscar);
-    } catch (err) {
-        console.error("Error al obtener datos:", err);
-        mensajeModal.value = "Error al cargar la colección";
-        mostrarModal.value = true;
-        return;
-    }
-
+    
+    // Configurar modal de confirmación
     idJuegoAEliminar.value = idJuego;
     mensajeConfirmacion.value = `¿Eliminar juego ${idJuego} de la colección?`;
     mostrarModalConfirmacion.value = true;
 }
 
-// Nueva función para confirmar la eliminación
+/**
+ * Confirma la eliminación de un juego después de la confirmación
+ */
 async function confirmarEliminarJuego() {
     const idJuego = idJuegoAEliminar.value;
     let jsonDatos;
 
     try {
         jsonDatos = await getDatosColeccion(props.idcoleccion);
-
-        // Verificar estructura de datos
         const juegos = jsonDatos[0].datosentrada.juegos;
-        if (!Array.isArray(juegos)) {
-            mensajeModal.value = "La colección no contiene juegos";
-            mostrarModal.value = true;
-            return;
-        }
 
-        // Buscar existencia del juego
-        let existe = false;
-        for (const juego of juegos) {
-            if (juego === idJuego) {
-                existe = true;
-                break;
-            }
-        }
-
-        if (!existe) {
+        // Verificar existencia del juego
+        if (!juegos.includes(idJuego)) {
             mensajeModal.value = "Este juego no está en la colección";
             mostrarModal.value = true;
             return;
@@ -318,27 +295,29 @@ async function confirmarEliminarJuego() {
     }
 }
 
+/**
+ * Obtiene la cantidad de juegos en la colección
+ */
 const getLongColeccion = async () => {
     let jsonDatos;
     try {
         jsonDatos = await getDatosColeccion(props.idcoleccion);
-
         longColeccion.value = jsonDatos[0].datosentrada.juegos.length;
-        console.log(jsonDatos[0].datosentrada.juegos)
-
         return longColeccion.value;
-
     } catch (err) {
         console.error("Error al obtener datos:", err);
         return;
     }
-
 }
 
+/**
+ * Alterna la visibilidad de las opciones de colección
+ */
 const toggleFunciones = () => {
     mostrarOpciones.value = !mostrarOpciones.value;
 }
 
+// Hook de ciclo de vida: Se ejecuta al montar el componente
 onMounted(async () => {
     if (props.juegos.length > 0) {
         await getJuegos();
@@ -349,103 +328,131 @@ onMounted(async () => {
         await getJuegoUnico(props.idRecibido);
     }
     longColeccion.value = await getLongColeccion();
-    console.log(longColeccion.value)
 });
-
 </script>
 
 <template>
-    <div class="listaColeccion">
-        <div class="textoColeccion">
+<!-- 
+  TEMPLATE - Estructura visual del componente
+  Contiene:
+  - Cabecera con nombre de colección
+  - Listado de juegos en tarjetas
+  - Botones de acciones (añadir/eliminar)
+  - Modales de confirmación
+  - Estados de carga y vacío
+-->
+<div class="listaColeccion">
+    <!-- Cabecera con título y subtítulo -->
+    <div class="textoColeccion">
+        <div class="titulo2">Colección <strong>{{ nombreColeccion }}</strong></div>
+        <div class="subtitulo" v-if="longColeccion">{{ longColeccion }} juegos en la colección.</div>
+    </div>
 
-            <div class="titulo2">Colección <strong>{{ nombreColeccion }}</strong></div>
-            <div class="subtitulo" v-if="longColeccion">{{ longColeccion }} juegos en la colección.</div>
-        </div>
+    <!-- Botón para añadir juego recibido por props -->
+    <span v-if="idRecibido">
+        <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando" class="botonPrincipal">
+            {{ `Añadir ${juegoUnico?.name || "juego"} a esta colección` }}
+        </button>
+    </span>
 
-        <span v-if="idRecibido">
-            <button @click="nuevoJuego(idcoleccion, 0, idRecibido)" :disabled="cargando" class="botonPrincipal">
-                {{ `Añadir ${juegoUnico?.name || "juego"} a esta colección` }}
+    <!-- Spinner durante carga -->
+    <div v-if="cargando">
+        <SpinnerCarga /> Cargando colección...
+    </div>
+
+    <!-- Listado de juegos (scroll horizontal) -->
+    <div v-else-if="juegos.length > 0" class="coleccionesJuegos">
+        <div v-for="juego in juegos" :key="juego.id" class="tarjetaJuegoContainer">
+            <!-- Botón eliminar juego -->
+            <button @click="eliminarJuego(idcoleccion, juego.id)" class="botonEliminar">
+                <img src="../assets/img/botones/basura.png" alt="Eliminar">
             </button>
-        </span>
-
-        <div v-if="cargando">
-            <SpinnerCarga /> Cargando colección...
+            
+            <!-- Componente tarjeta individual -->
+            <tarjetaJuego :juego="juego" />
         </div>
+    </div>
 
-        <div v-else-if="juegos.length > 0" class="coleccionesJuegos">
-            <div v-for="juego in juegos" :key="juego.id" class="tarjetaJuegoContainer">
+    <!-- Mensaje cuando no hay juegos -->
+    <div v-else>
+        <p class="textoVacio">Esta colección no tiene juegos aún. <router-link to="/catalogo">Explorar juegos.</router-link> </p>
+    </div>
 
-                <button @click="eliminarJuego(idcoleccion, juego.id)" class="botonEliminar"><img
-                        src="../assets/img/botones/basura.png" alt=""></button>
+    <!-- Botón para mostrar opciones (toggle) -->
+    <button v-if="!mostrarOpciones" @click="toggleFunciones()" class="botonSecundario">
+        <img class="botonesOpciones" src="../assets/img/botones/opciones.png" alt="Opciones">
+        <span>Opciones de {{ nombreColeccion }}</span>
+    </button>
 
-                <tarjetaJuego :juego="juego" />
-            </div>
-        </div>
-
-        <div v-else>
-            <p class="textoVacio">Esta colección no tiene juegos aún. <router-link to="/catalogo">Explorar
-                    juegos.</router-link> </p>
-        </div>
-
-        <!-- Botón para mostrar opciones -->
-        <button v-if="!mostrarOpciones" @click="toggleFunciones()" class="botonSecundario">
-            <img class="botonesOpciones" src="../assets/img/botones/opciones.png" alt="Opciones">
-            <span>Opciones de {{ nombreColeccion }}</span>
+    <!-- Panel de opciones cuando está visible -->
+    <div v-if="mostrarOpciones" class="opciones">
+        <!-- Botón para ocultar opciones -->
+        <button @click="toggleFunciones()" class="botonSecundario">
+            <img class="botonesOpciones" src="../assets/img/botones/cerrar.png" alt="Cerrar">
+            <span>&nbsp;Ocultar opciones</span>
         </button>
 
-        <!-- Botones de opciones -->
-        <div v-if="mostrarOpciones" class="opciones">
-            <!-- Botón para ocultar -->
-            <button @click="toggleFunciones()" class="botonSecundario">
-                <img class="botonesOpciones" src="../assets/img/botones/cerrar.png" alt="Cerrar">
-                <span>&nbsp;Ocultar opciones</span>
-            </button>
+        <!-- Botón cambiar nombre -->
+        <button @click="cambiarNombre(idcoleccion)" class="botonSecundario">
+            <img class="botonesOpciones" src="../assets/img/botones/editar.png">
+            <span>&nbsp;Cambiar Nombre</span>
+        </button>
 
-            <button @click="cambiarNombre(idcoleccion)" class="botonSecundario">
-                <img class="botonesOpciones" src="../assets/img/botones/editar.png"><span>
-                    &nbsp;Cambiar Nombre</span>
-            </button>
+        <!-- Botón eliminar colección -->
+        <button @click="eliminarColeccion(nombreColeccion, idcoleccion)" class="botonSecundario">
+            <img class="botonesOpciones" src="../assets/img/botones/basura.png">
+            <span>&nbsp;Eliminar Colección</span>
+        </button>
 
-            <button @click="eliminarColeccion(nombreColeccion, idcoleccion)" class="botonSecundario">
-                <img class="botonesOpciones" src="../assets/img/botones/basura.png"><span>
-                    &nbsp;Eliminar Colección</span>
-            </button>
-
-            <button @click="nuevoJuego(idcoleccion, 0)" :disabled="cargando" class="botonSecundario">
-                <img class="botonesOpciones" src="../assets/img/botones/nuevoJuego.png"><span>
-                    &nbsp;<strong>Añadir juego por ID</strong></span>
-            </button>
-        </div>
-
-        <!-- Modal para confirmación de eliminación -->
-        <Modal v-if="mostrarModalConfirmacion" @close="mostrarModalConfirmacion = false">
-            <template #header>
-                <h3>Confirmar eliminación</h3>
-            </template>
-            <template #default>
-                <p>{{ mensajeConfirmacion }}</p>
-            </template>
-            <template #footer>
-                <button @click="mostrarModalConfirmacion = false" class="botonSecundario">
-                    Cancelar
-                </button>
-                <button @click="confirmarEliminarJuego(); mostrarModalConfirmacion = false" class="botonPrincipal">
-                    Eliminar
-                </button>
-            </template>
-        </Modal>
-
-        <Modal v-model:mostrar="mostrarModal" tipo="alerta" titulo="Aviso" :mensaje="mensajeModal"
-            @cerrar="mostrarModal = false" />
-
-        <Modal v-model:mostrar="mostrarModalConfirmacion" tipo="confirmar" titulo="Confirmar eliminación"
-            :mensaje="mensajeConfirmacion" @confirmar="confirmarEliminarJuego"
-            @cancelar="mostrarModalConfirmacion = false" />
+        <!-- Botón añadir juego manual -->
+        <button @click="nuevoJuego(idcoleccion, 0)" :disabled="cargando" class="botonSecundario">
+            <img class="botonesOpciones" src="../assets/img/botones/nuevoJuego.png">
+            <span>&nbsp;<strong>Añadir juego por ID</strong></span>
+        </button>
     </div>
+
+    <!-- Modal de confirmación para eliminar juego -->
+    <Modal v-if="mostrarModalConfirmacion" @close="mostrarModalConfirmacion = false">
+        <template #header>
+            <h3>Confirmar eliminación</h3>
+        </template>
+        <template #default>
+            <p>{{ mensajeConfirmacion }}</p>
+        </template>
+        <template #footer>
+            <button @click="mostrarModalConfirmacion = false" class="botonSecundario">
+                Cancelar
+            </button>
+            <button @click="confirmarEliminarJuego(); mostrarModalConfirmacion = false" class="botonPrincipal">
+                Eliminar
+            </button>
+        </template>
+    </Modal>
+
+    <!-- Modal genérico para mensajes -->
+    <Modal v-model:mostrar="mostrarModal" tipo="alerta" titulo="Aviso" :mensaje="mensajeModal"
+        @cerrar="mostrarModal = false" />
+
+    <!-- Modal de confirmación alternativo -->
+    <Modal v-model:mostrar="mostrarModalConfirmacion" tipo="confirmar" titulo="Confirmar eliminación"
+        :mensaje="mensajeConfirmacion" @confirmar="confirmarEliminarJuego"
+        @cancelar="mostrarModalConfirmacion = false" />
+</div>
 </template>
 
-<style scoped>/* Ajustes para que el componente Coleccion tenga el mismo ancho que el contenedor padre */
+<style scoped>
+/* 
+  ESTILOS - Diseño responsive del componente
+  Organización:
+  1. Estilos generales del contenedor
+  2. Estilos del listado de juegos
+  3. Estilos de tarjetas individuales
+  4. Estilos de botones
+  5. Estilos de texto y mensajes
+  6. Media queries para responsive
+*/
 
+/* 1. Contenedor principal */
 .listaColeccion {
     padding: 1.5rem;
     border: 1px solid var(--color-borde);
@@ -456,33 +463,13 @@ onMounted(async () => {
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
-    
-    /* AJUSTES PRINCIPALES - Hacer que coincida con el contenedor padre */
     width: 100%;
-    max-width: 1350px; /* Mismo max-width que cabeceraJuego y contenidoFlex */
-    margin: 0 auto; /* Centrar como el contenedor padre */
+    max-width: 1350px;
+    margin: 0 auto;
     box-sizing: border-box;
 }
 
-/* Ajustar el contenedor de juegos para que respete el ancho del padre */
-.coleccionesJuegos {
-    display: flex;
-    flex-direction: row;
-    gap: 2rem;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    padding: 1rem 1rem 1rem 0;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-fondo-boton) var(--color-secundario);
-    
-    /* Asegurar que se mantenga dentro del contenedor padre */
-    width: 100%;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-}
-
-/* Resto de estilos permanecen igual */
+/* Efecto decorativo superior */
 .listaColeccion::before {
     content: '';
     position: absolute;
@@ -493,60 +480,28 @@ onMounted(async () => {
     background: var(--gradiente-primario);
 }
 
+/* Estilos texto cabecera */
 .textoColeccion {
     text-align: center;
 }
 
-.botonesOpciones {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    vertical-align: middle;
-    filter: brightness(1.3) contrast(1.1);
-    transition: transform 0.3s ease;
-    border: 1px solid var(--color-secundario);
-}
-
-.textoVacio {
-    background-color: var(--color-primario);
-    color: var(--color-texto-secundario);
-    padding: 1.2rem;
-    text-align: center;
-    border-radius: 12px;
-    margin-top: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    font-size: 1.05rem;
-    letter-spacing: 0.02em;
-    line-height: 1.6;
-}
-
-.textoVacio a {
-    color: var(--color-fondo-boton);
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s ease;
-}
-
-.textoVacio a:hover {
-    color: var(--color-acento-terciario);
-    text-decoration: underline;
-}
-
-.listaColeccion h2 {
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: var(--color-texto);
-    line-height: 1.3;
-    letter-spacing: 0.02em;
+/* 2. Listado de juegos (scroll horizontal) */
+.coleccionesJuegos {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-direction: row;
+    gap: 2rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    padding: 1rem 1rem 1rem 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-fondo-boton) var(--color-secundario);
+    width: 100%;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
 }
 
+/* Scrollbar personalizada */
 .coleccionesJuegos::-webkit-scrollbar {
     height: 8px;
 }
@@ -565,6 +520,7 @@ onMounted(async () => {
     background-color: var(--color-acento-terciario);
 }
 
+/* 3. Tarjetas individuales de juegos */
 .tarjetaJuegoContainer {
     scroll-snap-align: start;
     min-width: 280px;
@@ -581,6 +537,9 @@ onMounted(async () => {
     margin-right: 0.5rem;
 }
 
+/* 4. Estilos de botones */
+
+/* Botón principal (acción primaria) */
 .botonPrincipal {
     background-color: var(--color-fondo-boton);
     color: var(--color-texto);
@@ -609,6 +568,7 @@ onMounted(async () => {
     box-shadow: none;
 }
 
+/* Botón secundario (acciones secundarias) */
 .botonSecundario {
     background-color: var(--color-primario);
     color: var(--color-texto);
@@ -638,6 +598,7 @@ onMounted(async () => {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Iconos dentro de botones */
 .botonSecundario img.botonesOpciones {
     width: 20px;
     height: 20px;
@@ -650,6 +611,7 @@ onMounted(async () => {
     opacity: 1;
 }
 
+/* Contenedor de opciones */
 .opciones {
     display: inline-flex;
     flex-wrap: wrap;
@@ -658,6 +620,7 @@ onMounted(async () => {
     margin-top: 10px;
 }
 
+/* Botón eliminar en tarjetas */
 .botonEliminar {
     position: absolute;
     top: 15px;
@@ -688,12 +651,42 @@ onMounted(async () => {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* Media queries ajustadas */
+/* 5. Estilos de texto y mensajes */
+
+/* Mensaje cuando no hay juegos */
+.textoVacio {
+    background-color: var(--color-primario);
+    color: var(--color-texto-secundario);
+    padding: 1.2rem;
+    text-align: center;
+    border-radius: 12px;
+    margin-top: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    line-height: 1.6;
+}
+
+.textoVacio a {
+    color: var(--color-fondo-boton);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.textoVacio a:hover {
+    color: var(--color-acento-terciario);
+    text-decoration: underline;
+}
+
+/* 6. Media Queries para responsive */
+
+/* Tablet (768px) */
 @media (max-width: 768px) {
     .listaColeccion {
         padding: 1rem;
-        margin: 0.5rem auto; /* Mantener centrado */
-        max-width: calc(100% - 1rem); /* Ajustar para el margen */
+        margin: 0.5rem auto;
+        max-width: calc(100% - 1rem);
     }
 
     .textoColeccion {
@@ -759,6 +752,7 @@ onMounted(async () => {
     }
 }
 
+/* Mobile (480px) */
 @media (max-width: 480px) {
     .listaColeccion {
         max-width: calc(100% - 0.5rem);

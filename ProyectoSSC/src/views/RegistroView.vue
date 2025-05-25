@@ -9,28 +9,33 @@ import Modal from '@/components/Modal.vue'
 import mail from '../assets/img/login/mail.png'
 import candado from '../assets/img/login/candado.png'
 
+// Estado para indicar carga (loading)
 const cargando = ref(false);
+// Campos binded a inputs para email y password
 const email = ref('');
 const password = ref('');
 const router = useRouter();
 
-// Modal states
+// Estados para mostrar modal y mensaje
 const mostrarModal = ref(false);
 const mensajeModal = ref('');
 
+// Store para manejar sesión de usuario
 const sessionStore = useSessionStore();
 
+// Función para manejar el registro de usuario
 const manejarRegistro = async () => {
     try {
         cargando.value = true;
 
-        // Primero verificar si el usuario ya existe
+        // Verificar si el usuario ya existe en tabla 'usuarios' por email
         const { data: usuarioExistente } = await supabase
             .from('usuarios')
             .select('idusuario')
             .eq('email', email.value)
             .single();
 
+        // Si existe, mostrar mensaje y detener registro
         if (usuarioExistente) {
             mensajeModal.value = 'Esta cuenta ya existe, inicia sesión';
             mostrarModal.value = true;
@@ -38,11 +43,13 @@ const manejarRegistro = async () => {
             return;
         }
 
+        // Registrar usuario en Supabase Auth
         const { data, error } = await supabase.auth.signUp({
             email: email.value,
             password: password.value,
         });
 
+        // Manejo de error específico si usuario ya registrado en Auth
         if (error) {
             if (error.message.includes('User already registered')) {
                 mensajeModal.value = 'Esta cuenta ya existe, inicia sesión';
@@ -52,11 +59,13 @@ const manejarRegistro = async () => {
             throw error;
         }
 
+        // Obtener idauth del usuario registrado
         const user = data.user;
         const idauth = user?.id;
         if (!idauth) throw new Error('No se pudo obtener el idauth del usuario');
 
         try {
+            // Verificar si usuario ya existe en tabla 'usuarios' por idauth
             const { data: usuario, error: errorUsuario } = await supabase
                 .from('usuarios')
                 .select('idusuario')
@@ -69,6 +78,7 @@ const manejarRegistro = async () => {
                 return;
             }
 
+            // Crear una nueva entrada en tabla 'coleccion' vacía
             const { data: coleccion, error: errorColeccion } = await supabase
                 .from('coleccion')
                 .insert({})
@@ -79,6 +89,7 @@ const manejarRegistro = async () => {
 
             const idcoleccion = coleccion.idcoleccion;
 
+            // Insertar nuevo usuario en tabla 'usuarios' con idauth e idcoleccion
             const { data: nuevoUsuario, error: errorNuevoUsuario } = await supabase
                 .from('usuarios')
                 .insert({ idauth, idcoleccion })
@@ -89,6 +100,7 @@ const manejarRegistro = async () => {
 
             const idusuario = nuevoUsuario.idusuario;
 
+            // Actualizar la tabla 'coleccion' para relacionar el idusuario creado
             const { error: errorActualizarColeccion } = await supabase
                 .from('coleccion')
                 .update({ idusuario })
@@ -97,6 +109,7 @@ const manejarRegistro = async () => {
             if (errorActualizarColeccion) throw errorActualizarColeccion;
 
         } catch (dbError) {
+            // Manejo de errores de duplicados para evitar registro repetido
             if (dbError.code === '409' || dbError.message.includes('duplicate')) {
                 mensajeModal.value = 'Esta cuenta ya existe, inicia sesión';
                 mostrarModal.value = true;
@@ -106,22 +119,27 @@ const manejarRegistro = async () => {
             throw dbError;
         }
 
+        // Mostrar mensaje éxito de registro
         mensajeModal.value = '¡Registrado correctamente! Comprueba tu correo electrónico para verificar la cuenta.';
         mostrarModal.value = true;
 
     } catch (error) {
+        // Mensaje genérico en caso de error durante el registro
         mensajeModal.value = 'Ya existe una cuenta con este correo, por favor, inicia sesión.';
         mostrarModal.value = true;
         console.error('Error durante el registro:', error);
     } finally {
+        // Finalizar estado de carga
         cargando.value = false;
     }
 }
 
+// Función para cambiar a página de login
 const cambiarALogin = () => {
     router.push('/login');
 }
 
+// Al montar el componente, si hay sesión activa redirigir a cuenta
 onMounted(() => {
     if (sessionStore.session) {
         console.log("Sesión activa");
@@ -142,6 +160,7 @@ onMounted(() => {
                     <p class="subtituloInicioSesion">Introduce tus datos</p>
                 </div>
 
+                <!-- Formulario solo visible si no está cargando -->
                 <div v-if="!cargando" class="formularioInicioSesion">
                     <div class="grupoEntrada">
                         <label class="etiquetaEntrada">Correo electrónico</label>
@@ -179,6 +198,8 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
+
+                <!-- Indicador de carga mientras se registra -->
                 <div v-else class="cargando">
                     <div class="spinnerCarga"></div>
                     <p>Iniciando sesión...</p>
@@ -186,10 +207,12 @@ onMounted(() => {
             </div>
         </div>
 
+        <!-- Modal para mostrar mensajes de alerta -->
         <Modal v-model:mostrar="mostrarModal" tipo="alerta" titulo="Aviso" :mensaje="mensajeModal"
             @cerrar="mostrarModal = false" />
     </div>
 </template>
+
 
 <style scoped>
 .contenedorInicioSesion {

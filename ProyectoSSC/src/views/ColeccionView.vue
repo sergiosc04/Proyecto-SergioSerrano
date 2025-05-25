@@ -7,12 +7,13 @@ import SpinnerCarga from '@/components/SpinnerCarga.vue';
 import Modal from '@/components/Modal.vue';
 
 const route = useRoute();
-const idRecibido = Number(route.query.idRecibido);
+const idRecibido = Number(route.query.idRecibido); // Obtiene parámetro id de la URL
 const nombreColeccion = ref("");
-const mostrarCreacion = ref(false);
-const mostrarModal = ref(false);
-const mensajeModal = ref('');
+const mostrarCreacion = ref(false); // Controla mostrar formulario creación
+const mostrarModal = ref(false);    // Controla visibilidad modal
+const mensajeModal = ref('');       // Mensaje que se muestra en modal
 
+// Importa métodos y estado reactivo para colecciones
 const {
   colecciones,
   loading,
@@ -21,51 +22,61 @@ const {
   crearColeccion
 } = obtenerColecciones();
 
+// Alterna la visibilidad del formulario de creación de colección
 const toggleCreacion = () => {
   mostrarCreacion.value = !mostrarCreacion.value;
 }
 
+// Gestiona la creación de una nueva colección
 const manejarCrearColeccion = async () => {
   if (!nombreColeccion.value.trim()) {
+    // Validación simple: no se acepta nombre vacío
     mensajeModal.value = "Introduce un nombre para la colección";
     mostrarModal.value = true;
     return;
   }
 
+  // Intenta crear la colección
   const resultado = await crearColeccion(nombreColeccion.value);
   if (resultado) {
+    // Si se creó con éxito, limpia y oculta el formulario
     nombreColeccion.value = '';
     mostrarCreacion.value = false;
     mensajeModal.value = 'Colección creada correctamente.';
     mostrarModal.value = true;
   } else if (error.value) {
+    // Muestra el error en el modal si hubo fallo
     mensajeModal.value = error.value;
     mostrarModal.value = true;
   }
 }
-9
+
+// Se llama cuando una colección es eliminada para refrescar la lista
 const handleColeccionEliminada = async () => {
-  await getIdAuth(); // Esto recargará la lista de colecciones
+  await getIdAuth(); // Recarga las colecciones actualizadas
 };
 
+// Al montar el componente, carga las colecciones del usuario
 onMounted(async () => {
   await getIdAuth();
 });
-
 </script>
+
 <template>
-  <!-- Pantalla de carga -->
+  <!-- Muestra spinner mientras se cargan las colecciones -->
   <div v-if="loading" class="contenedorCarga">
     <SpinnerCarga />
     <p>Cargando colecciones...</p>
   </div>
 
-  <!-- Contenido principal -->
+  <!-- Contenido principal visible tras carga -->
   <div v-else class="contenedorPrincipal">
-    <!-- Cabecera -->
     <div class="cabeceraJuego">
+      <!-- Título cambia si hay id recibido en query -->
       <h1 class="tituloJuego" v-if="idRecibido">Añadir juego a colección</h1>
       <h1 class="tituloJuego" v-else>Mis Colecciones</h1>
+      
+      <!-- Subtítulo muestra número de colecciones -->
       <p class="subtituloJuego" v-if="colecciones && colecciones.length === 1">
         {{ colecciones.length }} colección disponible
       </p>
@@ -73,10 +84,12 @@ onMounted(async () => {
         {{ colecciones.length }} colecciones disponibles
       </p><br>
 
+      <!-- Botón para mostrar el formulario de creación -->
       <button class="botonPrimario" @click="toggleCreacion()" v-if="!mostrarCreacion">
         + Crear nueva colección
       </button>
 
+      <!-- Formulario para crear nueva colección -->
       <form v-if="mostrarCreacion" @submit.prevent="manejarCrearColeccion" class="formularioCreacion">
         <div class="grupoFormulario">
           <label for="nombreColeccion" class="etiquetaFormulario">Nombre de la colección</label>
@@ -96,12 +109,9 @@ onMounted(async () => {
     </div>
 
     <div class="contenidoFlex">
-      <!-- Panel principal -->
       <main class="panelPrincipal">
-
-        <!-- Sección de colecciones -->
         <div class="seccionInfo">
-
+          <!-- Mensaje si no hay sesión activa -->
           <div v-if="error === 'Sin sesión activa'" class="tarjetaInfo">
             <router-link to="/cuenta/" align="center">
               <strong>Regístrate o Inicia Sesión</strong>
@@ -109,14 +119,17 @@ onMounted(async () => {
             para crear y administrar colecciones.
           </div>
 
+          <!-- Mensaje de error genérico -->
           <div v-else-if="error" class="tarjetaInfo">
             <div class="mensajeError">{{ error }}</div>
           </div>
 
+          <!-- Mensaje si no hay colecciones -->
           <div v-else-if="colecciones.length === 0" class="tarjetaInfo">
             <div class="mensajeInfo">No tienes colecciones creadas.</div>
           </div>
 
+          <!-- Lista de colecciones -->
           <div v-else class="listaColecciones">
             <Coleccion 
               v-for="(coleccion, index) in colecciones" 
@@ -132,11 +145,12 @@ onMounted(async () => {
       </main>
     </div>
 
-    <!-- Componente Modal -->
+    <!-- Modal para mostrar avisos y errores -->
     <Modal v-model:mostrar="mostrarModal" tipo="alerta" titulo="Aviso" :mensaje="mensajeModal"
       @cerrar="mostrarModal = false" />
   </div>
 </template>
+
 
 <style scoped>
 /* Estilos principales */
