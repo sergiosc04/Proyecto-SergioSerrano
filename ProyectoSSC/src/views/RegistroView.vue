@@ -156,7 +156,7 @@ onMounted(() => {
         <div class="contenidoInicioSesion">
             <div class="contenedorFormularioInicioSesion">
                 <div class="cabeceraFormulario">
-                    <h2 class="tituloInicioSesion">Crear cuenta</h2>
+                    <h2 class="tituloInicioSesion">Registrarse</h2>
                     <p class="subtituloInicioSesion">Introduce tus datos</p>
                 </div>
 

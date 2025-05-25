@@ -113,8 +113,7 @@ onBeforeUnmount(() => {
 
         <!-- Botones de acción -->
         <div class="accionesJuegos">
-            <!-- Botón para ver más detalles -->
-            <router-link :to="`/juego/${juego.slug}`">
+            <router-link target="_blank" :to="`/juego/${juego.slug}`">
                 <button class="boton-accion boton-ver">
                     <span class="boton-texto">Ver más</span>
                 </button>

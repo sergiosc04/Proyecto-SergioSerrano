@@ -86,8 +86,8 @@ onMounted(() => {
             <div class="contenedorFormularioInicioSesion">
 
                 <div class="cabeceraFormulario">
-                    <h2 class="tituloInicioSesion">Bienvenido</h2>
-                    <p class="subtituloInicioSesion">Ingresa a tu cuenta</p>
+                    <h2 class="tituloInicioSesion">Iniciar sesión</h2>
+                    <p class="subtituloInicioSesion">Bienvenido de vuelta</p>
                 </div>
 
                 <!-- Formulario de login -->

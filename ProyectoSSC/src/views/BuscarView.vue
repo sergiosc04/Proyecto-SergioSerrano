@@ -21,7 +21,7 @@ const {
   idBuscar,
   buscarInput,
   generoSelect,
-  juegosPagina = 20,
+  juegosPagina,
   obtenerJuegos,
 } = getJuegos();
 
@@ -46,6 +46,8 @@ const getGeneros = async () => {
 const vistaAvanzada = () => (busquedaAvanzada.value = !busquedaAvanzada.value);
 
 onMounted(() => {
+  numPagina.value = 1;
+  juegosPagina.value = 12;
   getGeneros();
   obtenerJuegos();
 });
@@ -115,7 +117,7 @@ onMounted(() => {
             <span v-if="idBuscar">Resultados de búsqueda: "{{ idBuscar }}"</span>
             <div v-if="generoSelect">Género: {{ generoSelect }}</div>
 
-            <span v-if="!idBuscar">Juegos recomendados</span>
+            <span v-if="!idBuscar">Juegos populares</span>
 
           </h2>
 
