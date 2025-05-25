@@ -33,15 +33,15 @@ const anioActual = computed(() => {
     <div class="contenidoPie">
       <div class="seccionPie">
         <h4>Contacto</h4>
-        <p><img :src="imagenes.correo" alt="correo" class="iconoPie"> contacto@pixelrift.com</p>
+        <p><img :src="imagenes.correo" alt="correo" class="iconoPie"> info@ejemplo.com</p>
         <p><img :src="imagenes.telefono" alt="telefono" class="iconoPie"> +34 123 456 789</p>
       </div>
       <div class="seccionPie">
         <h4>Síguenos</h4>
         <div class="redesSociales">
-          <a href="https://www.facebook.com" target="_blank"><img :src="imagenes.facebook" alt="facebook" class="iconoRed"></a>
-          <a href="https://www.twitter.com" target="_blank"><img :src="imagenes.twitter" alt="twitter" class="iconoRed"></a>
-          <a href="https://www.instagram.com" target="_blank"><img :src="imagenes.instagram" alt="instagram" class="iconoRed"></a>
+          <a href="#"><img :src="imagenes.facebook" alt="facebook" class="iconoRed"></a>
+          <a href="#"><img :src="imagenes.twitter" alt="twitter" class="iconoRed"></a>
+          <a href="#"><img :src="imagenes.instagram" alt="instagram" class="iconoRed"></a>
         </div>
       </div>
       <div class="seccionPie">
@@ -49,7 +49,6 @@ const anioActual = computed(() => {
         <ul>
           <li><router-link to="/">Inicio</router-link></li>
           <li><router-link to="/catalogo">Ver catálogo</router-link></li>
-          <li><router-link to="/coleccion">Ver colecciones</router-link></li>
           <li><router-link to="/cuenta">Ver cuenta</router-link></li>
         </ul>
       </div>
